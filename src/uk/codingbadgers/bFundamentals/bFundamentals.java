@@ -63,17 +63,19 @@ public class bFundamentals extends JavaPlugin {
 
 	private void handleModulesCommand(CommandSender sender) {
 		List<Module> modules = m_moduleLoader.getModules();
-		String moduleString = "";
+		String moduleString = ChatColor.GREEN + "Modules: ";
 		boolean first = true;
 		
-		for (Module module : modules) 
+		for (Module module : modules) {
 			moduleString += (first ? "" : ", ") + module.getName();
+			first = false;
+		}
 		
 		sender.sendMessage(moduleString);
 	}
 
 	private void handleCommand(CommandSender sender, Command cmd, String label,	String[] args) {
-		if (args.length > 1) {
+		if (args.length < 1) {
 			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bFundamentals");			
 			return;
 		}
@@ -99,6 +101,7 @@ public class bFundamentals extends JavaPlugin {
 			
 			if (args[1].equalsIgnoreCase("load")) {
 				m_moduleLoader.load();
+				m_moduleLoader.enable();
 				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded all modules");			
 				return;
 			}
