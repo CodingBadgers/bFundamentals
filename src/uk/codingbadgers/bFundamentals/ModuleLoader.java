@@ -3,6 +3,7 @@ package uk.codingbadgers.bFundamentals;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 import org.bukkit.command.Command;
@@ -45,7 +46,13 @@ public class ModuleLoader {
 	* Unloads the modules
 	*/
 	public void unload() {
+		disable();
 		m_modules.clear();
+	}
+	
+	public void unload(Module module) {
+		module.onDisable();
+		m_modules.remove(module);
 	}
 	
 	public void enable() {
@@ -70,6 +77,10 @@ public class ModuleLoader {
 		}
 		
 		return false;
+	}
+
+	public List<Module> getModules() {
+		return m_modules;
 	}
 
 }

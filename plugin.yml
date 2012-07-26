@@ -8,3 +8,34 @@ commands:
     bFundamentals:
         description: Main command for the plugin
         usage: /<command> 
+    modules:
+        description: Lists all modules
+        usage: /<command>
+    rankhelp:
+        description: shows the help documentation.
+        usage: /<command>
+    register:
+        description: shows info on how to get first rank.
+        usage: /<command>
+    news:
+        description: shows the latest news.
+        usage: /<command>
+    bhelpful:
+        description: parameter is either version, reload or disable.
+        usage: /<command> <param>
+    maintenance:
+        description: toggles maintenance mode
+        aliases: [mm]
+        usage: /<command> [staff]
+    rules:
+        description: shows the rules
+        usage: /<command>
+    announce:
+        description: announcement commands
+        usage: /<command>
+    motd:
+        description: shows the motd
+        usage: /<command>
+    vote:
+        description: shows the vote info
+        usage: /<command>
