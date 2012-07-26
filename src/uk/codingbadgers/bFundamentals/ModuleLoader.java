@@ -3,7 +3,6 @@ package uk.codingbadgers.bFundamentals;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 import org.bukkit.command.Command;
