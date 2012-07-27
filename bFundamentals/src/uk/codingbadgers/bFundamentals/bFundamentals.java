@@ -4,18 +4,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager;
+import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager.DatabaseType;
+import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 
 public class bFundamentals extends JavaPlugin {
 	
-	private static bFundamentals m_instance;
+	private static bFundamentals m_instance = null;
 	private static final Logger log = Logger.getLogger("bFundamentals");
-	
+	private static BukkitDatabase m_database = null;	
+	private static Permission m_permissions = null;
 	private ModuleLoader m_moduleLoader = null;
 	
 	@Override
@@ -45,6 +52,23 @@ public class bFundamentals extends JavaPlugin {
 	
 	public static void log(Level level, String msg) {
 		log.log(level, "[" + m_instance.getDescription().getName() +"] " + msg);
+	}
+	
+	public static BukkitDatabase getBukkitDatabase() {
+		if (m_database == null) {
+			m_database = BukkitDatabaseManager.CreateDatabase("bFundamentals", m_instance, DatabaseType.SQLite);
+		}
+		return m_database;
+	}
+	
+	public static Permission getPermissions() {
+		if (m_permissions == null) {
+			RegisteredServiceProvider<Permission> permissionProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+		    if (permissionProvider != null) {
+		    	m_permissions = permissionProvider.getProvider();
+		    }
+		}
+	    return m_permissions;
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
