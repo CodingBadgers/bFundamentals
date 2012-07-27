@@ -44,6 +44,10 @@ public abstract class Module extends Loadable implements Listener {
 		plugin.getServer().getPluginManager().registerEvents(listener, plugin);
 	}
 	
+	public Permission getPermissions() {
+		return permissions;
+	}
+	
 	public abstract void onEnable();
 	
 	public abstract void onDisable();
