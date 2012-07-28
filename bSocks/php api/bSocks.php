@@ -52,7 +52,7 @@
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
-			or die("error: failed to send message to all\n");
+			or die("error: failed to send message\n");
 		}
 
 		/**
@@ -77,7 +77,46 @@
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
-			or die("error: failed to send message to all\n");
+			or die("error: failed to send message to all excluding a player\n");
+		}
+		
+		/**
+		*	Execute a command on the behalf of a sender
+		*	$sender - The name of a player to execute the command, or 'console' to execute the command as console.
+		* 	$command - The command to be executed by the sender.
+		**/		
+		public function executeCommand($sender, $command) {
+			$json = json_encode(array('password' => $this->$m_passwordHash, 'type' => 'executeCommand', 'sender' => $sender, 'context' => $command));
+			$this->connectSocket();
+			
+			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
+			or die("error: failed to execute a command\n");
+		}
+		
+		/**
+		*	Recieves a message from the socket
+		*	$maxLength - The maximum length of a message to recieve
+		* 	returns - A JSON encoded string recieved from the socket connection
+		**/			
+		public function receiveMessage($maxLength = 1024) {
+			$message = socket_read($this->m_sock, $maxLength, PHP_NORMAL_READ) //Reading the reply from socket
+			or die("error: failed to recieve message.\n");	
+			
+			return $message;
+		}
+
+		/**
+		*	Recieves a message from the socket
+		*	$maxLength - The maximum length of a message to recieve
+		* 	returns - A JSON encoded string recieved from the socket connection
+		**/			
+		public function sendRawMessage($rawArray) {
+			$rawArray = array_push($rawArray, 'password' => $this->$m_passwordHash);
+			$json = json_encode($rawArray);
+			$this->connectSocket();
+			
+			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
+			or die("error: failed to execute raw command\n");		
 		}
 	
 	};
