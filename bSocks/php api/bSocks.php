@@ -48,7 +48,7 @@
 		*	$message - The message to send to the player
 		**/
 		public function sendMessage($playername, $message) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'type' => 'sendMessage', 'playerName' => $playername, 'context' => $message));
+			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'message', 'mode' => 'sendMessage', 'playerName' => $playername, 'context' => $message));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
@@ -60,7 +60,7 @@
 		*	$message - The message to send to the players
 		**/		
 		public function sendMessageAll($message) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'type' => 'sendMessageAll', 'context' => $message));
+			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'message', 'mode' => 'sendMessageAll', 'context' => $message));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
@@ -73,7 +73,7 @@
 		* 	$excludedPlayer - The name of a player whom should not recieve the message
 		**/
 		public function sendMessageAllEx($message, $excludedPlayer) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'type' => 'sendMessageAllEx', 'exludedPlayer' => $excludedPlayer, 'context' => $message));
+			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'message', 'mode' => 'sendMessageAllEx', 'exludedPlayer' => $excludedPlayer, 'context' => $message));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
@@ -86,7 +86,7 @@
 		* 	$command - The command to be executed by the sender.
 		**/		
 		public function executeCommand($sender, $command) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'type' => 'executeCommand', 'sender' => $sender, 'context' => $command));
+			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'executeCommand' 'sender' => $sender, 'context' => $command));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)

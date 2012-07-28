@@ -63,7 +63,7 @@ public class RequestHandler extends Thread {
 			}
             
 			if (json == null) {
-				m_module.log(Level.SEVERE, "Wrong password from " + m_sock.getInetAddress().getHostAddress());
+				m_module.log(Level.SEVERE, "Invalid request from " + m_sock.getInetAddress().getHostAddress());
                 br.close();
                 m_sock.close();
                 return;
@@ -170,8 +170,8 @@ public class RequestHandler extends Thread {
 		
 		// send a message to a single player
 		if (mode.equalsIgnoreCase("message")) {
-			String playerName = (String) command.get("player");
-			String message = (String) command.get("message");
+			String playerName = (String) command.get("playerName");
+			String message = (String) command.get("context");
 			message = formatMessage(message);
 			
 			m_module.log(Level.INFO, "Sending message '" + message + "' to " + playerName);
@@ -184,7 +184,7 @@ public class RequestHandler extends Thread {
 		} 
 		// send a message to all players on the server
 		else if (mode.equalsIgnoreCase("messageall")) {
-			String message = (String)command.get("message");
+			String message = (String)command.get("context");
 			message = formatMessage(message);
 			
 			m_module.log(Level.INFO, "Sending message '" + message + "' to all players");
@@ -194,9 +194,9 @@ public class RequestHandler extends Thread {
 		} 
 		// message all players, excluding a given player
 		else if (mode.equalsIgnoreCase("messageallex")) {
-			Player excludePlayer = m_plugin.getServer().getPlayer((String)command.get("exclude"));
+			Player excludePlayer = m_plugin.getServer().getPlayer((String)command.get("exludedPlayer"));
 
-			String message = (String) command.get("message");
+			String message = (String) command.get("context");
 			message = formatMessage(message);
 			
 			m_module.log(Level.INFO, " Sending message '" + message + "' to all players apart from " + excludePlayer.getName());
@@ -235,7 +235,7 @@ public class RequestHandler extends Thread {
 		}
 
 		// get the command 
-		String command = (String)json.get("Send");		
+		String command = (String)json.get("context");		
 		m_plugin.getServer().dispatchCommand(sender, command);		
 		m_module.log(Level.INFO, "Executed command '" + command + "' as " + senderName);
 	}
