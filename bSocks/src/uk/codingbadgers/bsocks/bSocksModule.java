@@ -10,6 +10,12 @@ import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bsocks.threading.ListenerThread;
 
 public class bSocksModule extends Module {
+	
+	/** The Constant NAME of the module. */
+	final public static String NAME = "bSocks";
+	
+	/** The Constant VERSION of the module. */
+	final public static String VERSION = "1.00";
 
 	/** The listener thread. */
 	private ListenerThread m_listenerThread = null;
@@ -27,7 +33,7 @@ public class bSocksModule extends Module {
 	 * Instantiates a new bSocksModule.
 	 */
 	public bSocksModule() {
-		super("bSocks", "1.0");
+		super(NAME, VERSION);
 	}
  
 	/**
@@ -35,7 +41,7 @@ public class bSocksModule extends Module {
 	 */
 	public void onDisable() {
 		m_listenerThread.kill();		
-		log(Level.INFO, "Disabled.");
+		log(Level.INFO,  "Module Version " + VERSION + " disabled.");
 	}
 
 	/**
@@ -53,7 +59,7 @@ public class bSocksModule extends Module {
 			e.printStackTrace();
 		}
 		
-		log(Level.INFO, "Enabled.");
+		log(Level.INFO,  "Module Version " + VERSION + " enabled.");
 	}
 	
 	/**
@@ -62,7 +68,7 @@ public class bSocksModule extends Module {
 	private void loadConfig() {
 		try {
 			FileConfiguration config = getConfig();
-			config.addDefault("port", "5598");	
+			config.addDefault("port", 5598);	
 			config.addDefault("password", "mypassword");
 			config.options().copyDefaults(true);
 			m_port = config.getInt("port");

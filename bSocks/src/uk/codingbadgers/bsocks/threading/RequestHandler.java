@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,7 +70,7 @@ public class RequestHandler extends Thread {
                 return;
 			}
 
-    		if (json.get("Password") == null || !json.get("Password").equals(m_passHash)) {
+    		if (json.get("password") == null || !json.get("password").equals(m_passHash)) {
     			m_module.log(Level.SEVERE, "Wrong password from " + m_sock.getInetAddress().getHostAddress());
                 br.close();
                 m_sock.close();
@@ -77,7 +78,7 @@ public class RequestHandler extends Thread {
             }
     		
     		String type = (String)json.get("command");
-    		
+
 			if (type.equals("message"))
 				handleMessage(json);	
 			else if (type.equals("serverstats"))
@@ -130,27 +131,39 @@ public class RequestHandler extends Thread {
 	 */
 	@SuppressWarnings("unchecked")
 	private void handleServerStatsCommand(JSONObject command, Socket sock) throws Exception {
-		String bukketVersion = m_plugin.getServer().getBukkitVersion();
-		Player[] onlinePlayers = m_plugin.getServer().getOnlinePlayers();
-		String maxPlayers = Integer.toString(m_plugin.getServer().getMaxPlayers());
-		String noofOnlinePlayers = Integer.toString(onlinePlayers.length);
+		
+		Server server = m_plugin.getServer();
+		Player[] onlinePlayers = server.getOnlinePlayers();
+		Runtime runtime = Runtime.getRuntime();
 		
 		JSONObject responce = new JSONObject();
 		
-		responce.put("bukkitVersion", bukketVersion);
-		responce.put("maxPlayers", maxPlayers);
-		responce.put("onlinePlayers", noofOnlinePlayers);
+		responce.put("bukkit-version", server.getBukkitVersion());
+		responce.put("server-name", server.getServerName());
+		responce.put("using-memory-bytes", (runtime.totalMemory() - runtime.freeMemory()));
+		responce.put("max-memory-bytes", runtime.maxMemory());
+		responce.put("noof-processors", runtime.availableProcessors());
+
+		responce.put("max-players", Integer.toString(server.getMaxPlayers()));
+		responce.put("online-players", Integer.toString(onlinePlayers.length));
 		
 		JSONArray players = new JSONArray();
 		
-		for (int i = 0; i < onlinePlayers.length; i++) {
-			JSONObject player = new JSONObject();
-			player.put("player", onlinePlayers[i].getDisplayName());
-			player.put("rank-name", m_module.getPermissions().getPlayerGroups(onlinePlayers[i]));
-			players.add(player);
+		for (Player player : onlinePlayers) {
+			JSONObject jplayer = new JSONObject();
+			jplayer.put("player-name", player.getDisplayName());
+			
+			JSONArray groups = new JSONArray();
+			for (String group : m_module.getPermissions().getPlayerGroups(player)) {
+				JSONObject jgroup = new JSONObject();
+				jgroup.put("group", group);
+				groups.add(jgroup);
+			}
+			jplayer.put("rank-name", groups);
+			players.add(jplayer);
 		}
 		
-		responce.put("players", players);
+		responce.put("online-players", players);
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 		bw.write(responce.toJSONString() + "\n");
@@ -167,9 +180,9 @@ public class RequestHandler extends Thread {
 	private void handleMessage(JSONObject command) {
 	
 		String mode = (String)command.get("mode");
-		
+				
 		// send a message to a single player
-		if (mode.equalsIgnoreCase("message")) {
+		if (mode.equalsIgnoreCase("sendMessage")) {
 			String playerName = (String) command.get("playerName");
 			String message = (String) command.get("context");
 			message = formatMessage(message);
@@ -183,7 +196,7 @@ public class RequestHandler extends Thread {
 			
 		} 
 		// send a message to all players on the server
-		else if (mode.equalsIgnoreCase("messageall")) {
+		else if (mode.equalsIgnoreCase("sendMessageAll")) {
 			String message = (String)command.get("context");
 			message = formatMessage(message);
 			
@@ -193,7 +206,7 @@ public class RequestHandler extends Thread {
 			
 		} 
 		// message all players, excluding a given player
-		else if (mode.equalsIgnoreCase("messageallex")) {
+		else if (mode.equalsIgnoreCase("sendMessageAllEx")) {
 			Player excludePlayer = m_plugin.getServer().getPlayer((String)command.get("exludedPlayer"));
 
 			String message = (String) command.get("context");
@@ -208,6 +221,11 @@ public class RequestHandler extends Thread {
 					p.sendMessage(message);
 				}				
 			}
+		}
+		else
+		{
+			// We got told to send a message, but with an unknown mode.
+			m_module.log(Level.WARNING, "Unknown message mode '" + mode + "'");
 		}
 	}
 	

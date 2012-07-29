@@ -25,9 +25,9 @@
 		*	host, port and plain text password.
 		**/
 		public function __construct($host, $port, $password) {
-			$this->$m_host = $host;
-			$this->$m_port = $port;
-			$this->$m_passwordHash = md5($password);
+			$this->m_host = $host;
+			$this->m_port = $port;
+			$this->m_passwordHash = md5($password);
 		}
 		
 		/**
@@ -48,7 +48,7 @@
 		*	$message - The message to send to the player
 		**/
 		public function sendMessage($playername, $message) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'message', 'mode' => 'sendMessage', 'playerName' => $playername, 'context' => $message));
+			$json = json_encode(array('password' => $this->m_passwordHash, 'command' => 'message', 'mode' => 'sendMessage', 'playerName' => $playername, 'context' => $message));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
@@ -60,7 +60,7 @@
 		*	$message - The message to send to the players
 		**/		
 		public function sendMessageAll($message) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'message', 'mode' => 'sendMessageAll', 'context' => $message));
+			$json = json_encode(array('password' => $this->m_passwordHash, 'command' => 'message', 'mode' => 'sendMessageAll', 'context' => $message));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
@@ -73,7 +73,7 @@
 		* 	$excludedPlayer - The name of a player whom should not recieve the message
 		**/
 		public function sendMessageAllEx($message, $excludedPlayer) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'message', 'mode' => 'sendMessageAllEx', 'exludedPlayer' => $excludedPlayer, 'context' => $message));
+			$json = json_encode(array('password' => $this->m_passwordHash, 'command' => 'message', 'mode' => 'sendMessageAllEx', 'exludedPlayer' => $excludedPlayer, 'context' => $message));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
@@ -86,11 +86,22 @@
 		* 	$command - The command to be executed by the sender.
 		**/		
 		public function executeCommand($sender, $command) {
-			$json = json_encode(array('password' => $this->$m_passwordHash, 'command' => 'executeCommand' 'sender' => $sender, 'context' => $command));
+			$json = json_encode(array('password' => $this->m_passwordHash, 'command' => 'executeCommand', 'sender' => $sender, 'context' => $command));
 			$this->connectSocket();
 			
 			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
 			or die("error: failed to execute a command\n");
+		}
+		
+		/**
+		*	Request the server statistics.
+		**/			
+		public function requestServerStats() {
+			$json = json_encode(array('password' => $this->m_passwordHash, 'command' => 'serverstats'));
+			$this->connectSocket();
+			
+			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
+			or die("error: failed to execute raw command\n");		
 		}
 		
 		/**
@@ -103,21 +114,6 @@
 			or die("error: failed to recieve message.\n");	
 			
 			return $message;
-		}
-
-		/**
-		*	Recieves a message from the socket
-		*	$maxLength - The maximum length of a message to recieve
-		* 	returns - A JSON encoded string recieved from the socket connection
-		**/			
-		public function sendRawMessage($rawArray) {
-			$rawArray = array_push($rawArray, 'password' => $this->$m_passwordHash);
-			$json = json_encode($rawArray);
-			$this->connectSocket();
-			
-			socket_write($this->m_sock, $json . "\n", strlen($json) + 1)
-			or die("error: failed to execute raw command\n");		
-		}
-	
+		}	
 	};
 ?>
