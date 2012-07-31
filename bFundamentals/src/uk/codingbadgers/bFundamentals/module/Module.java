@@ -1,6 +1,11 @@
 package uk.codingbadgers.bFundamentals.module;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
@@ -22,7 +27,9 @@ public abstract class Module extends Loadable implements Listener {
 	protected final bFundamentals plugin;
 	protected FileConfiguration config;
 	protected File configFile;
-	private String m_version;
+	private String m_version = null;
+	private String m_name = null;
+	private HashMap<String, String> m_languageMap = new HashMap<String, String>();
 	
 	protected static BukkitDatabase database = null;
 	private static Permission permissions = null;
@@ -30,10 +37,54 @@ public abstract class Module extends Loadable implements Listener {
 	public Module(String name, String version) {
 		super(name);
 		m_version = version;
-		this.plugin = bFundamentals.getInstance();
+		plugin = bFundamentals.getInstance();
 		database = bFundamentals.getBukkitDatabase();
 		permissions = bFundamentals.getPermissions();
-		configFile = new File(getDataFolder() + File.separator  + "config.yml");
+		m_name = name;
+	}
+	
+	protected void loadLanguageFile() {
+		File languageFile = new File(getDataFolder() + File.separator + m_name + "_" + plugin.getConfigurationManager().getLanguage() + ".lang");
+		
+		if (!languageFile.exists()) {
+			log(Level.SEVERE, "Missing language file '" + languageFile.getAbsolutePath() + "'!");
+			return;
+		}
+		
+		log(Level.INFO, "Loading Language File: " + languageFile.getName());
+		
+		try {
+			FileInputStream fstream = new FileInputStream(languageFile);
+			DataInputStream in = new DataInputStream(fstream);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			
+			String line = null;
+			String key = null;
+			while ((line = br.readLine()) != null)   {
+				
+				if (line.isEmpty())
+					continue;
+				
+				if (line.startsWith("#")) {
+					key = line.substring(1);
+					continue;
+				}
+				
+				if (key == null) {
+					log(Level.WARNING, "Trying to parse a language value, with no key set!");
+					continue;
+				}
+				
+				log(Level.INFO, key + ", " + line);
+				m_languageMap.put(key, line);				
+			}
+			
+			br.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
 	}
 	
 	public void log(Level level, String string) {
@@ -69,6 +120,10 @@ public abstract class Module extends Loadable implements Listener {
 	
 	public static void sendMessage(String name, Player player, String message) {
 		player.sendMessage(ChatColor.DARK_PURPLE + "[" + name + "] " + ChatColor.RESET + message);
+	}
+	
+	public String getLanguageValue(String key) {
+		return m_languageMap.get(key);
 	}
 
 }

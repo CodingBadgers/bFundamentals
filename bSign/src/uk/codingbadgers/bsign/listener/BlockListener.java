@@ -45,7 +45,7 @@ public class BlockListener implements Listener {
 				return;
 			
 			newSign = new WebSign(creator, signLocation);
-			bSignModule.sendMessage("bSign", creator, "Please enter the url for this sign into your chat.");
+			bSignModule.sendMessage("bSign", creator, bSignModule.MODULE.getLanguageValue("WEBSIGN-SETUP"));
 		}
 		else if (event.getLine(0).equalsIgnoreCase("--command--")) {
 			
@@ -54,7 +54,7 @@ public class BlockListener implements Listener {
 				return;
 			
 			newSign = new CommandSign(creator, signLocation);
-			bSignModule.sendMessage("bSign", creator, "Please enter the command for this sign into your chat.");
+			bSignModule.sendMessage("bSign", creator, bSignModule.MODULE.getLanguageValue("COMMANDSIGN-SETUP"));
 		}
 		else if (event.getLine(0).equalsIgnoreCase("--info--")) {
 			
@@ -63,7 +63,7 @@ public class BlockListener implements Listener {
 				return;
 			
 			newSign = new InfoSign(creator, signLocation);
-			bSignModule.sendMessage("bSign", creator, "Please enter the information for this sign into your chat.");
+			bSignModule.sendMessage("bSign", creator, bSignModule.MODULE.getLanguageValue("INFOSIGN-SETUP"));
 		}
 		
 		bSignModule.SIGNS.add(newSign);
@@ -98,7 +98,7 @@ public class BlockListener implements Listener {
 			return;
 		
 		bSignModule.SIGNS.remove(contextSign);
-		bSignModule.sendMessage("bSign", event.getPlayer(), "bSign Removed");
+		bSignModule.sendMessage("bSign", event.getPlayer(), bSignModule.MODULE.getLanguageValue("SIGN-REMOVED"));
 		
 	}
 

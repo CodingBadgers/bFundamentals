@@ -23,14 +23,16 @@ public class bFundamentals extends JavaPlugin {
 	private static final Logger log = Logger.getLogger("bFundamentals");
 	private static BukkitDatabase m_database = null;	
 	private static Permission m_permissions = null;
+	private ConfigurationManager m_configuration = null;
 	private ModuleLoader m_moduleLoader = null;
 	
 	@Override
 	public void onEnable() {
 		m_instance = this;
 		
-		getConfig().options().copyDefaults(true);
-		saveConfig();
+		// load the configuration into the configuration manager
+		m_configuration = new ConfigurationManager();
+		m_configuration.loadConfiguration(m_instance);
 		
 		// load the modules in
 		m_moduleLoader = new ModuleLoader();
@@ -39,7 +41,7 @@ public class bFundamentals extends JavaPlugin {
 		
 		bFundamentals.log(Level.INFO, "bFundamentals Loaded.");
 	}
-	
+
 	@Override
 	public void onDisable() {
 		bFundamentals.log(Level.INFO, "bFundamentals Disabled.");
@@ -52,6 +54,10 @@ public class bFundamentals extends JavaPlugin {
 	
 	public static void log(Level level, String msg) {
 		log.log(level, "[" + m_instance.getDescription().getName() +"] " + msg);
+	}
+	
+	public ConfigurationManager getConfigurationManager() {
+		return m_configuration;
 	}
 	
 	public static BukkitDatabase getBukkitDatabase() {

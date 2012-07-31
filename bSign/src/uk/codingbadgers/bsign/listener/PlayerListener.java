@@ -99,7 +99,7 @@ public class PlayerListener implements Listener {
 		
 		// Attempt to initialize the sign based upon the message.
 		if (contextSign.init(event.getMessage())) {
-			bSignModule.sendMessage("bSign", chatter, "Sign context succesfully set");
+			bSignModule.sendMessage("bSign", chatter, bSignModule.MODULE.getLanguageValue("SIGN-CONTEXT-SET"));
 			
 			String type = contextSign.getType(); 
 			String location = contextSign.getLocation().getX() + "," + contextSign.getLocation().getY() + "," + contextSign.getLocation().getZ() + "," + contextSign.getLocation().getWorld().getName();
@@ -115,7 +115,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		bSignModule.sendMessage("bSign", chatter, "The message you entered is invalid, please try again, so enter 'bsigncancel'.");
+		bSignModule.sendMessage("bSign", chatter, bSignModule.MODULE.getLanguageValue("INVALID-SIGN-CONTEXT"));
 		
 	}
 

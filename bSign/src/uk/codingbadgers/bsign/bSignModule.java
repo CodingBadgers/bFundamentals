@@ -41,6 +41,9 @@ public class bSignModule extends Module {
 	/** Access to the bukkit plugin. */
 	public static Plugin PLUGIN = null;
 	
+	/** Access to the module. */
+	public static bSignModule MODULE = null;
+	
 	/** A list of all the bSigns */
 	public static ArrayList<Sign> SIGNS = new ArrayList<Sign>();
 	
@@ -70,8 +73,10 @@ public class bSignModule extends Module {
 	@Override
 	public void onEnable() {
 		
+		MODULE = this;
 		PLUGIN = plugin;
 		DATABASE = database;
+		loadLanguageFile();
 
 		if (!DATABASE.TableExists("bSign")) {
 			// the bSign table doesn't exist, create one
