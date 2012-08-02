@@ -3,6 +3,8 @@ package uk.codingbadgers.bFundamentals.module;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ public abstract class Module extends Loadable implements Listener {
 	private String m_version = null;
 	private String m_name = null;
 	private HashMap<String, String> m_languageMap = new HashMap<String, String>();
+	protected List<String> m_commands = new ArrayList<String>();
 	
 	protected static BukkitDatabase database = null;
 	private static Permission permissions = null;
@@ -107,6 +110,10 @@ public abstract class Module extends Loadable implements Listener {
 		return false;
 	}
 	
+	public boolean onCommand(Player sender, String label, String[] args){
+		return false;
+	}
+	
 	public String getVersion() {
 		return m_version;
 	}
@@ -122,8 +129,16 @@ public abstract class Module extends Loadable implements Listener {
 		player.sendMessage(ChatColor.DARK_PURPLE + "[" + name + "] " + ChatColor.RESET + message);
 	}
 	
+	public boolean isCommandRegistered(String command) {
+		return m_commands.contains(command);
+	}
+
 	public String getLanguageValue(String key) {
 		return m_languageMap.get(key);
+	}
+	
+	protected void registerCommand(String command) {
+		m_commands.add(command);
 	}
 
 }
