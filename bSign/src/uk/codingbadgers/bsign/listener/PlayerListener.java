@@ -30,6 +30,9 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 
+		if (bSignModule.SIGNS == null)
+			return;
+		
 		// we only want right click events
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
@@ -42,10 +45,15 @@ public class PlayerListener implements Listener {
 		// try to find the bsign from all our stored signs
 		Sign contextSign = null;
 		for (Sign sign : bSignModule.SIGNS) {
+			
+			if (sign == null)
+				continue;
+			
 			if (sign.getLocation().equals(block.getLocation())) {
 				contextSign = sign;
 				break;
 			}
+			
 		}
 		
 		// its a sign, but not a bsign
@@ -64,14 +72,25 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onChatInteract(PlayerChatEvent event) {
 		
+		if (bSignModule.SIGNS == null)
+			return;
+		
 		// get the person that is speaking
 		Player chatter = (Player)event.getPlayer();
+		if (chatter == null)
+			return;
 		
 		// spin through all signs, to find a sign that does not have a context
 		// and the creator is the person who is talking
 		Sign contextSign = null;
 		for (Sign sign : bSignModule.SIGNS) {
+			if (sign == null)
+				continue;
+				
 			if (sign.getContext() != null)
+				continue;
+			
+			if (sign.getCreator() == null)
 				continue;
 			
 			if (!sign.getCreator().getName().equalsIgnoreCase(chatter.getName()))

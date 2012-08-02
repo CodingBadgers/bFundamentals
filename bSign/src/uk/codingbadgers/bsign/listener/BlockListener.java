@@ -78,6 +78,9 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
 
+		if (bSignModule.SIGNS == null)
+			return;
+		
 		Block block = event.getBlock();
 		
 		// if its not a sign, we dont care.
@@ -87,6 +90,10 @@ public class BlockListener implements Listener {
 		// find the sign at the location
 		Sign contextSign = null;
 		for (Sign sign : bSignModule.SIGNS) {
+			
+			if (sign == null)
+				continue;
+			
 			if (sign.getLocation().equals(block.getLocation())) {
 				contextSign = sign;
 				break;

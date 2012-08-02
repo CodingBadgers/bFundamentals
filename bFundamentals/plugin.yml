@@ -2,6 +2,7 @@ name: bFundamentals
 main: uk.codingbadgers.bFundamentals.bFundamentals
 version: 1.0
 authors: [n3wton, thefish97]
+depends: [BukkitDatabaseManager, Vault, NC-BukkitLib]
 description: Fundamental plugins root plugin
 
 commands:

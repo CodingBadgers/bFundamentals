@@ -54,9 +54,11 @@ public class RequestHandler extends Thread {
 			BufferedReader br = new BufferedReader(new InputStreamReader(m_sock.getInputStream()));
 			
 			JSONObject json = null;
+			String line = br.readLine();
 			try {
-				json = (JSONObject)parser.parse(br.readLine());
+				json = (JSONObject)parser.parse(line);
 			} catch (ParseException pe) {
+				m_module.log(Level.WARNING, "Error Parsing: " + line);
 				m_module.log(Level.WARNING, pe.toString());
 				br.close();
 				m_sock.close();
