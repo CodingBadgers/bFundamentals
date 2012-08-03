@@ -2,8 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/Programming/MineCraft/Source Code/_Test Server/plugins/bFundamentals.jar"/>
-	<classpathentry kind="lib" path="D:/Programming/MineCraft/Source Code/_Test Server/plugins/NC-BukkitLib.jar"/>
-	<classpathentry kind="lib" path="D:/Programming/MineCraft/Source Code/Extra Libs/bukkit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/bukkit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/craftbukkit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/NC-BukkitLib.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bFundamentals"/>
+	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/BukkitDatabaseManager.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

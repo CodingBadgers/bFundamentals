@@ -1,0 +1,4 @@
+name: bQuiet
+main: uk.codingbadgers.bQuiet.bQuiet
+version: 1.00
+softdepend: [Vault]
