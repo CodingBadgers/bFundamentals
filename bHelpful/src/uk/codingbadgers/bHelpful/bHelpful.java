@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import uk.codingbadgers.bFundamentals.ModuleCommand;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
@@ -60,14 +61,15 @@ public class bHelpful extends Module {
         	Maintenance.setStaffMaintenance(true);
         }     
         
-        registerCommand("news");
-        registerCommand("announce");
-        registerCommand("rankhelp");
-        registerCommand("maintenance");
-        registerCommand("motd");
-        registerCommand("register");
-        registerCommand("rules");
-        registerCommand("vote");
+        registerCommand(new ModuleCommand("news", "/news"));
+        // for some reason this is the only broken cmd
+        registerCommand(new ModuleCommand("announce", "/announce <subcmd>"));
+        registerCommand(new ModuleCommand("rankhelp", "/rankhelp"));
+        registerCommand(new ModuleCommand("maintenance", "/maintenance <staff>").addAliase("mm"));
+        registerCommand(new ModuleCommand("motd", "/motd"));
+        registerCommand(new ModuleCommand("register", "/register"));
+        registerCommand(new ModuleCommand("rules", "/rules"));
+        registerCommand(new ModuleCommand("vote", "/vote"));
         
         log(Level.INFO, "bHelpful enabled");
         		

@@ -128,11 +128,16 @@ public class Announcement extends Thread {
         
         if (commandLabel.equalsIgnoreCase("announce")) {
         	
+        	if (args.length < 1) {
+        		Output.player((Player)sender, "[bHelpful]", "/Announce <list/broadcast/add/remove>");
+        		return true;
+        	}
+        	
         	if (args[0].equalsIgnoreCase("list")) {
         		
         		if (!bHelpful.hasPerms(player, "bhelpful.announcement.list")) {
         			Output.noPermission(player);
-        			return false;
+        			return true;
         		}
         		
         		for (int i = 0; i<Configuration.announcements.size(); i++) {
@@ -149,7 +154,7 @@ public class Announcement extends Thread {
         		
         		if (!bHelpful.hasPerms(player, "bhelpful.announcement.add")) {
         			Output.noPermission(player);
-        			return false;
+        			return true;
         		}
         		
         		String trimedAnnouncement = "";

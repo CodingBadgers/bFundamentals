@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class Output{
     
     static public void log(Level INFO, String msg){
-    	bHelpful.module.log(Level.INFO, ChatColor.GREEN + "[bHelpful] " + ChatColor.WHITE + msg);
+    	bHelpful.module.log(Level.INFO, msg);
     }
     
     static public void player(Player player, String msg1, String msg2) {

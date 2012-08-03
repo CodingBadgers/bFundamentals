@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 
 import com.nodinchan.ncbukkit.loader.Loadable;
 
+import uk.codingbadgers.bFundamentals.ModuleCommand;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 
 public abstract class Module extends Loadable implements Listener {
@@ -32,7 +33,7 @@ public abstract class Module extends Loadable implements Listener {
 	private String m_version = null;
 	private String m_name = null;
 	private HashMap<String, String> m_languageMap = new HashMap<String, String>();
-	protected List<String> m_commands = new ArrayList<String>();
+	protected List<ModuleCommand> m_commands = new ArrayList<ModuleCommand>();
 	
 	protected static BukkitDatabase database = null;
 	private static Permission permissions = null;
@@ -130,14 +131,18 @@ public abstract class Module extends Loadable implements Listener {
 	}
 	
 	public boolean isCommandRegistered(String command) {
-		return m_commands.contains(command);
+		for (ModuleCommand cmd : m_commands) {
+			if (cmd.equals(command))
+				return true;
+		}
+		return false;
 	}
 
 	public String getLanguageValue(String key) {
 		return m_languageMap.get(key);
 	}
 	
-	protected void registerCommand(String command) {
+	protected void registerCommand(ModuleCommand command) {
 		m_commands.add(command);
 	}
 
