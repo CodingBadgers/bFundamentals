@@ -39,6 +39,8 @@ public class ListenerThread extends Thread {
 	 */
 	public ListenerThread(JavaPlugin plugin, ServerSocket listenSock, String password, bSocksModule module) throws IOException {
 		m_listenSock = listenSock;
+		m_listenSock.setPerformancePreferences(1, 0, 0);
+		
 		m_passHash = createMD5Hash(password);
 		m_plugin = plugin;
 		m_module = module;

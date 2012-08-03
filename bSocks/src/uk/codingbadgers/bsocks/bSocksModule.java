@@ -54,6 +54,7 @@ public class bSocksModule extends Module {
 		try {
 			m_listenSock = new ServerSocket(m_port);
 			m_listenerThread = new ListenerThread(plugin, m_listenSock, m_password, this);
+			m_listenerThread.setName(NAME + "-listenerThread");
 			m_listenerThread.start();
 		} catch (IOException e) {
 			e.printStackTrace();
