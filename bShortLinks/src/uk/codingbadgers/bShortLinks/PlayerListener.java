@@ -41,7 +41,7 @@ public class PlayerListener implements Listener {
 	private boolean CheckSite(String url) {
 		
 		// If there are no blacklisted words, the site is ok.
-		if (Global.BlackList.size() == 0)
+		if (Global.BLACKLIST.size() == 0)
 			return true;
 		
 		try {
@@ -54,7 +54,7 @@ public class PlayerListener implements Listener {
 			while (siteText != null) {
 				
 				// see if the line of source code contains a blacklisted word
-				for (String word : Global.BlackList) {
+				for (String word : Global.BLACKLIST) {
 					if (siteText.contains(word)) {
 						in.close();
 						return false;
@@ -94,7 +94,7 @@ public class PlayerListener implements Listener {
 			}
 			
 			if (!CheckSite(url)) {
-				return Global.UrlColour + "Blacklisted Url" + ChatColor.RESET;
+				return Global.URLCOLOUR + "Blacklisted Url" + ChatColor.RESET;
 			}
 		}
 		
@@ -103,14 +103,14 @@ public class PlayerListener implements Listener {
 		
 		// If we are using adfly use there api
 		if (Global.API.equalsIgnoreCase("adfly")) {
-			urlShortenAPI = "http://api.adf.ly/api.php?key=" + Global.AfdlyAPIKey + "&uid=" + Global.AfdlyAPIUid + "&advert_type=int&domain=adf.ly&url=";
+			urlShortenAPI = "http://api.adf.ly/api.php?key=" + Global.AFDLYAPIKEY + "&uid=" + Global.AFDLYAPIUID + "&advert_type=int&domain=adf.ly&url=";
 		// if we are using tinyurl use there api
 		} else if (Global.API.equalsIgnoreCase("tinyurl")) {
 			urlShortenAPI = "http://tinyurl.com/api-create.php?url=";
 		// error in config? return a non shortened url
 		} else {
 			Global.OutputConsole("Error: Unknown api '" + Global.API + "'");
-			return Global.UrlColour + shorturl + ChatColor.RESET;
+			return Global.URLCOLOUR + shorturl + ChatColor.RESET;
 		}
 		
 		// Use the api to shorten the url
@@ -134,7 +134,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		// If we are masking all links with a tinyurl link then mask it...
-		if (Global.MaskWithTinyUrl) {
+		if (Global.MASKWITHTINYURL) {
 			try {
 				URL urlRequest = new URL("http://tinyurl.com/api-create.php?url=" + shorturl);
 				
@@ -155,7 +155,7 @@ public class PlayerListener implements Listener {
 			shorturl = url;
 		}
         
-		return Global.UrlColour + shorturl + ChatColor.RESET;
+		return Global.URLCOLOUR + shorturl + ChatColor.RESET;
 	}
 	
 	/**

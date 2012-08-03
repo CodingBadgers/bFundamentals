@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -20,18 +18,33 @@ import uk.codingbadgers.bFundamentals.module.Module;
 
 public class Global {
 	
-	static public Plugin plugin = null;
-	static public Permission permission = null;
-	static public Module module = null;
+	/** The bFundamentals plugin. */
+	static public Plugin PLUGIN = null;
+	
+	/** The bSHorLinks module. */
+	static public Module MODULE = null;
 	
 	//! Configuration members
+	/** The api to use. */
 	static public String API = "adfly";
-	static public String AfdlyAPIKey = "";
-	static public String AfdlyAPIUid = "";
-	static public ChatColor UrlColour = ChatColor.DARK_AQUA;
-	static public Boolean MaskWithTinyUrl = false;
+	
+	/** The afdly api key. */
+	static public String AFDLYAPIKEY = "";
+	
+	/** The afdly api uid. */
+	static public String AFDLYAPIUID = "";
+	
+	/** The colour to use for urls in chat. */
+	static public ChatColor URLCOLOUR = ChatColor.DARK_AQUA;
+	
+	/** Should we hide afdly links with tiny url links. */
+	static public Boolean MASKWITHTINYURL = false;
+	
+	/** Add extra debug information. */
 	static public Boolean DEBUG = false;
-	static public ArrayList<String> BlackList = new ArrayList<String>();
+	
+	/** A blacklist of words that cannot exist in a web pages header. */
+	static public ArrayList<String> BLACKLIST = new ArrayList<String>();
 	
 	/**
 	 * Output a message to the console.
@@ -39,7 +52,7 @@ public class Global {
 	 * @param msg the message to output
 	 */
 	static public void OutputConsole(String msg) {
-		module.log(Level.INFO, msg);
+		MODULE.log(Level.INFO, msg);
 	}
 		
 	/**
@@ -52,7 +65,7 @@ public class Global {
 	static public boolean HasPermission(Player player, String node) {
 				
 		// If they have vault, check with that
-		if (permission != null && permission.has(player, node))
+		if (MODULE.getPermissions() != null && MODULE.getPermissions().has(player, node))
 			return true;
 		
 		// try bukkit perms...
@@ -72,7 +85,7 @@ public class Global {
 	 */
 	public static void LoadConfig() {
 		
-		FileConfiguration config = module.getConfig();
+		FileConfiguration config = MODULE.getConfig();
 		
 		try {
 			config.addDefault("shorten_api", "adfly");
@@ -87,16 +100,16 @@ public class Global {
 		}
 		
 		API = config.getString("shorten_api", "adfly");
-		AfdlyAPIKey = config.getString("adfly_api_key");
-		AfdlyAPIUid = config.getString("adfly_api_uid");
-		MaskWithTinyUrl = config.getBoolean("mask_with_tinyurl");
-		UrlColour = ChatColor.getByChar(config.getString("url_colour"));
+		AFDLYAPIKEY = config.getString("adfly_api_key");
+		AFDLYAPIUID = config.getString("adfly_api_uid");
+		MASKWITHTINYURL = config.getBoolean("mask_with_tinyurl");
+		URLCOLOUR = ChatColor.getByChar(config.getString("url_colour"));
 		DEBUG = config.getBoolean("debug");
 		
-		module.saveConfig();
+		MODULE.saveConfig();
 		
 		// create and load the black list
-		File blackList = new File(module.getDataFolder() + File.separator + "blacklist.cfg");
+		File blackList = new File(MODULE.getDataFolder() + File.separator + "blacklist.cfg");
 		
 		if (!blackList.exists()) {
 			try {
@@ -132,7 +145,7 @@ public class Global {
 				if (line.startsWith("#") || line.length() == 0)
 					continue;
 
-				BlackList.add(line);
+				BLACKLIST.add(line);
 
 			}
 			

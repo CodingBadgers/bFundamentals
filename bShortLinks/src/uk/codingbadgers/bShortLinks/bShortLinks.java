@@ -7,39 +7,40 @@ import uk.codingbadgers.bFundamentals.module.Module;
  */
 public class bShortLinks extends Module {
 	
+	/** The name of the module. */
+	public static String NAME = "bShortLinks";
+	
+	/** The version of the module. */
+	public static String VERSION = "1.0";
+	
+	/** The m_player listener. */
+	final private PlayerListener m_playerListener = new PlayerListener();
+	
 	/**
-	 * Instantiates a new b short links.
+	 * Instantiates a new bShortLinks.
 	 */
 	public bShortLinks() {
-		super("bShortLinks", "1.0");
+		super(NAME, VERSION);
 	}
-
-	/** The m_player listener. */
-	private PlayerListener m_playerListener = new PlayerListener();
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.module.Module#onEnable()
+	/**
+	 * Called when the module is enabled.
 	 */
 	public void onEnable() {
-		
-		Global.plugin = m_plugin;
-		Global.module = this;
+		Global.PLUGIN = m_plugin;
+		Global.MODULE = this;
 		register(m_playerListener);
         
         Global.LoadConfig();
 		
-		Global.OutputConsole("bShortLinks Enabled");
-		
+		Global.OutputConsole("Module Enabled");
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.module.Module#onDisable()
+	/**
+	 * Called when the module is disabled.
 	 */
 	public void onDisable() {
-		
-		Global.OutputConsole("bShortLinks Disabled");
-		
+		Global.OutputConsole("Module Disabled");
 	}
-
 
 }
