@@ -2,6 +2,8 @@ package uk.codingbadgers.bHelpful;
 
 import java.util.ArrayList;
 
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,15 +15,22 @@ import org.getspout.spoutapi.player.SpoutPlayer;
  */
 public class Help {
     
+	/**
+	 * Display help.
+	 *
+	 * @param player the player
+	 */
 	public static void displayHelp(Player player) {
 		
-		if (bHelpful.m_permission == null) {
+		Permission permission = bHelpful.MODULE.getPermissions();
+		
+		if (permission == null) {
 			player.sendMessage("Help is based upon player rank.");
 			player.sendMessage("This server has no ranks.");
 			return;
 		}
 				
-		ArrayList<String> help = Configuration.getHelp(bHelpful.m_permission.getPrimaryGroup(player));
+		ArrayList<String> help = Configuration.getHelp(permission.getPrimaryGroup(player));
 		
 		if (help == null) {
 			player.sendMessage("No help exists for your rank.");
@@ -29,7 +38,7 @@ public class Help {
 		}
 		
 		
-		String rank = bHelpful.m_permission.getPrimaryGroup(player);
+		String rank = permission.getPrimaryGroup(player);
 		rank = rank.substring(0, 1).toUpperCase() + rank.substring(1);
 		
 		if (bHelpful.spoutEnabled) {

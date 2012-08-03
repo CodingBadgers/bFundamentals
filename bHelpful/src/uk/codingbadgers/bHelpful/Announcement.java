@@ -13,31 +13,42 @@ import org.bukkit.entity.Player;
 
 public class Announcement extends Thread {
 	
+	/** The m_plugin. */
 	bHelpful m_plugin = null;
+	
+	/** The m_running. */
 	boolean m_running = false;
 	
+	/**
+	 * Instantiates a new announcement.
+	 *
+	 * @param plugin the plugin
+	 */
 	Announcement(bHelpful plugin) {
 		m_plugin = plugin;
 		m_running = true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Thread#run()
+	 */
 	public void run() {
 		
 		int lastRand = -1;
 		int rand = -1;
 		
-		double noofMinutes = bHelpful.module.getConfig().getDouble("announcement.timedelay");
+		double noofMinutes = bHelpful.MODULE.getConfig().getDouble("announcement.timedelay");
 		
 		final int sleepTime = (int)((noofMinutes * 60) * 1000);
 		
 		while(m_running) {
 			
-			if (Configuration.announcements.size() > 0) {
+			if (Configuration.ANNOUCNEMENTS.size() > 0) {
 				Random random = new Random();
 				while(rand == lastRand)
-					rand = random.nextInt(Configuration.announcements.size());
+					rand = random.nextInt(Configuration.ANNOUCNEMENTS.size());
 					
-				ArrayList<String> announcemnet = Configuration.announcements.get(rand);
+				ArrayList<String> announcemnet = Configuration.ANNOUCNEMENTS.get(rand);
 				lastRand = rand;
 
 				broadcast(announcemnet);
@@ -52,19 +63,30 @@ public class Announcement extends Thread {
 		}
 	}
 	
+	/**
+	 * Kill the thread.
+	 */
 	public void kill() {
 		m_running = false;
 	}
 
+	/**
+	 * Restart the thread.
+	 */
 	public void restart() {
 		m_running = true;
 		run();
 	}
 	
+	/**
+	 * Adds the announcement.
+	 *
+	 * @param announcement the announcement
+	 */
 	public static void addAnnouncement(String announcement) {
 		
-		Configuration.announcements.clear();
-		File announcementConfig = Configuration.announcementConfig;	
+		Configuration.ANNOUCNEMENTS.clear();
+		File announcementConfig = Configuration.ANNOUNCEMENT_CONIFG;	
     	
     	try {
     		FileWriter fstream = new FileWriter(announcementConfig.getPath(),true);
@@ -83,21 +105,26 @@ public class Announcement extends Thread {
     	Configuration.LoadAnnouncemnetConfig(announcementConfig);
 	}
 	
+	/**
+	 * Removes the announcement.
+	 *
+	 * @param id the id
+	 */
 	public static void removeAnnouncement(int id)  {
 		
-		ArrayList<ArrayList<String>> announcements = Configuration.announcements;
+		ArrayList<ArrayList<String>> ANNOUNCEMENTS = Configuration.ANNOUCNEMENTS;
 
-		announcements.remove(id);
+		ANNOUNCEMENTS.remove(id);
 		
-		File announcementConfig = Configuration.announcementConfig;	
+		File announcementConfig = Configuration.ANNOUNCEMENT_CONIFG;	
 		
-		for (int i = 0; i<announcements.size(); i++) {
+		for (int i = 0; i<ANNOUNCEMENTS.size(); i++) {
 			
 			try {
 	    		FileWriter fstream = new FileWriter(announcementConfig.getPath());
 				BufferedWriter writer = new BufferedWriter(fstream);
 				
-				String announcement = announcements.get(i).toString();				
+				String announcement = ANNOUNCEMENTS.get(i).toString();				
 				
 				writer.write("~ANNOUNCEMENT~\n");
 				writer.write(announcement + "\n");
@@ -112,17 +139,35 @@ public class Announcement extends Thread {
 		}
 	}
 	
+	/**
+	 * Broadcast.
+	 *
+	 * @param id the id
+	 */
 	public static void broadcast(int id) {
-		broadcast(Configuration.announcements.get(id));
+		broadcast(Configuration.ANNOUCNEMENTS.get(id));
 	}
 	
+	/**
+	 * Broadcast.
+	 *
+	 * @param announcement the announcement
+	 */
 	public static void broadcast(ArrayList<String> announcement) {
 		
 		for (int i = 0; i < announcement.size(); ++i) {
-			bHelpful.m_plugin.getServer().broadcastMessage(ChatColor.DARK_AQUA + "[Announcement] " + ChatColor.WHITE + announcement.get(i));
+			bHelpful.PLUGIN.getServer().broadcastMessage(ChatColor.DARK_AQUA + "[Announcement] " + ChatColor.WHITE + announcement.get(i));
 		}
 	}
 	
+	/**
+	 * On command.
+	 *
+	 * @param sender the sender
+	 * @param commandLabel the command label
+	 * @param args the args
+	 * @return true, if successful
+	 */
 	public static boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
 		Player player = (Player) sender;
         
@@ -135,14 +180,14 @@ public class Announcement extends Thread {
         	
         	if (args[0].equalsIgnoreCase("list")) {
         		
-        		if (!bHelpful.hasPerms(player, "bhelpful.announcement.list")) {
+        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.list")) {
         			Output.noPermission(player);
         			return true;
         		}
         		
-        		for (int i = 0; i<Configuration.announcements.size(); i++) {
+        		for (int i = 0; i<Configuration.ANNOUCNEMENTS.size(); i++) {
         			String index = String.valueOf(i + 1);
-        			String announcement = Configuration.announcements.get(i).toString();
+        			String announcement = Configuration.ANNOUCNEMENTS.get(i).toString();
         			Output.player(player, ChatColor.GREEN + index + ".", ChatColor.WHITE + announcement);
         		}
         		
@@ -152,7 +197,7 @@ public class Announcement extends Thread {
         	
         	if (args[0].equalsIgnoreCase("add")) {
         		
-        		if (!bHelpful.hasPerms(player, "bhelpful.announcement.add")) {
+        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.add")) {
         			Output.noPermission(player);
         			return true;
         		}
@@ -178,7 +223,7 @@ public class Announcement extends Thread {
         	
         	if (args[0].equalsIgnoreCase("remove")) {
         		
-        		if (!bHelpful.hasPerms(player, "bhelpful.announcement.remove")) {
+        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.remove")) {
         			Output.noPermission(player);
         			return true;
         		}
@@ -195,7 +240,7 @@ public class Announcement extends Thread {
         			Output.player(player, "[bHelpful]", "There was a error parsing the number you enterd");
         		}
         		
-        		if (index > Configuration.announcements.size()){
+        		if (index > Configuration.ANNOUCNEMENTS.size()){
         			Output.player(player, "[bHelpful]", "That announcement does not exist");
         			return true;
         		}
@@ -209,7 +254,7 @@ public class Announcement extends Thread {
         	
         	if (args[0].equalsIgnoreCase("broadcast")) {
         		
-        		if (!bHelpful.hasPerms(player, "bhelpful.announcement.broadcast")) {
+        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.broadcast")) {
         			Output.noPermission(player);
         			return true;
         		}
@@ -226,7 +271,7 @@ public class Announcement extends Thread {
         			Output.player(player, "[bHelpful]", "There was a error parsing the number you enterd");
         		}
         		
-        		if (index > Configuration.announcements.size()){
+        		if (index > Configuration.ANNOUCNEMENTS.size()){
         			Output.player(player, "[bHelpful]", "That announcement does not exist");
         			return true;
         		}

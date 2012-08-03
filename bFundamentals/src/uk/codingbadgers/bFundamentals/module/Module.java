@@ -27,28 +27,28 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 
 public abstract class Module extends Loadable implements Listener {
 
-	protected final bFundamentals plugin;
-	protected FileConfiguration config;
-	protected File configFile;
+	protected final bFundamentals m_plugin;
+	protected FileConfiguration m_config;
+	protected File m_configFile = null;
 	private String m_version = null;
 	private String m_name = null;
 	private HashMap<String, String> m_languageMap = new HashMap<String, String>();
 	protected List<ModuleCommand> m_commands = new ArrayList<ModuleCommand>();
 	
-	protected static BukkitDatabase database = null;
-	private static Permission permissions = null;
+	protected static BukkitDatabase m_database = null;
+	private static Permission m_permissions = null;
 	
 	public Module(String name, String version) {
 		super(name);
 		m_version = version;
-		plugin = bFundamentals.getInstance();
-		database = bFundamentals.getBukkitDatabase();
-		permissions = bFundamentals.getPermissions();
+		m_plugin = bFundamentals.getInstance();
+		m_database = bFundamentals.getBukkitDatabase();
+		m_permissions = bFundamentals.getPermissions();
 		m_name = name;
 	}
 	
 	protected void loadLanguageFile() {
-		File languageFile = new File(getDataFolder() + File.separator + m_name + "_" + plugin.getConfigurationManager().getLanguage() + ".lang");
+		File languageFile = new File(getDataFolder() + File.separator + m_name + "_" + m_plugin.getConfigurationManager().getLanguage() + ".lang");
 		
 		if (!languageFile.exists()) {
 			log(Level.SEVERE, "Missing language file '" + languageFile.getAbsolutePath() + "'!");
@@ -96,11 +96,11 @@ public abstract class Module extends Loadable implements Listener {
 	}
 	
 	public final void register(Listener listener) {
-		plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+		m_plugin.getServer().getPluginManager().registerEvents(listener, m_plugin);
 	}
 	
 	public Permission getPermissions() {
-		return permissions;
+		return m_permissions;
 	}
 	
 	public abstract void onEnable();
@@ -120,7 +120,7 @@ public abstract class Module extends Loadable implements Listener {
 	}
 	
 	public static boolean hasPermission(final Player player, final String node) {
-		if (permissions.has(player, node)) {
+		if (m_permissions.has(player, node)) {
 			return true;
 		}
 		return false;

@@ -8,19 +8,29 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 /**
- * 
+ *
  * @author James
  */
-
 public class BadgerDocsListener implements Listener {
 
+	/** The m_plugin. */
 	@SuppressWarnings("unused")
 	private bHelpful m_plugin = null;
 
+	/**
+	 * Instantiates a new badger docs listener.
+	 *
+	 * @param plugin the plugin
+	 */
 	public BadgerDocsListener(bHelpful plugin) {
 		m_plugin = plugin;
 	}
 
+	/**
+	 * On player join event.
+	 *
+	 * @param event the event
+	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
@@ -42,17 +52,27 @@ public class BadgerDocsListener implements Listener {
 			Output.server("[bHelpful]", "Please welcome " + player.getName() + " to the server");
 	}
 	
-	// this should work, may change though if needed
+	/**
+	 * Checks if the player has played before.
+	 *
+	 * @param player the player
+	 * @return true, if they have
+	 */
 	private boolean hasPlayedBefore(Player player) {
 		return player.hasPlayedBefore();
 	}
 
+	/**
+	 * On player login event.
+	 *
+	 * @param event the event
+	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		
 		Player player = event.getPlayer();		
 		if (Maintenance.isStaffMaintenance()) {
-			if (!bHelpful.hasPerms(player, "bhelpful.staff")) {
+			if (!bHelpful.hasPermission(player, "bhelpful.staff")) {
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Maintance Mode Enabled");
 			}
 		}

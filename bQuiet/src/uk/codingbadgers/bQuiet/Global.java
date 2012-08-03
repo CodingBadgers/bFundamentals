@@ -13,7 +13,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import uk.codingbadgers.bQuiet.containers.bPlayer;
 
-public class bGlobal {
+public class Global {
 	
 	private static Plugin m_plugin = null;
 	private static ArrayList<bPlayer> m_players = new ArrayList<bPlayer>();

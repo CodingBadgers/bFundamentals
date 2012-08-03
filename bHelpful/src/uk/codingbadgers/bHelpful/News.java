@@ -20,13 +20,19 @@ import org.getspout.spoutapi.player.SpoutPlayer;
  */
 public class News {
     
+    /**
+     * Display news.
+     *
+     * @param player the player
+     * @param noofEvent the number of events to be shown
+     */
     static public void displayNews(Player player, int noofEvents) {
     	
     	if (noofEvents == -1)
-    		noofEvents = Configuration.news.size() + 1;
+    		noofEvents = Configuration.NEWS.size() + 1;
     	
-    	for( int i = 0; i < Configuration.news.size(); ++i ) {
-    		player.sendMessage(Configuration.news.get(Configuration.news.size()-i-1));
+    	for( int i = 0; i < Configuration.NEWS.size(); ++i ) {
+    		player.sendMessage(Configuration.NEWS.get(Configuration.NEWS.size()-i-1));
     		
     		if (i >= noofEvents - 1)
     			break;
@@ -36,7 +42,7 @@ public class News {
 	    	SpoutPlayer sPlayer = (SpoutPlayer)player;
 	    	
 			if (sPlayer.isSpoutCraftEnabled()) {
-				String latest = Configuration.news.get(Configuration.news.size()-1);
+				String latest = Configuration.NEWS.get(Configuration.NEWS.size()-1);
 				latest = latest.substring(latest.indexOf("]")+4).trim();
 				
 				if (latest.length() < 26) {
@@ -47,10 +53,15 @@ public class News {
     	
     }
     
+    /**
+     * Adds the news.
+     *
+     * @param news the news
+     */
     static public void addNews (String news) {
     	
-    	Configuration.news.clear();
-    	File newsConfig = Configuration.newsConfig;
+    	Configuration.NEWS.clear();
+    	File newsConfig = Configuration.NEWS_CONFIG;
     	
     	try {
     		FileWriter fstream = new FileWriter(newsConfig.getPath(),true);
@@ -85,7 +96,7 @@ public class News {
         	
         	if (args[0].equalsIgnoreCase("add")) {
         		
-        		if (!bHelpful.hasPerms(player, "bhelpful.news.add")) {
+        		if (!bHelpful.hasPermission(player, "bhelpful.news.add")) {
         			Output.noPermission(player);
         			return false;
         		}

@@ -2,62 +2,69 @@ package uk.codingbadgers.bHelpful;
 
 import java.util.logging.Level;
 
-import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
-
 import uk.codingbadgers.bFundamentals.ModuleCommand;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
 /**
+ * The base bHelpful module class
  *
  * @author James
  */
 public class bHelpful extends Module {
 
+	/**
+	 * Instantiates a new b helpful.
+	 */
 	public bHelpful() {
 		super("bHelpful", "1.1");
 	}
 	
-	public static bFundamentals m_plugin = null;
-	public static bHelpful module = null;
-    private Announcement m_announcement = new Announcement(this);
-    public static boolean spoutEnabled = false;
-    public static Permission m_permission = null;
+	/** The plugin instance. */
+	public static bFundamentals PLUGIN = null;
+	
+	/** The module instance. */
+	public static bHelpful MODULE = null;
     
+    /** The announcement thread */
+    private Announcement m_announcement = new Announcement(this);
+    
+    /** if spout is enabled. */
+    public static boolean spoutEnabled = false;
+    
+    /* (non-Javadoc)
+     * @see uk.codingbadgers.bFundamentals.module.Module#onDisable()
+     */
     public void onDisable() {
     	log(Level.INFO, "bHelpful disabled");
     }
 
+    /* (non-Javadoc)
+     * @see uk.codingbadgers.bFundamentals.module.Module#onEnable()
+     */
     public void onEnable() {
 
-        module = this;
-        m_plugin = plugin;
+    	MODULE = this;
+        PLUGIN = m_plugin;
         
-		if (plugin.getServer().getPluginManager().getPlugin("Vault") != null) {	
-	        RegisteredServiceProvider<Permission> rsp = plugin.getServer().getServicesManager().getRegistration(Permission.class);
-	        m_permission = rsp.getProvider();
-		}
-        
-        Configuration.loadConfig(module);
+        Configuration.loadConfig(this);
         
         register(new BadgerDocsListener(this));
         
-        spoutEnabled = plugin.getServer().getPluginManager().getPlugin("Spout") != null;
+        spoutEnabled = m_plugin.getServer().getPluginManager().getPlugin("Spout") != null;
         
         // lol really not thread safe :D will improve stability later...
         if (!m_announcement.isAlive()) {
         	m_announcement.start();
         }
         
-        if (Configuration.normalState) {
+        if (Configuration.NORMAL_STATE) {
         	Maintenance.setMaintenance(true);
         }
         
-        if (Configuration.staffState) {
+        if (Configuration.STAFF_STATE) {
         	Maintenance.setStaffMaintenance(true);
         }     
         
@@ -74,18 +81,10 @@ public class bHelpful extends Module {
         log(Level.INFO, "bHelpful enabled");
         		
     }
-
-	public static boolean hasPerms(Player player, String node) {
-		
-		if (m_permission == null)
-			return false;
-		
-		if (m_permission.has(player, node))
-			return true;
-		
-		return false;
-	}   
 	
+	/* (non-Javadoc)
+	 * @see uk.codingbadgers.bFundamentals.module.Module#onCommand(org.bukkit.entity.Player, java.lang.String, java.lang.String[])
+	 */
 	public boolean onCommand(Player sender, String command, String[] args) {
 		 // /rankhelp cmd
         if (command.equalsIgnoreCase("rankhelp")) {
@@ -156,9 +155,9 @@ public class bHelpful extends Module {
             }
             
             if (args[0].equalsIgnoreCase("disable")) {
-                if(bHelpful.hasPerms(sender, "bhelpful.admin.disable") || sender.isOp()) {
+                if(hasPermission(sender, "bhelpful.admin.disable") || sender.isOp()) {
                 	sender.sendMessage(ChatColor.RED + "bHelpful disabling");
-                	plugin.disable(this);
+                	m_plugin.disable(this);
                 	return true;
                 }
             }

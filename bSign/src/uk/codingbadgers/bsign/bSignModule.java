@@ -74,8 +74,8 @@ public class bSignModule extends Module {
 	public void onEnable() {
 		
 		MODULE = this;
-		PLUGIN = plugin;
-		DATABASE = database;
+		PLUGIN = m_plugin;
+		DATABASE = m_database;
 		loadLanguageFile();
 
 		if (!DATABASE.TableExists("bSign")) {

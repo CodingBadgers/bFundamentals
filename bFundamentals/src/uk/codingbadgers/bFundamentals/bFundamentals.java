@@ -32,7 +32,7 @@ import uk.codingbadgers.bFundamentals.module.Module;
 public class bFundamentals extends JavaPlugin {
 	
 	private static bFundamentals m_instance = null;
-	private static final Logger log = Logger.getLogger("bFundamentals");
+	private static final Logger m_log = Logger.getLogger("bFundamentals");
 	private static BukkitDatabase m_database = null;	
 	private static Permission m_permissions = null;
 	public ModuleLoader m_moduleLoader = null;
@@ -76,7 +76,7 @@ public class bFundamentals extends JavaPlugin {
 	}
 	
 	public static void log(Level level, String msg) {
-		log.log(level, "[" + m_instance.getDescription().getName() +"] " + msg);
+		m_log.log(level, "[" + m_instance.getDescription().getName() +"] " + msg);
 	}
 	
 	public ConfigurationManager getConfigurationManager() {

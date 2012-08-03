@@ -8,10 +8,15 @@ import org.bukkit.entity.Player;
  */
 public class Register {
     
+    /**
+     * Display register.
+     *
+     * @param player the player
+     */
     static public void displayRegister(Player player) {
     	
-    	for( int i = 0; i < Configuration.register.size(); ++i ) {
-    		player.sendMessage(Configuration.register.get(i));
+    	for( int i = 0; i < Configuration.REGISTER.size(); ++i ) {
+    		player.sendMessage(Configuration.REGISTER.get(i));
     	}
     	    	
     }

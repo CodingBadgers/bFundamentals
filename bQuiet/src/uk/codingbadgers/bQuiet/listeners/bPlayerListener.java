@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import uk.codingbadgers.bQuiet.containers.bPlayer;
-import uk.codingbadgers.bQuiet.bGlobal;
+import uk.codingbadgers.bQuiet.Global;
 
 public class bPlayerListener implements Listener {
 	
@@ -17,27 +17,27 @@ public class bPlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		
 		bPlayer player = new bPlayer(event.getPlayer());
-		bGlobal.addPlayer(player);
+		Global.addPlayer(player);
 		
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		bGlobal.removePlayer(bGlobal.getPlayer(event.getPlayer()));
+		Global.removePlayer(Global.getPlayer(event.getPlayer()));
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerKickEvent event) {
-		bGlobal.removePlayer(bGlobal.getPlayer(event.getPlayer()));
+		Global.removePlayer(Global.getPlayer(event.getPlayer()));
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerChat(PlayerChatEvent event) {
 		
-		if (bGlobal.hasPerms(event.getPlayer(), "bQuiet.exclude"))
+		if (Global.hasPerms(event.getPlayer(), "bQuiet.exclude"))
 			return;
 				
-		bPlayer player = bGlobal.getPlayer(event.getPlayer());
+		bPlayer player = Global.getPlayer(event.getPlayer());
 		if (player == null)
 			return;
 		

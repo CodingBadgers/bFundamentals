@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package uk.codingbadgers.bHelpful;
 
 import org.bukkit.command.CommandSender;
@@ -5,39 +8,63 @@ import org.bukkit.entity.Player;
 
 public class Maintenance {
 
-	private static boolean maintenanceNormal = false;
-	private static boolean maintenanceStaff = false;
+	private static boolean m_normal = false;
+	private static boolean m_staff = false;
 
-	// set the maintenance mode for normal players
+	/**
+	 * Sets the maintenance.
+	 *
+	 * @param maintenance the new maintenance
+	 */
 	public static void setMaintenance(boolean maintenance) {
-		maintenanceNormal = maintenance;
+		m_normal = maintenance;
 		Configuration.config.set("maintenance.state.normal", maintenance);
-		Configuration.normalState = maintenance;
+		Configuration.NORMAL_STATE = maintenance;
 	}
 
-	// gets if the server is under maintenance
+	/**
+	 * Checks if is maintenance.
+	 *
+	 * @return true, if is maintenance
+	 */
 	public static boolean isMaintenance() {
-		return maintenanceNormal;
+		return m_normal;
 	}
 
-	// set the maintenance more for staff
+	/**
+	 * Sets the staff maintenance.
+	 *
+	 * @param maintenance the new staff maintenance
+	 */
 	public static void setStaffMaintenance(boolean maintenance) {
-		maintenanceStaff = maintenance;
+		m_staff = maintenance;
 		Configuration.config.set("maintenance.state.staff", maintenance);
-		Configuration.staffState = maintenance;
+		Configuration.STAFF_STATE = maintenance;
 	}
 
-	// gets if the server is under maintenance for staff
+	/**
+	 * Checks if is staff maintenance.
+	 *
+	 * @return true, if is staff maintenance
+	 */
 	public static boolean isStaffMaintenance() {
-		return maintenanceStaff;
+		return m_staff;
 	}
 
+	/**
+	 * Maintenance command.
+	 *
+	 * @param sender the sender
+	 * @param commandLabel the command label
+	 * @param args the args
+	 * @return true, if successful
+	 */
 	public static boolean maintenanceCommand(CommandSender sender, String commandLabel, String[] args) {
 		Player player = (Player) sender;
 
 		// maintenance cmd
         if (commandLabel.equalsIgnoreCase("maintenance") || commandLabel.equalsIgnoreCase("mm")) {
-        	if (!bHelpful.hasPerms(player, "bhelpful.maintenance")) {
+        	if (!bHelpful.hasPermission(player, "bhelpful.maintenance")) {
         		Output.player(player, "[bhelpful]", "You do not have permission to do this");
     			return true;
     		}
@@ -51,11 +78,11 @@ public class Maintenance {
         		if (Maintenance.isMaintenance()) {
         			Maintenance.setMaintenance(false);
         			Output.player(player, "[bHelpful] ", "Maintenance mode disabled");
-        			Output.server("[bHelpful] ", Configuration.normalDisabled);
+        			Output.server("[bHelpful] ", Configuration.NORMAL_DISABLED);
         		} else {
         			Maintenance.setMaintenance(true);
         			Output.player(player, "[bHelpful]", "Maintenance mode enabled");
-        			Output.server("[bHelpful] ", Configuration.normalEnabled);
+        			Output.server("[bHelpful] ", Configuration.NORMAL_ENABLED);
         		}
         		return false;
         	}
@@ -65,11 +92,11 @@ public class Maintenance {
         			Maintenance.setStaffMaintenance(false);
         			Output.player(player, "[bHelpful] ", "Staff maintenance mode disabled");
 
-        			Player[] oPlayer = bHelpful.m_plugin.getServer().getOnlinePlayers();
+        			Player[] oPlayer = bHelpful.PLUGIN.getServer().getOnlinePlayers();
 
         			for (int i = 0; i<oPlayer.length; i++) {
-        				if (bHelpful.hasPerms(oPlayer[i], "bhelpful.staff")) {
-        					Output.player(oPlayer[i], "[bHelpful] ", Configuration.staffDisabled);
+        				if (bHelpful.hasPermission(oPlayer[i], "bhelpful.staff")) {
+        					Output.player(oPlayer[i], "[bHelpful] ", Configuration.STAFF_DISABLED);
         				}
         			}
 
@@ -77,11 +104,11 @@ public class Maintenance {
         			Maintenance.setStaffMaintenance(true);
         			Output.player(player, "[bHelpful] ", "Staff maintenance mode enabled");
 
-        			Player[] oPlayer = bHelpful.m_plugin.getServer().getOnlinePlayers();
+        			Player[] oPlayer = bHelpful.PLUGIN.getServer().getOnlinePlayers();
 
         			for (int i = 0; i<oPlayer.length; i++) {
-        				if (bHelpful.hasPerms(oPlayer[i], "bhelpful.staff")) {
-        					Output.player(oPlayer[i], "[bHelpful] ", Configuration.staffEnabled);
+        				if (bHelpful.hasPermission(oPlayer[i], "bhelpful.staff")) {
+        					Output.player(oPlayer[i], "[bHelpful] ", Configuration.STAFF_ENABLED);
         				}
         				else
         					oPlayer[i].kickPlayer("Maintenance Enabled");

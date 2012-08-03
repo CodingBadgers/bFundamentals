@@ -24,41 +24,41 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Configuration {
 
 	static private Hashtable<String, ArrayList<String>> m_help = new Hashtable<String, ArrayList<String>>();
-	static public ArrayList<String> register = new ArrayList<String>();
-	static public ArrayList<String> news = new ArrayList<String>();
-	static public ArrayList<String> motd = new ArrayList<String>();
-	static public ArrayList<ArrayList<String>> announcements =  new ArrayList<ArrayList<String>>();
-    static public ArrayList<String> rules = new ArrayList<String> ();
-    static public ArrayList<String> vote = new ArrayList<String>();
+	static public ArrayList<String> REGISTER = new ArrayList<String>();
+	static public ArrayList<String> NEWS = new ArrayList<String>();
+	static public ArrayList<String> MOTD = new ArrayList<String>();
+	static public ArrayList<ArrayList<String>> ANNOUCNEMENTS =  new ArrayList<ArrayList<String>>();
+    static public ArrayList<String> RULES = new ArrayList<String> ();
+    static public ArrayList<String> VOTE = new ArrayList<String>();
     
-    public static FileConfiguration config = bHelpful.module.getConfig();
+    public static FileConfiguration config = bHelpful.MODULE.getConfig();
     
-    static public File announcementConfig;
-    static public File newsConfig;
+    static public File ANNOUNCEMENT_CONIFG;
+    static public File NEWS_CONFIG;
 
-    public static String normalEnabled = null; 
-    public static String staffEnabled = null;
-    public static String normalDisabled = null;
-    public static String staffDisabled = null;
+    public static String NORMAL_ENABLED = null; 
+    public static String STAFF_ENABLED = null;
+    public static String NORMAL_DISABLED = null;
+    public static String STAFF_DISABLED = null;
     
-    public static boolean normalState = false;
-    public static boolean staffState = false;
+    public static boolean NORMAL_STATE = false;
+    public static boolean STAFF_STATE = false;
     
     public static String m_servername = "Minecraft Server";
 
 	public static boolean loadConfig(bHelpful plugin) {
 		
-		m_servername = bHelpful.m_plugin.getServer().getServerName();
+		m_servername = bHelpful.PLUGIN.getServer().getServerName();
 
 		m_help.clear();
-		register.clear();
-		news.clear();
-		motd.clear();
-		announcements.clear();
-        rules.clear();
+		REGISTER.clear();
+		NEWS.clear();
+		MOTD.clear();
+		ANNOUCNEMENTS.clear();
+        RULES.clear();
 
         try {
-        	FileConfiguration config = bHelpful.module.getConfig();
+        	FileConfiguration config = bHelpful.MODULE.getConfig();
         	
         	config.addDefault("maintenance.message.normal.enabled", "Maintenance Mode has Been Enabled. The server may lag. Please bare with us");
         	config.addDefault("maintenance.message.staff.enabled", "Maintenance Mode has Been Disabled. Thankyou for your paitence");
@@ -75,15 +75,15 @@ public class Configuration {
         	return false;
         }
         
-    	normalEnabled = config.getString("maintenance.message.normal.enabled", "Maintenance Mode has Been Enabled. The server may lag. Please bare with us");
-    	staffEnabled = config.getString("maintenance.message.staff.enabled", "Maintenance Mode has Been Disabled. Thankyou for your paitence");
-    	normalDisabled = config.getString("maintenance.message.normal.disabled", "Staff Maintenance Mode Enabled");
-    	staffDisabled = config.getString("maintenance.message.staff.disabled", "Staff Maintenance Mode Disabled");
+        NORMAL_ENABLED = config.getString("maintenance.message.normal.enabled", "Maintenance Mode has Been Enabled. The server may lag. Please bare with us");
+        STAFF_ENABLED = config.getString("maintenance.message.staff.enabled", "Maintenance Mode has Been Disabled. Thankyou for your paitence");
+        NORMAL_DISABLED = config.getString("maintenance.message.normal.disabled", "Staff Maintenance Mode Enabled");
+        STAFF_DISABLED = config.getString("maintenance.message.staff.disabled", "Staff Maintenance Mode Disabled");
     	
-    	normalState = config.getBoolean("maintenance.state.normal");
-    	staffState = config.getBoolean("maintenance.state.staff");
+        NORMAL_STATE = config.getBoolean("maintenance.state.normal");
+        STAFF_STATE = config.getBoolean("maintenance.state.staff");
     	
-    	bHelpful.module.saveConfig();
+    	bHelpful.MODULE.saveConfig();
         
 		File folder = new File(plugin.getDataFolder() + File.separator
 				+ "RankHelp");
@@ -115,13 +115,13 @@ public class Configuration {
 		loadRegisterConfig(registerConfig);
 
 		// see if the News.cfg exists, if not make a default one
-		newsConfig = new File(plugin.getDataFolder() + File.separator
+		NEWS_CONFIG = new File(plugin.getDataFolder() + File.separator
 				+ "News.cfg");
-		if (!newsConfig.exists())
-			createDefaultNewsConfig(newsConfig);
+		if (!NEWS_CONFIG.exists())
+			createDefaultNewsConfig(NEWS_CONFIG);
 
 		// load in the news config file, storing it in the news member
-		loadNewsConfig(newsConfig);
+		loadNewsConfig(NEWS_CONFIG);
 
 		// see if the News.cfg exists, if not make a default one
 		File motdConfig = new File(plugin.getDataFolder() + File.separator
@@ -134,13 +134,13 @@ public class Configuration {
 		
 		
 		// see if the Announcement.cfg exists, if not make a default one
-		announcementConfig = new File(plugin.getDataFolder() + File.separator
+		ANNOUNCEMENT_CONIFG = new File(plugin.getDataFolder() + File.separator
 				+ "Announcement.cfg");
-		if (!announcementConfig.exists())
-			createDefaultAnnouncementsConfig(announcementConfig);
+		if (!ANNOUNCEMENT_CONIFG.exists())
+			createDefaultAnnouncementsConfig(ANNOUNCEMENT_CONIFG);
 		
 		// load announcements
-		LoadAnnouncemnetConfig(announcementConfig);
+		LoadAnnouncemnetConfig(ANNOUNCEMENT_CONIFG);
                 
 		// see if the Rules.cfg exists, if not make a default one
 		File rulesConfig = new File(plugin.getDataFolder() + File.separator
@@ -220,7 +220,7 @@ public class Configuration {
 					newAnnouncement.add(replaceColors(line));
 				}
 								
-				announcements.add(newAnnouncement);
+				ANNOUCNEMENTS.add(newAnnouncement);
 			}
 
 		} catch (IOException e) {
@@ -252,7 +252,7 @@ public class Configuration {
 
 				// store the line into the array of help, which will be added to
 				// the help HashMap
-				motd.add(replaceColors(line));
+				MOTD.add(replaceColors(line));
 			}
 
 		} catch (IOException e) {
@@ -306,7 +306,7 @@ public class Configuration {
 
 				// store the line into the array of help, which will be added to
 				// the help HashMap
-				news.add(replaceColors(line));
+				NEWS.add(replaceColors(line));
 			}
 
 		} catch (IOException e) {
@@ -365,7 +365,7 @@ public class Configuration {
 
 				// store the line into the array of help, which will be added to
 				// the help HashMap
-				register.add(replaceColors(line));
+				REGISTER.add(replaceColors(line));
 			}
 
 		} catch (IOException e) {
@@ -547,7 +547,7 @@ public class Configuration {
 
 				// store the line into the array of help, which will be added to
 				// the help HashMap
-				rules.add(replaceColors(line));
+				RULES.add(replaceColors(line));
 			}
 
 		} catch (IOException e) {
@@ -601,7 +601,7 @@ public class Configuration {
 
 				// store the line into the array of help, which will be added to
 				// the help HashMap
-				vote.add(replaceColors(line));
+				VOTE.add(replaceColors(line));
 			}
 
 		} catch (IOException e) {
