@@ -24,8 +24,6 @@ public class CommandListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerCommandPreProcess(PlayerCommandPreprocessEvent event) {
-		System.out.println(event.getMessage().substring(1));
-		
 		Player sender = event.getPlayer();
 		String command = event.getMessage().substring(1, event.getMessage().indexOf(' ') != -1 ? event.getMessage().indexOf(' ') : event.getMessage().length());
 		String[] args = event.getMessage().indexOf(' ') != -1 ? event.getMessage().substring(event.getMessage().indexOf(' ')).split(" ") : new String[0];
