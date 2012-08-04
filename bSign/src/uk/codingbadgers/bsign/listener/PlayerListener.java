@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import uk.codingbadgers.bsign.bSignModule;
@@ -70,7 +70,7 @@ public class PlayerListener implements Listener {
 	 * @param event the event
 	 */
 	@EventHandler(priority = EventPriority.LOW)
-	public void onChatInteract(PlayerChatEvent event) {
+	public void onChatInteract(AsyncPlayerChatEvent event) {
 		
 		if (bSignModule.SIGNS == null)
 			return;

@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class PlayerListener implements Listener {
 	
@@ -21,8 +21,8 @@ public class PlayerListener implements Listener {
 	 * @param event the chat event
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerChat(PlayerChatEvent event) {
-				
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
+
 		Player player = event.getPlayer();
 		
 		if (!Global.HasPermission(player, "shortlinks.url"))
