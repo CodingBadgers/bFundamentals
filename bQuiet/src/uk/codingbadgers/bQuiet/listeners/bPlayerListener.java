@@ -3,7 +3,7 @@ package uk.codingbadgers.bQuiet.listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -31,8 +31,8 @@ public class bPlayerListener implements Listener {
 		Global.removePlayer(Global.getPlayer(event.getPlayer()));
 	}
 	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerChat(PlayerChatEvent event) {
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		
 		if (Global.hasPerms(event.getPlayer(), "bQuiet.exclude"))
 			return;

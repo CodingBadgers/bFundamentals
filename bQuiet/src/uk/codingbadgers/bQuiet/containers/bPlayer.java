@@ -23,12 +23,14 @@ public class bPlayer {
 	/** The Array of sent messages. */
 	private ArrayList<bChatMessage> m_message = new ArrayList<bChatMessage>();
 	
-	/** The ip adress pattern. */
-	private final String m_ipAdressPattern = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-											"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-											"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-											"([01]?\\d\\d?|2[0-4]\\d|25[0-5])" +
-											"(:[0-9999999]$";
+	/** The ip address pattern. */
+	private final String m_ipAddressPattern = "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b";
+	
+	/** The ip and port pattern. */
+	private final String m_ipAndPortPattern = "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b:\\d{1,5}";
+	
+	/** The host name pattern. */
+	private final String m_hostNamePattern = ".[a-z0-9]+([\\-\\:]{1})\\d{1,5}";
 	
 	/**
 	 * Instantiates a new b player.
@@ -115,15 +117,15 @@ public class bPlayer {
 				}
 			}
 			
-			Global.sendMessage(m_player, "noofCaps : " + noofCaps);
-			Global.sendMessage(m_player, "noofValidChars : " + noofValidChars);
+			//Global.sendMessage(m_player, "noofCaps : " + noofCaps);
+			//Global.sendMessage(m_player, "noofValidChars : " + noofValidChars);
 			
 			if (noofCaps == 0 || noofCaps <= ConfigManager.m_capsMessageLength)
 				return false;
 
 			int percentage = (100 / noofValidChars) * noofCaps;
 			
-			Global.sendMessage(m_player, "percentage : " + percentage);
+			//Global.sendMessage(m_player, "percentage : " + percentage);
 			
 			if (percentage >= ConfigManager.m_maxPercentageOfCaps) {
 				if (ConfigManager.m_forceLowerCase) {
@@ -157,14 +159,16 @@ public class bPlayer {
 	 */
 	public boolean isAdvertising(String message) {
 		String[] words = message.split(" ");
-		Pattern pattern = Pattern.compile(m_ipAdressPattern);
-		boolean ip;
-		
+		Pattern ippattern = Pattern.compile(m_ipAddressPattern);
+		Pattern ipPortPattern = Pattern.compile(m_ipAndPortPattern);
+		Pattern hostPattern = Pattern.compile(m_hostNamePattern);
+
 		for (String word : words) {
-		    Matcher matcher = pattern.matcher(word);
-			ip = matcher.matches();
-			
-			if (ip) {
+		    Matcher ipmatcher = ippattern.matcher(word);
+		    Matcher ipPortMatcher = ipPortPattern.matcher(word);
+		    Matcher hostMatcher = hostPattern.matcher(word);
+
+			if (ipmatcher.matches() || ipPortMatcher.matches() || hostMatcher.matches()) {
 				Global.sendMessage(m_player, "Please dont advertise other servers");
 				return true;
 			}
