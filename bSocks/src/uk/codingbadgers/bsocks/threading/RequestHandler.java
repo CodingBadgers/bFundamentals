@@ -111,7 +111,7 @@ public class RequestHandler extends Thread {
 		JSONObject responce = new JSONObject();
 		JSONArray players = new JSONArray();
 		
-		for (OfflinePlayer player  : m_plugin.getServer().getOfflinePlayers()) {
+		for (OfflinePlayer player : m_plugin.getServer().getOfflinePlayers()) {
 			if (player.getName().startsWith((String) command.get("player")))
 				players.add(player.getName());
 		}

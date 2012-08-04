@@ -243,10 +243,11 @@ public class bFundamentals extends JavaPlugin {
 					FileOutputStream output = new FileOutputStream(pluginLib);
 					output.getChannel().transferFrom(rbc, 0, 1 << 24);
 					libPlugin = (NCBL) pm.loadPlugin(pluginLib);
-					
+					output.close();
 				} else {
 					FileOutputStream output = new FileOutputStream(lib);
 					output.getChannel().transferFrom(rbc, 0, 1 << 24);
+					output.close();
 				}
 				
 				log(Level.INFO, "Downloaded NC-Bukkit lib");
