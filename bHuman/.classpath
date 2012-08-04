@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/bukkit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/craftbukkit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/NC-BukkitLib.jar"/>
-	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/Vault.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bFundamentals"/>
-	<classpathentry kind="lib" path="C:/Users/james/Programing/Java/jars/BukkitDatabaseManager.jar"/>
+	<classpathentry kind="lib" path="D:/Programing/Java/jars/bukkit.jar"/>
+	<classpathentry kind="lib" path="D:/Programing/Java/jars/BukkitDatabaseManager.jar"/>
+	<classpathentry kind="lib" path="D:/Programing/Java/jars/craftbukkit.jar"/>
+	<classpathentry kind="lib" path="D:/Programing/Java/jars/NC-BukkitLib.jar"/>
+	<classpathentry kind="lib" path="D:/Programing/Java/jars/Vault.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

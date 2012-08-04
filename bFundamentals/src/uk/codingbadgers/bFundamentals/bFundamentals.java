@@ -27,6 +27,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.nodinchan.ncbukkit.NCBL;
 
+import uk.codingbadgers.bFundamentals.commands.CommandListener;
 import uk.codingbadgers.bFundamentals.module.Module;
 
 public class bFundamentals extends JavaPlugin {
