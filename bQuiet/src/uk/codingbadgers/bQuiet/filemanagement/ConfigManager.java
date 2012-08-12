@@ -28,6 +28,7 @@ public class ConfigManager {
 			config.addDefault("max_percentage_of_caps_in_a_message", 80);
 			config.addDefault("force_lowercase_rather_than_deny_caps_message", false);
 			config.options().copyDefaults(true);
+			bQuiet.getInstance().saveConfig();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;

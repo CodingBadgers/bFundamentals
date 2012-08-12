@@ -26,8 +26,8 @@ public class CommandListener implements Listener {
 	public void onPlayerCommandPreProcess(PlayerCommandPreprocessEvent event) {
 		Player sender = event.getPlayer();
 		String command = event.getMessage().substring(1, event.getMessage().indexOf(' ') != -1 ? event.getMessage().indexOf(' ') : event.getMessage().length());
-		String[] args = event.getMessage().indexOf(' ') != -1 ? event.getMessage().substring(event.getMessage().indexOf(' ')).split(" ") : new String[0];
-	
+		String[] args = event.getMessage().indexOf(' ') != -1 ? event.getMessage().substring(event.getMessage().indexOf(' ') + 1).split(" ") : new String[0];
+		
 		List<Module> modules = bFundamentals.getInstance().m_moduleLoader.getModules();
 		for (Module module : modules) {
 			if (module.isCommandRegistered(command)) {

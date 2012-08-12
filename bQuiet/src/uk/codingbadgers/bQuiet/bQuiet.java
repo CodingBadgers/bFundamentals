@@ -9,7 +9,7 @@ import uk.codingbadgers.bQuiet.listeners.bPlayerListener;
 public class bQuiet extends Module {
 
 	/** The Constant NAME. */
-	private static final String NAME = "bHuman";
+	private static final String NAME = "bQuiet";
 	
 	/** The Constant VERSION. */
 	private static final String VERSION = "1.0";

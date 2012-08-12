@@ -123,11 +123,13 @@ public class bPlayer {
 			if (noofCaps == 0 || noofCaps <= ConfigManager.m_capsMessageLength)
 				return false;
 
-			int percentage = (100 / noofValidChars) * noofCaps;
+			int percentage =  (100 / noofValidChars) * noofCaps;
 			
 			//Global.sendMessage(m_player, "percentage : " + percentage);
 			
 			if (percentage >= ConfigManager.m_maxPercentageOfCaps) {
+				//Global.sendMessage(m_player, "OverCaps percentage");
+				
 				if (ConfigManager.m_forceLowerCase) {
 					chatMessage.forceLowerCase();
 					return false;
