@@ -106,8 +106,7 @@ public abstract class Module extends Loadable implements Listener {
 					log(Level.WARNING, "Trying to parse a language value, with no key set!");
 					continue;
 				}
-				
-				log(Level.INFO, key + ", " + line);
+
 				m_languageMap.put(key, line);				
 			}
 			

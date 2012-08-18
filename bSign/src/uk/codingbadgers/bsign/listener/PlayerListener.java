@@ -1,5 +1,8 @@
 package uk.codingbadgers.bsign.listener;
 
+import java.util.ArrayList;
+
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,26 +25,14 @@ import uk.codingbadgers.bsign.sign.Sign;
  */
 public class PlayerListener implements Listener {
 	
+	private ArrayList<Location> m_visitedLocations = new ArrayList<Location>();
+	
 	/**
-	 * On player interact. Used to call the interact command on a bSign
-	 *
-	 * @param event the event
+	 * Handles when a player right clicks a bSign
+	 * @param event The interact event to handle with a sign interaction
 	 */
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerInteract(PlayerInteractEvent event) {
-
-		if (bSignModule.SIGNS == null)
-			return;
-		
-		// we only want right click events
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-			return;
-		
-		// see if we are dealing with a sign
-		Block block = event.getClickedBlock();
-		if (!(block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST))
-			return;
-		
+	private void handleSignInteract(final Block block, final Player player)
+	{		
 		// try to find the bsign from all our stored signs
 		Sign contextSign = null;
 		for (Sign sign : bSignModule.SIGNS) {
@@ -60,7 +51,159 @@ public class PlayerListener implements Listener {
 		if (contextSign == null)
 			return;
 				
-		contextSign.interact(event.getPlayer());		
+		contextSign.interact(player);	
+	}
+	
+	/**
+	 * See if a block is valid restone
+	 * @param block THe block to validate
+	 * @return true if the block is redstone, false otherwise
+	 */
+	private boolean isRedStone(Block block) {
+		if (block.getType() == Material.REDSTONE_WIRE)
+			return true;
+		return false;
+	}
+	
+	/**
+	 * See if a block is a sign
+	 * @param block The block to validate
+	 * @return true if the block is a sign, false otherwise
+	 */
+	private boolean findSignBlock(Block block) {
+		if (block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST)
+			return true;		
+		return false;
+	}
+	
+	/**
+	 * Find connected sign.
+	 *
+	 * @param startBlock the start block
+	 * @return the block
+	 */
+	private Block findConnectedSign(Block startBlock)
+	{
+		Location right = startBlock.getLocation();
+		Location left = startBlock.getLocation();
+		Location up = startBlock.getLocation();
+		Location down = startBlock.getLocation();
+		
+		if (findSignBlock(right.add(1.0, 0.0, 0.0).getBlock()))
+			return right.getBlock();
+		
+		if (findSignBlock(left.add(-1.0, 0.0, 0.0).getBlock()))
+			return left.getBlock();
+		
+		if (findSignBlock(up.add(0.0, 0.0, 1.0).getBlock()))
+			return up.getBlock();
+		
+		if (findSignBlock(down.add(0.0, 0.0, -1.0).getBlock()))
+			return down.getBlock();
+		
+		return null;
+	}
+	
+	/**
+	 * @param lastBlock
+	 * @return
+	 */
+	private Block findConnectedRedstone(Block lastBlock) {
+				
+		for (int y = -1; y <= 1; ++y) {
+			Location right = lastBlock.getLocation();
+			Location left = lastBlock.getLocation();
+			Location up = lastBlock.getLocation();
+			Location down = lastBlock.getLocation();
+			
+			if (isRedStone(right.add(1.0, y, 0.0).getBlock())) {
+				if (!m_visitedLocations.contains(right.getBlock().getLocation())) {
+					return right.getBlock();
+				}
+			}
+			
+			if (isRedStone(left.add(-1.0, y, 0.0).getBlock())) {
+				if (!m_visitedLocations.contains(left.getBlock().getLocation())) {
+					return left.getBlock();
+				}
+			}
+			
+			if (isRedStone(up.add(0.0, y, 1.0).getBlock())) {
+				if (!m_visitedLocations.contains(up.getBlock().getLocation())) {
+					return up.getBlock();
+				}
+			}
+			
+			if (isRedStone(down.add(0.0, y, -1.0).getBlock())) {
+				if (!m_visitedLocations.contains(down.getBlock().getLocation())) {
+					return down.getBlock();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Handle redstone sign interaction
+	 * @param event The interact event to handle with a sign interaction
+	 */
+	private void handleRedStoneInteract(PlayerInteractEvent event) 
+	{
+		if (!(event.getPlayer() instanceof Player))
+			return;
+		
+		Block block = event.getClickedBlock();
+		if (block.getType() != Material.STONE_PLATE)
+			return;
+			
+		m_visitedLocations.clear();
+		int powerLevel = 15;
+		
+		do {
+			Block sign = null;
+			if ((sign = findConnectedSign(block)) != null) {
+				handleSignInteract(sign, event.getPlayer());
+				return;
+			}
+			
+			m_visitedLocations.add(block.getLocation());
+			if ((block = findConnectedRedstone(block)) == null) {
+				return;
+			}
+			powerLevel = powerLevel - 1;
+		
+		} while (powerLevel > 1);
+		
+	}
+	
+	/**
+	 * On player interact. Used to call the interact command on a bSign
+	 *
+	 * @param event the event
+	 */
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerInteract(PlayerInteractEvent event) {
+
+		if (bSignModule.SIGNS == null)
+			return;
+				
+		// If we right clicked, then handle the sign interaction
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			// see if we are dealing with a sign
+			final Block block = event.getClickedBlock();
+			if (findSignBlock(block)) {
+				handleSignInteract(block, event.getPlayer());
+				return;
+			}
+		}
+		
+		// Handle redstone events
+		if (event.getAction() == Action.PHYSICAL) {
+			handleRedStoneInteract(event);
+			return;
+		}
+			
 	}
 	
 	/**
@@ -137,6 +280,4 @@ public class PlayerListener implements Listener {
 		bSignModule.sendMessage("bSign", chatter, bSignModule.MODULE.getLanguageValue("INVALID-SIGN-CONTEXT"));
 		
 	}
-
-	
 }
