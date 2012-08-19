@@ -22,13 +22,13 @@ public class CommandListener implements Listener{
 	 */
 	public static class Command {
 		
-		/** The m_player. */
+		/** The player who used the command. */
 		public String m_player;
 		
-		/** The m_command. */
+		/** The command used. */
 		public String m_command;
 		
-		/** The m_args. */
+		/** The arguments that went with the command. */
 		public String m_args;
 	}
 	
@@ -37,10 +37,10 @@ public class CommandListener implements Listener{
 	 */
 	public static class ChatMessage {
 		
-		/** The m_player. */
+		/** The player who sent the message. */
 		public String m_player;
 		
-		/** The m_message. */
+		/** The message sent. */
 		public String m_message;
 	}
 	

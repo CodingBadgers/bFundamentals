@@ -46,7 +46,7 @@ public class bFundamentals extends JavaPlugin {
 		
 		log(Level.INFO, "bFundamentals Loading");
 		// update NC-loader
-		updateLib();
+		//updateLib();
 	}
 	
 	@Override
@@ -142,18 +142,32 @@ public class bFundamentals extends JavaPlugin {
 		}
 		
 		if (args[0].equalsIgnoreCase("module")) {
-			if (args.length < 2) {
+			if (args.length < 1) {
 				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "use /bFundamentals <reload/load>");
 				return;
 			}
 			
 			if (args[1].equalsIgnoreCase("unload")) {
+				if (args.length == 3) {
+					m_moduleLoader.unload(m_moduleLoader.getModule(args[2]));
+					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Unloaded " + args[2]);
+					return;
+				}
+				
 				m_moduleLoader.unload();
 				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "UnLoaded all modules");			
 				return;
 			}
 			
 			if (args[1].equalsIgnoreCase("load")) {
+				
+				if (args.length == 3) {
+					m_moduleLoader.load(args[2]);
+					m_moduleLoader.getModule(args[2]).onEnable();
+					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded " + args[2]);
+					return;
+				}
+				
 				m_moduleLoader.load();
 				m_moduleLoader.enable();
 				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded all modules");			
@@ -161,8 +175,18 @@ public class bFundamentals extends JavaPlugin {
 			}
 			
 			if (args[1].equalsIgnoreCase("reload")) {
+				
+				if (args.length == 3) {
+					m_moduleLoader.unload(m_moduleLoader.getModule(args[2]));
+					m_moduleLoader.load(args[2]);
+					m_moduleLoader.getModule(args[2]).onEnable();
+					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "ReLoaded " + args[2]);
+					return;
+				}
+				
 				m_moduleLoader.unload();
 				m_moduleLoader.load();
+				m_moduleLoader.enable();
 				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");			
 				return;
 			}
@@ -170,12 +194,14 @@ public class bFundamentals extends JavaPlugin {
 			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "use /bFundamentals <reload/load>");
 			return;
 		}
+		sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals");
 	}
 	
 	public void disable(Module module) {
 		m_moduleLoader.unload(module);
 	}
 	
+	@SuppressWarnings("unused")
 	private void updateLib() {
 		PluginManager pm = getServer().getPluginManager();
 		

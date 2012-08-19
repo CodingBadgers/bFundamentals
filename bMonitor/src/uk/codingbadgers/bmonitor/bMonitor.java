@@ -31,28 +31,28 @@ public class bMonitor extends Module {
 	 */
 	public static class DatabaseInfo {
 		
-		/** The m_driver. */
+		/** The database driver. */
 		public DatabaseType m_driver = null;
 		
-		/** The m_host. */
+		/** The the hostname. */
 		public String m_host = null;
 		
-		/** The m_dbname. */
+		/** The teh database name. */
 		public String m_dbname = null;
 		
-		/** The m_table prefix. */
+		/** The table prefix. */
 		public String m_tablePrefix = null;
 		
-		/** The m_user. */
+		/** The database username. */
 		public String m_user = null;
 		
-		/** The m_password. */
+		/** The the database password. */
 		public String m_password = null;
 		
-		/** The m_port. */
+		/** The database port. */
 		public int m_port = 3306;
 		
-		/** The m_update. */
+		/** The update time. */
 		public int m_update = 20;
 	}
 	
@@ -61,16 +61,16 @@ public class bMonitor extends Module {
 	 */
 	public static class Logging {
 		
-		/** The m_player join. */
+		/** Logging player join. */
 		public boolean m_playerJoin;
 		
-		/** The m_player leave. */
+		/** Logging player leave. */
 		public boolean m_playerLeave;
 		
-		/** The m_chat. */
+		/** Logging chat. */
 		public boolean m_chat;
 		
-		/** The m_commands. */
+		/** Logging commands. */
 		public boolean m_commands;		
 	}
 	

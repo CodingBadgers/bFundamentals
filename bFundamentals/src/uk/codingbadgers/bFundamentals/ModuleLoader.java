@@ -1,12 +1,15 @@
 package uk.codingbadgers.bFundamentals;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 
 import com.nodinchan.ncbukkit.loader.Loader;
 
@@ -19,6 +22,7 @@ public class ModuleLoader {
 	
 	/** The List of modules. */
 	private final List<Module> m_modules;
+	private Loader<Module> m_loader;
 
 	/**
 	 * Instantiates a new module loader.
@@ -42,10 +46,23 @@ public class ModuleLoader {
 	 * Loads the modules.
 	 */
 	public void load() {
-		Loader<Module> loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
-		m_modules.addAll(loader.sort(loader.load()));
+		m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
+		m_modules.addAll(m_loader.sort(m_loader.load()));
 		
 		bFundamentals.log(Level.INFO, "Loaded " + m_modules.size() + " modules.");
+	}
+	
+	/**
+	 * Loads a module with a given name
+	 * 
+	 * @param fileName the files name
+	 */
+	public void load(String fileName) {
+		if (m_loader == null) 
+			m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
+		
+		m_modules.clear();
+		m_modules.addAll(m_loader.sort(m_loader.load(new File(getModuleDir() + File.separator + fileName + ".jar"))));
 	}
 	
 	/**
@@ -81,6 +98,9 @@ public class ModuleLoader {
 	public void disable() {
 		for (Module module : m_modules) {
 			module.onDisable();
+			for (Listener listener : module.getListeners()) {
+				HandlerList.unregisterAll(listener);
+			}
 		}
 	}
 	
@@ -113,6 +133,15 @@ public class ModuleLoader {
 	 */
 	public List<Module> getModules() {
 		return m_modules;
+	}
+
+	public Module getModule(String string) {
+		Iterator<Module> itr = m_modules.iterator();
+		while(itr.hasNext()) {
+			if (itr.next().getName().equalsIgnoreCase(string))
+				return itr.next();
+		}
+		return null;		
 	}
 
 }
