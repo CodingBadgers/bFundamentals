@@ -70,6 +70,7 @@ public class bFundamentals extends JavaPlugin {
 	public void onDisable() {
 		bFundamentals.log(Level.INFO, "bFundamentals Disabled.");
 		m_moduleLoader.disable();
+		m_database.End();
 	}
 	
 	/**
