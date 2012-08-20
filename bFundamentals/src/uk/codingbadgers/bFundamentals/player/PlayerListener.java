@@ -10,21 +10,36 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
+	/**
+	 * Called when a player joins the server
+	 *
+	 * @param The player join event
+	 */
 	@EventHandler(priority = EventPriority.NORMAL) 
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		BasePlayer bPlayer = new BasePlayer(player);
 		
-		PlayerUtils.players.add(bPlayer);
+		PlayerUtils.getPlayerArray().add(bPlayer);
 	}
 	
+	/**
+	 * Called when a player quits the server
+	 *
+	 * @param The player quit event
+	 */
 	@EventHandler(priority = EventPriority.NORMAL) 
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		PlayerUtils.players.removePlayer(event.getPlayer());
+		PlayerUtils.getPlayerArray().removePlayer(event.getPlayer());
 	}
 	
+	/**
+	 * Called when a player is kicked from the server
+	 *
+	 * @param The player kick event
+	 */
 	@EventHandler(priority = EventPriority.NORMAL) 
 	public void onPlayerKick(PlayerKickEvent event) {
-		PlayerUtils.players.removePlayer(event.getPlayer());
+		PlayerUtils.getPlayerArray().removePlayer(event.getPlayer());
 	}
 }
