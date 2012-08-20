@@ -132,6 +132,10 @@ public class bSignModule extends Module {
 		log(Level.INFO,  "Module Version " + VERSION + " enabled.");
 	}
 
+	/**
+	 * @param locationString A string of a location loaded from the database
+	 * @return A location from a formatted string
+	 */
 	private Location getLocationFromString(String locationString) {
 		
 		double locX = Double.parseDouble(locationString.substring(0, locationString.indexOf(",") - 1));

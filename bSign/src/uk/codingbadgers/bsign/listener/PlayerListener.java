@@ -25,8 +25,6 @@ import uk.codingbadgers.bsign.sign.Sign;
  */
 public class PlayerListener implements Listener {
 	
-	private ArrayList<Location> m_visitedLocations = new ArrayList<Location>();
-	
 	/**
 	 * Handles when a player right clicks a bSign
 	 * @param event The interact event to handle with a sign interaction
@@ -86,6 +84,8 @@ public class PlayerListener implements Listener {
 	{
 		Location right = startBlock.getLocation();
 		Location left = startBlock.getLocation();
+		Location forward = startBlock.getLocation();
+		Location back = startBlock.getLocation();
 		Location up = startBlock.getLocation();
 		Location down = startBlock.getLocation();
 		
@@ -95,10 +95,16 @@ public class PlayerListener implements Listener {
 		if (findSignBlock(left.add(-1.0, 0.0, 0.0).getBlock()))
 			return left.getBlock();
 		
-		if (findSignBlock(up.add(0.0, 0.0, 1.0).getBlock()))
+		if (findSignBlock(forward.add(0.0, 0.0, 1.0).getBlock()))
+			return forward.getBlock();
+		
+		if (findSignBlock(back.add(0.0, 0.0, -1.0).getBlock()))
+			return back.getBlock();
+		
+		if (findSignBlock(up.add(0.0, 1.0, 0.0).getBlock()))
 			return up.getBlock();
 		
-		if (findSignBlock(down.add(0.0, 0.0, -1.0).getBlock()))
+		if (findSignBlock(down.add(0.0, -2.0, 0.0).getBlock()))
 			return down.getBlock();
 		
 		return null;
@@ -108,7 +114,7 @@ public class PlayerListener implements Listener {
 	 * @param lastBlock
 	 * @return
 	 */
-	private Block findConnectedRedstone(Block lastBlock) {
+	private Block findConnectedRedstone(Block lastBlock, ArrayList<Location> visitedLocations) {
 				
 		for (int y = -1; y <= 1; ++y) {
 			Location right = lastBlock.getLocation();
@@ -117,25 +123,25 @@ public class PlayerListener implements Listener {
 			Location down = lastBlock.getLocation();
 			
 			if (isRedStone(right.add(1.0, y, 0.0).getBlock())) {
-				if (!m_visitedLocations.contains(right.getBlock().getLocation())) {
+				if (!visitedLocations.contains(right.getBlock().getLocation())) {
 					return right.getBlock();
 				}
 			}
 			
 			if (isRedStone(left.add(-1.0, y, 0.0).getBlock())) {
-				if (!m_visitedLocations.contains(left.getBlock().getLocation())) {
+				if (!visitedLocations.contains(left.getBlock().getLocation())) {
 					return left.getBlock();
 				}
 			}
 			
 			if (isRedStone(up.add(0.0, y, 1.0).getBlock())) {
-				if (!m_visitedLocations.contains(up.getBlock().getLocation())) {
+				if (!visitedLocations.contains(up.getBlock().getLocation())) {
 					return up.getBlock();
 				}
 			}
 			
 			if (isRedStone(down.add(0.0, y, -1.0).getBlock())) {
-				if (!m_visitedLocations.contains(down.getBlock().getLocation())) {
+				if (!visitedLocations.contains(down.getBlock().getLocation())) {
 					return down.getBlock();
 				}
 			}
@@ -157,7 +163,8 @@ public class PlayerListener implements Listener {
 		if (block.getType() != Material.STONE_PLATE)
 			return;
 			
-		m_visitedLocations.clear();
+		ArrayList<Location> visitedLocations = new ArrayList<Location>();
+		visitedLocations.clear();
 		int powerLevel = 15;
 		
 		do {
@@ -167,8 +174,8 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			m_visitedLocations.add(block.getLocation());
-			if ((block = findConnectedRedstone(block)) == null) {
+			visitedLocations.add(block.getLocation());
+			if ((block = findConnectedRedstone(block, visitedLocations)) == null) {
 				return;
 			}
 			powerLevel = powerLevel - 1;
