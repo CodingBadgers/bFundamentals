@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
-import uk.codingbadgers.bQuiet.Global;
+import uk.codingbadgers.bQuiet.bQuiet;
 import uk.codingbadgers.bQuiet.filemanagement.ConfigManager;
 
 /**
@@ -57,11 +57,11 @@ public class bPlayer {
 	 * @return true, if successful
 	 */
 	public boolean canTalk() {
-		if (System.currentTimeMillis() - m_loginTime > ConfigManager.m_loginSilence) {
+		if (System.currentTimeMillis() - m_loginTime > ConfigManager.LOGINSILENCE) {
 			return true;
 		}
 		
-		Global.sendMessage(m_player, "You can not talk for the first " + (ConfigManager.m_loginSilence * 0.001) + " seconds of logging in.");		
+		bQuiet.sendMessage(bQuiet.NAME, m_player, "You can not talk for the first " + (ConfigManager.LOGINSILENCE * 0.001) + " seconds of logging in.");		
 		return false;
 	}
 
@@ -77,7 +77,7 @@ public class bPlayer {
 		
 		m_message.add(chatMessage);
 		
-		if (m_message.size() > ConfigManager.m_noofMessages) {
+		if (m_message.size() > ConfigManager.NOOFMESSAGES) {
 			m_message.remove(0);
 		}
 
@@ -90,22 +90,22 @@ public class bPlayer {
 			
 			if (currentMessage.getMessage().equalsIgnoreCase(chatMessage.getMessage())) {
 				
-				if (chatMessage.getTime() - currentMessage.getTime() < ConfigManager.m_repeatMessageTime) {
-					Global.sendMessage(m_player, "Please do not spam the chat.");
+				if (chatMessage.getTime() - currentMessage.getTime() < ConfigManager.REPEATMESSAGETIME) {
+					bQuiet.sendMessage(bQuiet.NAME, m_player, "Please do not spam the chat.");
 					return true;
 				}
 			}
 			
-			if (chatMessage.getTime() - currentMessage.getTime() < ConfigManager.m_chatSpeed) {
-				Global.sendMessage(m_player, "You are speaking too quickly...");
-				Global.sendMessage(m_player, "Please do not spam the chat.");
+			if (chatMessage.getTime() - currentMessage.getTime() < ConfigManager.CHATSPEED) {
+				bQuiet.sendMessage(bQuiet.NAME, m_player, "You are speaking too quickly...");
+				bQuiet.sendMessage(bQuiet.NAME, m_player, "Please do not spam the chat.");
 				return true;
 			}
 						
 		}
 		
 		
-		if (chatMessage.getMessage().length() > ConfigManager.m_capsMessageLength) {
+		if (chatMessage.getMessage().length() > ConfigManager.CAPSMESSAGELENGTH) {
 			
 			int noofCaps = 0;
 			int noofValidChars = 0;
@@ -120,21 +120,21 @@ public class bPlayer {
 			//Global.sendMessage(m_player, "noofCaps : " + noofCaps);
 			//Global.sendMessage(m_player, "noofValidChars : " + noofValidChars);
 			
-			if (noofCaps == 0 || noofCaps <= ConfigManager.m_capsMessageLength)
+			if (noofCaps == 0 || noofCaps <= ConfigManager.CAPSMESSAGELENGTH)
 				return false;
 
 			int percentage =  (100 / noofValidChars) * noofCaps;
 			
 			//Global.sendMessage(m_player, "percentage : " + percentage);
 			
-			if (percentage >= ConfigManager.m_maxPercentageOfCaps) {
+			if (percentage >= ConfigManager.MAXPERCENTAGEOFCAPS) {
 				//Global.sendMessage(m_player, "OverCaps percentage");
 				
-				if (ConfigManager.m_forceLowerCase) {
+				if (ConfigManager.FORCELOWERCASE) {
 					chatMessage.forceLowerCase();
 					return false;
 				} else {
-					Global.sendMessage(m_player, "Please don't speak in all caps.");
+					bQuiet.sendMessage(bQuiet.NAME, m_player, "Please don't speak in all caps.");
 					return true;
 				}
 			}
@@ -171,7 +171,7 @@ public class bPlayer {
 		    Matcher hostMatcher = hostPattern.matcher(word);
 
 			if (ipmatcher.matches() || ipPortMatcher.matches() || hostMatcher.matches()) {
-				Global.sendMessage(m_player, "Please dont advertise other servers");
+				bQuiet.sendMessage(bQuiet.NAME, m_player, "Please dont advertise other servers");
 				return true;
 			}
 		}

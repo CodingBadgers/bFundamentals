@@ -9,18 +9,28 @@ import uk.codingbadgers.bQuiet.listeners.bPlayerListener;
 public class bQuiet extends Module {
 
 	/** The Constant NAME. */
-	private static final String NAME = "bQuiet";
+	public static final String NAME = "bQuiet";
 	
 	/** The Constant VERSION. */
-	private static final String VERSION = "1.0";
+	public static final String VERSION = "1.0";
 	
+	/** The player listener. */
+	private bPlayerListener m_playerListener = new bPlayerListener();
+	
+	/** The module instance. */
+	private static bQuiet instance = null;
+	
+	/**
+	 * The bQuiet module constructor
+	 */
 	public bQuiet() {
 		super(NAME, VERSION);
 	}
 	
-	private bPlayerListener m_playerListener = new bPlayerListener();
-	private static bQuiet instance;
-	
+	/**
+	 * Called when the module is enabled.
+	 * Register the player listener and setup the configuration
+	 */
 	public void onEnable() {
 		
 		Global.setPlugin(m_plugin);
@@ -33,10 +43,16 @@ public class bQuiet extends Module {
 		
 	}
 	
+	/**
+	 * Called when the module is disabled
+	 */
 	public void onDisable() {
 		log(Level.INFO, "bQuiet disabled");
 	}
 
+	/**
+	 * Get the static module instance
+	 */
 	public static Module getInstance() {
 		return instance;
 	}
