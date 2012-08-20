@@ -52,7 +52,7 @@ public abstract class Module extends Loadable implements Listener {
 	protected List<ModuleCommand> m_commands = new ArrayList<ModuleCommand>();
 
 	/** All the listeners registered to this module */
-	private List<Listener> listeners;
+	private List<Listener> m_listeners = new ArrayList<Listener>();
 	
 	/** The database registered to the modules. */
 	protected static BukkitDatabase m_database = null;
@@ -138,7 +138,7 @@ public abstract class Module extends Loadable implements Listener {
 	 */
 	public final void register(Listener listener) {
 		m_plugin.getServer().getPluginManager().registerEvents(listener, m_plugin);
-		listeners.add(listener);
+		m_listeners.add(listener);
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * @return a list of all listeners
 	 */
 	public List<Listener> getListeners() {
-		return listeners;
+		return m_listeners;
 	}
 
 }
