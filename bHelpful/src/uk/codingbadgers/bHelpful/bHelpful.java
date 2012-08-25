@@ -157,7 +157,7 @@ public class bHelpful extends Module {
             if (args[0].equalsIgnoreCase("disable")) {
                 if(hasPermission(sender, "bhelpful.admin.disable") || sender.isOp()) {
                 	sender.sendMessage(ChatColor.RED + "bHelpful disabling");
-                	m_plugin.disable(this);
+                	m_plugin.disableModule(this);
                 	return true;
                 }
             }

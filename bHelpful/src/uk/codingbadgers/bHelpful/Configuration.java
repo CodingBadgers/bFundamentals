@@ -207,6 +207,7 @@ public class Configuration {
 					continue;
 				
 				if (!line.equalsIgnoreCase("~ANNOUNCEMENT~")) {
+					reader.close();
 					return;
 				}
 				
@@ -222,6 +223,8 @@ public class Configuration {
 								
 				ANNOUCNEMENTS.add(newAnnouncement);
 			}
+			
+			reader.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -239,8 +242,7 @@ public class Configuration {
 		Output.log(Level.INFO, "Loading config file 'Motd.cfg'");
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					motdConfig.getPath()));
+			BufferedReader reader = new BufferedReader(new FileReader(motdConfig.getPath()));
 
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -254,6 +256,8 @@ public class Configuration {
 				// the help HashMap
 				MOTD.add(replaceColors(line));
 			}
+			
+			reader.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -293,8 +297,7 @@ public class Configuration {
 		Output.log(Level.INFO, "Loading config file 'News.cfg'");
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					newsConfig.getPath()));
+			BufferedReader reader = new BufferedReader(new FileReader(newsConfig.getPath()));
 
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -309,6 +312,8 @@ public class Configuration {
 				NEWS.add(replaceColors(line));
 			}
 
+			reader.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -352,8 +357,7 @@ public class Configuration {
 		Output.log(Level.INFO, "Loading config file 'Register.cfg'");
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					registerConfig.getPath()));
+			BufferedReader reader = new BufferedReader(new FileReader(registerConfig.getPath()));
 
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -367,6 +371,8 @@ public class Configuration {
 				// the help HashMap
 				REGISTER.add(replaceColors(line));
 			}
+			
+			reader.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -442,8 +448,7 @@ public class Configuration {
 		Output.log(Level.INFO, "Loading config file '" + rank + ".cfg'");
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					config.getPath()));
+			BufferedReader reader = new BufferedReader(new FileReader(config.getPath()));
 
 			ArrayList<String> help = new ArrayList<String>();
 
@@ -464,6 +469,8 @@ public class Configuration {
 			// Hashmaps are case sensitive so just make everything lower case to
 			// be safe
 			m_help.put(rank.toLowerCase(), help);
+			
+			reader.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -534,8 +541,7 @@ public class Configuration {
 		Output.log(Level.INFO, "Loading config file 'Rules.cfg'");
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					rulesConfig.getPath()));
+			BufferedReader reader = new BufferedReader(new FileReader(rulesConfig.getPath()));
 
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -549,6 +555,8 @@ public class Configuration {
 				// the help HashMap
 				RULES.add(replaceColors(line));
 			}
+			
+			reader.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -588,8 +596,7 @@ public class Configuration {
 		Output.log(Level.INFO, "Loading config file 'Vote.cfg'");
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(
-					voteConfig.getPath()));
+			BufferedReader reader = new BufferedReader(new FileReader(voteConfig.getPath()));
 
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -603,6 +610,8 @@ public class Configuration {
 				// the help HashMap
 				VOTE.add(replaceColors(line));
 			}
+			
+			reader.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();

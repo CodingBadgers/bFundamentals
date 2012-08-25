@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.getspout.spoutapi.player.SpoutPlayer;
 
 /**
  *
@@ -41,16 +39,7 @@ public class Help {
 		String rank = permission.getPrimaryGroup(player);
 		rank = rank.substring(0, 1).toUpperCase() + rank.substring(1);
 		
-		if (bHelpful.spoutEnabled) {
-			SpoutPlayer sPlayer = (SpoutPlayer)player;
-			if (sPlayer.isSpoutCraftEnabled()) {
-				sPlayer.sendNotification(ChatColor.RED + Configuration.m_servername + " Help", "You are rank [" + rank + "]", Material.DIAMOND_PICKAXE);
-			} else {
-				player.sendMessage(ChatColor.RED + "You are rank " + ChatColor.GRAY + "[" + rank + "]");
-			}
-		} else {
-			player.sendMessage(ChatColor.RED + "You are rank " + ChatColor.GRAY + "[" + rank + "]");
-		}
+		player.sendMessage(ChatColor.RED + "You are rank " + ChatColor.GRAY + "[" + rank + "]");
 		
 		for (int i = 0; i < help.size(); ++i ) {
 			player.sendMessage(help.get(i));

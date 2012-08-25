@@ -13,10 +13,10 @@ import org.bukkit.entity.Player;
 
 public class Announcement extends Thread {
 	
-	/** The m_plugin. */
+	/** Access to the plugin object. */
 	bHelpful m_plugin = null;
 	
-	/** The m_running. */
+	/** The flag storing whether we are running. */
 	boolean m_running = false;
 	
 	/**
@@ -43,6 +43,12 @@ public class Announcement extends Thread {
 		
 		while(m_running) {
 			
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			if (Configuration.ANNOUCNEMENTS.size() > 0) {
 				Random random = new Random();
 				while(rand == lastRand)
@@ -53,13 +59,7 @@ public class Announcement extends Thread {
 
 				broadcast(announcemnet);
 			}
-			
-			try {
-				Thread.sleep(sleepTime);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
+						
 		}
 	}
 	

@@ -9,10 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.getspout.spoutapi.player.SpoutPlayer;
 
 /**
  *
@@ -36,19 +34,6 @@ public class News {
     		
     		if (i >= noofEvents - 1)
     			break;
-    	}
-    	
-    	if (bHelpful.spoutEnabled) {
-	    	SpoutPlayer sPlayer = (SpoutPlayer)player;
-	    	
-			if (sPlayer.isSpoutCraftEnabled()) {
-				String latest = Configuration.NEWS.get(Configuration.NEWS.size()-1);
-				latest = latest.substring(latest.indexOf("]")+4).trim();
-				
-				if (latest.length() < 26) {
-					sPlayer.sendNotification(ChatColor.RED + "Latest " + Configuration.m_servername + " News", latest, Material.DIAMOND_PICKAXE);
-				}
-			}
     	}
     	
     }
