@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import com.nodinchan.ncbukkit.loader.Loader;
 
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bFundamentals.module.ModuleHelpTopic;
 
 /**
  * The ModuleLoader.
@@ -66,6 +67,19 @@ public class ModuleLoader {
 	}
 	
 	/**
+	 * Loads a module with a given name
+	 * 
+	 * @param fileName the files name
+	 */
+	public void load(File file) {
+		if (m_loader == null) 
+			m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
+		
+		m_modules.clear();
+		m_modules.addAll(m_loader.sort(m_loader.load(file)));
+	}
+	
+	/**
 	 * Unloads the modules.
 	 */
 	public void unload() {
@@ -88,7 +102,12 @@ public class ModuleLoader {
 	 */
 	public void enable() {
 		for (Module module : m_modules) {
-			module.onEnable();
+			try {
+				module.onEnable();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			bFundamentals.getInstance().getServer().getHelpMap().addTopic(new ModuleHelpTopic(module));
 		}
 	}
 	
@@ -97,9 +116,13 @@ public class ModuleLoader {
 	 */
 	public void disable() {
 		for (Module module : m_modules) {
-			module.onDisable();
-			for (Listener listener : module.getListeners()) {
-				HandlerList.unregisterAll(listener);
+			try {
+				module.onDisable();
+				for (Listener listener : module.getListeners()) {
+					HandlerList.unregisterAll(listener);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 		}
 	}

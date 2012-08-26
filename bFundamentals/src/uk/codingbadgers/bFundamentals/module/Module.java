@@ -251,6 +251,7 @@ public abstract class Module extends Loadable implements Listener {
 	 */
 	protected void registerCommand(ModuleCommand command) {
 		m_commands.add(command);
+		m_plugin.getServer().getHelpMap().addTopic(command.getHelpTopic());
 	}
 
 	/**
@@ -260,6 +261,10 @@ public abstract class Module extends Loadable implements Listener {
 	 */
 	public List<Listener> getListeners() {
 		return m_listeners;
+	}
+	
+	public List<ModuleCommand> getCommands() {
+		return m_commands;
 	}
 
 }

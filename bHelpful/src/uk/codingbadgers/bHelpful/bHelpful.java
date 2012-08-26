@@ -68,15 +68,16 @@ public class bHelpful extends Module {
         	Maintenance.setStaffMaintenance(true);
         }     
         
-        registerCommand(new ModuleCommand("news", "/news"));
+        registerCommand(new ModuleCommand("news", "/news").setHelp("shows the latest news."));
         // for some reason this is the only broken cmd
-        registerCommand(new ModuleCommand("announce", "/announce <subcmd>"));
-        registerCommand(new ModuleCommand("rankhelp", "/rankhelp"));
-        registerCommand(new ModuleCommand("maintenance", "/maintenance <staff>").addAliase("mm"));
-        registerCommand(new ModuleCommand("motd", "/motd"));
-        registerCommand(new ModuleCommand("register", "/register"));
-        registerCommand(new ModuleCommand("rules", "/rules"));
-        registerCommand(new ModuleCommand("vote", "/vote"));
+        registerCommand(new ModuleCommand("announce", "/announce <subcmd>").setHelp("announcement commands"));
+        registerCommand(new ModuleCommand("rankhelp", "/rankhelp").setHelp("shows the help documentation."));
+        registerCommand(new ModuleCommand("maintenance", "/maintenance <staff>").addAliase("mm").setHelp("toggles maintenance mode"));
+        registerCommand(new ModuleCommand("motd", "/motd").setHelp("shows the motd"));
+        registerCommand(new ModuleCommand("register", "/register").setHelp("shows info on how to get first rank."));
+        registerCommand(new ModuleCommand("rules", "/rules").setHelp("shows the rules"));
+        registerCommand(new ModuleCommand("vote", "/vote").setHelp("shows the vote info"));
+        registerCommand(new ModuleCommand("bHelpful", "/bhelpful <reload/disable/version>").setHelp("bHelpful admin commands"));
         
         log(Level.INFO, "bHelpful enabled");
         		
@@ -139,15 +140,14 @@ public class bHelpful extends Module {
                 return true;
             }
             
-            /* Can't yet do with bFundamentals without reloading all modules
             if (args[0].equalsIgnoreCase("reload")) {
-                if(bHelpful.hasPerms(player, "bhelpful.admin.reload") || player.isOp()) {
-                	reload();
-                	Output.player(player, "[bHelpful] ", "Reloaded Plugin");
+                if(hasPermission(sender, "bhelpful.admin.reload") || sender.isOp()) {
+                	m_plugin.reloadModule(this);
+                	Output.player(sender, "[bHelpful] ", "Reloaded Plugin");
                 	return true;
                 }
             }
-            */
+            
             
             if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("ver")) {
                 Output.player(sender, "[bHelpful] ", "version " + getVersion());

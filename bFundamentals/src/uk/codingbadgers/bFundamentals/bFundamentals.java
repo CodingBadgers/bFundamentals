@@ -232,5 +232,14 @@ public class bFundamentals extends JavaPlugin {
 	public void disableModule(Module module) {
 		m_moduleLoader.unload(module);
 	}
+
+	/**
+	 * Reloads a specific module
+	 */
+	public void reloadModule(Module module) {
+		m_moduleLoader.unload(module);
+		m_moduleLoader.load(module.getFile());
+		m_moduleLoader.getModule(module.getName()).onEnable();
+	}
 	
 }
