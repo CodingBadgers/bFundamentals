@@ -1,4 +1,4 @@
-package uk.codingbadgers.bHelpful;
+package uk.codingbadgers.bHelpful.commands;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import uk.codingbadgers.bHelpful.Configuration;
+import uk.codingbadgers.bHelpful.bHelpful;
 
 public class Announcement extends Thread {
 	
@@ -24,7 +26,7 @@ public class Announcement extends Thread {
 	 *
 	 * @param plugin the plugin
 	 */
-	Announcement(bHelpful plugin) {
+	public Announcement(bHelpful plugin) {
 		m_plugin = plugin;
 		m_running = true;
 	}
@@ -168,13 +170,12 @@ public class Announcement extends Thread {
 	 * @param args the args
 	 * @return true, if successful
 	 */
-	public static boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
-		Player player = (Player) sender;
+	public static boolean onCommand(Player player, String commandLabel, String[] args) {
         
         if (commandLabel.equalsIgnoreCase("announce")) {
         	
         	if (args.length < 1) {
-        		Output.player((Player)sender, "[bHelpful]", "/Announce <list/broadcast/add/remove>");
+        		Output.player(player, "[bHelpful]", "/Announce <list/broadcast/add/remove>");
         		return true;
         	}
         	

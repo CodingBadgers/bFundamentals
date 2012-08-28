@@ -4,6 +4,8 @@ import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 
+import com.topcat.npclib.NPCManager;
+
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
 
@@ -13,19 +15,22 @@ import uk.codingbadgers.bFundamentals.module.Module;
 public class bHuman extends Module {
 
 	/** The Constant NAME. */
-	private static final String NAME = "bHuman";
+	public static final String NAME = "bHuman";
 	
 	/** The Constant VERSION. */
-	private static final String VERSION = "1.0";
+	public static final String VERSION = "1.0";
 	
 	/** The module instance. */
 	public static bHuman MODULE = null;
+	
+	private static NPCManager m_npcManager = null;
 	
 	/**
 	 * Instantiates a new bHuman module.
 	 */
 	public bHuman() {
 		super(NAME, VERSION);
+		m_npcManager = new NPCManager(m_plugin);
 	}
 
 	/* (non-Javadoc)
@@ -35,7 +40,9 @@ public class bHuman extends Module {
 	public void onEnable() {
 		MODULE = this;
 		
-		registerCommand(new ModuleCommand("bHuman", "/bHuman"));
+		registerCommand(new ModuleCommand("npc", "/npc help").setHelp("Access all npc commands"));
+		
+		register(new PlayerListener());
 		
 		log(Level.INFO, "bHuman has been enabled");
 	}
@@ -52,7 +59,11 @@ public class bHuman extends Module {
 	 * @see uk.codingbadgers.bFundamentals.module.Module#onCommand(org.bukkit.entity.Player, java.lang.String, java.lang.String[])
 	 */
 	public boolean onCommand(Player sender, String label, String[] args) {
-		return false;
+		return CommandHandler.onCommand(sender, label, args);
+	}
+	
+	public static NPCManager getNPCManager() {
+		return m_npcManager;
 	}
 
 }

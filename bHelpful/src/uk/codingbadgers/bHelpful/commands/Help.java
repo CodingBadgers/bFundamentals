@@ -1,4 +1,4 @@
-package uk.codingbadgers.bHelpful;
+package uk.codingbadgers.bHelpful.commands;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,9 @@ import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import uk.codingbadgers.bHelpful.Configuration;
+import uk.codingbadgers.bHelpful.bHelpful;
 
 /**
  *

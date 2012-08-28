@@ -6,8 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
@@ -50,6 +48,11 @@ public class ModuleLoader {
 		m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
 		m_modules.addAll(m_loader.sort(m_loader.load()));
 		
+		for (Module module : m_modules) {
+			module.onLoad();
+			module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
+		}
+		
 		bFundamentals.log(Level.INFO, "Loaded " + m_modules.size() + " modules.");
 	}
 	
@@ -59,11 +62,8 @@ public class ModuleLoader {
 	 * @param fileName the files name
 	 */
 	public void load(String fileName) {
-		if (m_loader == null) 
-			m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
-		
-		m_modules.clear();
-		m_modules.addAll(m_loader.sort(m_loader.load(new File(getModuleDir() + File.separator + fileName + ".jar"))));
+		File module = new File(getModuleDir() + File.separator + fileName + ".jar");
+		load(module);
 	}
 	
 	/**
@@ -75,8 +75,15 @@ public class ModuleLoader {
 		if (m_loader == null) 
 			m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
 		
+		if (getModule(file) != null)
+			throw new IllegalArgumentException("Module " + file.getName() + " is already loaded");
+		
 		m_modules.clear();
 		m_modules.addAll(m_loader.sort(m_loader.load(file)));
+		
+		Module module = getModule(file);
+		module.onLoad();
+		module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
 	}
 	
 	/**
@@ -126,28 +133,6 @@ public class ModuleLoader {
 			}
 		}
 	}
-	
-	/**
-	 * On command.
-	 *
-	 * @param sender the sender
-	 * @param cmd the cmd
-	 * @param label the label
-	 * @param args the args
-	 * @return true, if successful
-	 */
-	@SuppressWarnings("deprecation")
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		
-		for (Module module : m_modules) {
-			if (module.onCommand(sender, cmd, label, args))
-				return true;
-			else 
-				continue;
-		}
-		
-		return false;
-	}
 
 	/**
 	 * Gets the modules.
@@ -165,6 +150,15 @@ public class ModuleLoader {
 				return itr.next();
 		}
 		return null;		
+	}
+	
+	public Module getModule(File file) {
+		Iterator<Module> itr = m_modules.iterator();
+		while(itr.hasNext()) {
+			if (itr.next().getFile().getPath().equalsIgnoreCase(file.getPath()))
+				return itr.next();
+		}
+		return null;
 	}
 
 }

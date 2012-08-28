@@ -1,4 +1,4 @@
-package uk.codingbadgers.bHelpful;
+package uk.codingbadgers.bHelpful.commands;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +11,9 @@ import java.util.Date;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import uk.codingbadgers.bHelpful.Configuration;
+import uk.codingbadgers.bHelpful.bHelpful;
 
 /**
  *

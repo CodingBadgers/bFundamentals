@@ -1,8 +1,10 @@
-package uk.codingbadgers.bHelpful;
+package uk.codingbadgers.bHelpful.commands;
 
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import uk.codingbadgers.bHelpful.bHelpful;
 
 /**
  *  

@@ -1,10 +1,13 @@
 /*
  * 
  */
-package uk.codingbadgers.bHelpful;
+package uk.codingbadgers.bHelpful.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import uk.codingbadgers.bHelpful.Configuration;
+import uk.codingbadgers.bHelpful.bHelpful;
 
 public class Maintenance {
 

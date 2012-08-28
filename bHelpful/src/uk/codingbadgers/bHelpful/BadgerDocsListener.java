@@ -7,6 +7,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import uk.codingbadgers.bHelpful.commands.Maintenance;
+import uk.codingbadgers.bHelpful.commands.Motd;
+import uk.codingbadgers.bHelpful.commands.News;
+import uk.codingbadgers.bHelpful.commands.Output;
+import uk.codingbadgers.bHelpful.commands.PlayerList;
+
 /**
  *
  * @author James
@@ -50,6 +56,8 @@ public class BadgerDocsListener implements Listener {
 
 		if (!hasPlayedBefore(player))
 			Output.server("[bHelpful]", "Please welcome " + player.getName() + " to the server");
+	
+		PlayerList.displayList(player);
 	}
 	
 	/**

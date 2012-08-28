@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager;
 import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager.DatabaseType;
 import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
@@ -22,13 +24,16 @@ public class bFundamentals extends JavaPlugin {
 	
 	private static final Logger m_log = Logger.getLogger("bFundamentals");
 	private static bFundamentals m_instance = null;
-	private static BukkitDatabase m_database = null;	
+	private static BukkitDatabase m_database = null;
+	
 	private static Permission m_permissions = null;
+	private static Chat m_chat = null;
+	private static Economy m_economy = null;
 	
 	private final CommandListener m_commandListener = new CommandListener();
 	
-	public ModuleLoader m_moduleLoader = null;
-	private ConfigurationManager m_configuration = null;
+	private static ModuleLoader m_moduleLoader = null;
+	private static ConfigurationManager m_configuration = null;
 	
 	/**
 	 * Called on loading. This is called before onEnable.
@@ -89,9 +94,26 @@ public class bFundamentals extends JavaPlugin {
 			return true;
 		}
 		
-		return m_moduleLoader.onCommand(sender, cmd, label, args);
+		return false;
 	}
 	
+
+	/**
+	 * Disable a specific module
+	 */
+	public void disableModule(Module module) {
+		m_moduleLoader.unload(module);
+	}
+
+	/**
+	 * Reloads a specific module
+	 */
+	public void reloadModule(Module module) {
+		m_moduleLoader.unload(module);
+		m_moduleLoader.load(module.getFile());
+		m_moduleLoader.getModule(module.getName()).onEnable();
+	}
+
 	/**
 	 * Get the bFundamentals plugin instance.
 	 * @return the instance
@@ -110,7 +132,7 @@ public class bFundamentals extends JavaPlugin {
 	/**
 	 * Get the configuration manager
 	 */
-	public ConfigurationManager getConfigurationManager() {
+	public static ConfigurationManager getConfigurationManager() {
 		return m_configuration;
 	}
 	
@@ -135,6 +157,39 @@ public class bFundamentals extends JavaPlugin {
 		    }
 		}
 	    return m_permissions;
+	}
+	
+	/**
+	 * Access to vaults chat mananger
+	 */
+	public static Chat getChat() {
+		if (m_chat == null) {
+			RegisteredServiceProvider<Chat> chatProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+		    if (chatProvider != null) {
+		    	m_chat = chatProvider.getProvider();
+		    }
+		}
+	    return m_chat;
+	}
+	
+	/**
+	 * Access to vaults economy mananger
+	 */
+	public static Economy getEconomy() {
+		if (m_economy == null) {
+			RegisteredServiceProvider<Economy> economyProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		    if (economyProvider != null) {
+		    	m_economy = economyProvider.getProvider();
+		    }
+		}
+	    return m_economy;
+	}
+	
+	/**
+	 * Gets the module loader
+	 */
+	public static ModuleLoader getModuleLoader(){	
+		return m_moduleLoader;
 	}
 
 	/**
@@ -225,21 +280,4 @@ public class bFundamentals extends JavaPlugin {
 		}
 		sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals");
 	}
-	
-	/**
-	 * Disable a specific module
-	 */
-	public void disableModule(Module module) {
-		m_moduleLoader.unload(module);
-	}
-
-	/**
-	 * Reloads a specific module
-	 */
-	public void reloadModule(Module module) {
-		m_moduleLoader.unload(module);
-		m_moduleLoader.load(module.getFile());
-		m_moduleLoader.getModule(module.getName()).onEnable();
-	}
-	
 }

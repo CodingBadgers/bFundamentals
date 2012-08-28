@@ -28,7 +28,7 @@ public class CommandListener implements Listener {
 		String command = event.getMessage().substring(1, event.getMessage().indexOf(' ') != -1 ? event.getMessage().indexOf(' ') : event.getMessage().length());
 		String[] args = event.getMessage().indexOf(' ') != -1 ? event.getMessage().substring(event.getMessage().indexOf(' ') + 1).split(" ") : new String[0];
 		
-		List<Module> modules = bFundamentals.getInstance().m_moduleLoader.getModules();
+		List<Module> modules = bFundamentals.getModuleLoader().getModules();
 		for (Module module : modules) {
 			if (module.isCommandRegistered(command)) {
 				if (module.onCommand(sender, command, args)) {

@@ -7,6 +7,16 @@ import org.bukkit.entity.Player;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bHelpful.commands.Announcement;
+import uk.codingbadgers.bHelpful.commands.Help;
+import uk.codingbadgers.bHelpful.commands.Maintenance;
+import uk.codingbadgers.bHelpful.commands.Motd;
+import uk.codingbadgers.bHelpful.commands.News;
+import uk.codingbadgers.bHelpful.commands.Output;
+import uk.codingbadgers.bHelpful.commands.PlayerList;
+import uk.codingbadgers.bHelpful.commands.Register;
+import uk.codingbadgers.bHelpful.commands.Rules;
+import uk.codingbadgers.bHelpful.commands.Vote;
 
 /**
  * The base bHelpful module class
@@ -69,7 +79,6 @@ public class bHelpful extends Module {
         }     
         
         registerCommand(new ModuleCommand("news", "/news").setHelp("shows the latest news."));
-        // for some reason this is the only broken cmd
         registerCommand(new ModuleCommand("announce", "/announce <subcmd>").setHelp("announcement commands"));
         registerCommand(new ModuleCommand("rankhelp", "/rankhelp").setHelp("shows the help documentation."));
         registerCommand(new ModuleCommand("maintenance", "/maintenance <staff>").addAliase("mm").setHelp("toggles maintenance mode"));
@@ -78,6 +87,7 @@ public class bHelpful extends Module {
         registerCommand(new ModuleCommand("rules", "/rules").setHelp("shows the rules"));
         registerCommand(new ModuleCommand("vote", "/vote").setHelp("shows the vote info"));
         registerCommand(new ModuleCommand("bHelpful", "/bhelpful <reload/disable/version>").setHelp("bHelpful admin commands"));
+        registerCommand(new ModuleCommand("list", "/list").addAliase("players").addAliase("who").setHelp("List all players online on the server"));
         
         log(Level.INFO, "bHelpful enabled");
         		
@@ -129,6 +139,11 @@ public class bHelpful extends Module {
         // /vote cmd
         if (command.equalsIgnoreCase("vote")) {
         	Vote.displayVoteInfo(sender);
+        	return true;
+        }
+        
+        if (command.equalsIgnoreCase("list") || command.equalsIgnoreCase("who") || command.equalsIgnoreCase("players")) {
+        	PlayerList.displayList(sender);
         	return true;
         }
         

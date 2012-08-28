@@ -14,8 +14,6 @@ import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -79,7 +77,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * Load language file.
 	 */
 	protected void loadLanguageFile() {
-		File languageFile = new File(getDataFolder() + File.separator + m_name + "_" + m_plugin.getConfigurationManager().getLanguage() + ".lang");
+		File languageFile = new File(getDataFolder() + File.separator + m_name + "_" + bFundamentals.getConfigurationManager().getLanguage() + ".lang");
 		
 		if (!languageFile.exists()) {
 			log(Level.SEVERE, "Missing language file '" + languageFile.getAbsolutePath() + "'!");
@@ -161,21 +159,12 @@ public abstract class Module extends Loadable implements Listener {
 	public abstract void onDisable();
 	
 	/**
-	 * On command (Bukkit command system).
-	 *
-	 * @param sender the sender
-	 * @param cmd the cmd
-	 * @param label the label
-	 * @param args the args
-	 * @return true, if successful
+	 * On Load.
 	 */
-	@Deprecated
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		return false;
-	}
+	public void onLoad() {}
 	
 	/**
-	 * On command (Our command system).
+	 * On command.
 	 *
 	 * @param sender the sender
 	 * @param label the label
@@ -235,6 +224,25 @@ public abstract class Module extends Loadable implements Listener {
 	}
 
 	/**
+	 * Register command.
+	 *
+	 * @param command the command
+	 */
+	protected void registerCommand(ModuleCommand command) {
+		m_commands.add(command);
+		m_plugin.getServer().getHelpMap().addTopic(command.getHelpTopic());
+	}
+	
+	/**
+	 * Get all commands registered to this module
+	 * 
+	 * @return the commands
+	 */
+	public List<ModuleCommand> getCommands() {
+		return m_commands;
+	}
+	
+	/**
 	 * Gets the language value.
 	 *
 	 * @param key the key
@@ -244,15 +252,6 @@ public abstract class Module extends Loadable implements Listener {
 		return m_languageMap.get(key);
 	}
 	
-	/**
-	 * Register command.
-	 *
-	 * @param command the command
-	 */
-	protected void registerCommand(ModuleCommand command) {
-		m_commands.add(command);
-		m_plugin.getServer().getHelpMap().addTopic(command.getHelpTopic());
-	}
 
 	/**
 	 * Get all the listeners registered to this module, for cleaning up on disable
@@ -262,9 +261,4 @@ public abstract class Module extends Loadable implements Listener {
 	public List<Listener> getListeners() {
 		return m_listeners;
 	}
-	
-	public List<ModuleCommand> getCommands() {
-		return m_commands;
-	}
-
 }
