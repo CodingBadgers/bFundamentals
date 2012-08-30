@@ -31,7 +31,7 @@ public class Config {
 	
 	public static boolean setupConfig() {
 		
-		FileConfiguration config = Global.getPlugin().getConfig();
+		FileConfiguration config = Global.getModule().getConfig();
 		
 		try {
 			// database config
