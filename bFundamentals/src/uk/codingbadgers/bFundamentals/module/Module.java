@@ -14,6 +14,7 @@ import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -58,6 +59,9 @@ public abstract class Module extends Loadable implements Listener {
 	/** The Permissions instance. */
 	private static Permission m_permissions = null;
 	
+	/** Whether this module is in debug mode */
+	private boolean m_debug = false;
+	
 	/**
 	 * Instantiates a new module.
 	 *
@@ -71,6 +75,7 @@ public abstract class Module extends Loadable implements Listener {
 		m_database = bFundamentals.getBukkitDatabase();
 		m_permissions = bFundamentals.getPermissions();
 		m_name = name;
+		m_debug = bFundamentals.getConfigurationManager().getDebug();
 	}
 	
 	/**
@@ -171,7 +176,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * @param args the args
 	 * @return true, if successful
 	 */
-	public boolean onCommand(Player sender, String label, String[] args){
+	public boolean onCommand(CommandSender sender, String label, String[] args){
 		return false;
 	}
 	
@@ -260,5 +265,35 @@ public abstract class Module extends Loadable implements Listener {
 	 */
 	public List<Listener> getListeners() {
 		return m_listeners;
+	}
+	
+	/**
+	 * Is debug mode enabled on this module
+	 * 
+	 * @return if debug is enabled
+	 */
+	public boolean isDebug() {
+		return m_debug;
+	}
+	
+	/**
+	 * Set the debug mode for this module
+	 * 
+	 * @param debug whether debug is on or not
+	 */
+	public void setDebug(boolean debug) {
+		m_debug = debug;
+	}
+	
+	/**
+	 * Output a message to console if debug mode is on
+	 * 
+	 * @param message the message to output
+	 */
+	public void debugConsole(String message){ 
+		if (!m_debug)
+			return;
+		
+		log(Level.INFO, "[Debug] " + message);
 	}
 }

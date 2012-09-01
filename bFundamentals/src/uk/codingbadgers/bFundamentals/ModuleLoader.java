@@ -146,8 +146,9 @@ public class ModuleLoader {
 	public Module getModule(String string) {
 		Iterator<Module> itr = m_modules.iterator();
 		while(itr.hasNext()) {
-			if (itr.next().getName().equalsIgnoreCase(string))
-				return itr.next();
+			Module module = itr.next();
+			if (module.getName().equalsIgnoreCase(string))
+				return module;
 		}
 		return null;		
 	}
@@ -155,8 +156,9 @@ public class ModuleLoader {
 	public Module getModule(File file) {
 		Iterator<Module> itr = m_modules.iterator();
 		while(itr.hasNext()) {
-			if (itr.next().getFile().getPath().equalsIgnoreCase(file.getPath()))
-				return itr.next();
+			Module module = itr.next();
+			if (module.getFile().getPath().equalsIgnoreCase(file.getPath()))
+				return module;
 		}
 		return null;
 	}

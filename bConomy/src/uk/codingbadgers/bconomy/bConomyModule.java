@@ -2,7 +2,7 @@ package uk.codingbadgers.bconomy;
 
 import java.util.logging.Level;
 
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -68,7 +68,7 @@ public class bConomyModule extends Module {
 	 * Called on command
 	 */
 	@Override
-	public boolean onCommand(Player sender, String commandLabel, String[] args) {
+	public boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
 		return CommandManager.onCommand(sender, commandLabel, args);
 	}
 	

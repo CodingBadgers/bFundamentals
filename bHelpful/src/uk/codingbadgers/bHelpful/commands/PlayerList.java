@@ -112,10 +112,15 @@ public class PlayerList {
             }         
         }
         
-        if (players.length == Bukkit.getServer().getMaxPlayers()) {
+        int onlinePlayers = players.length;
+        
+        if (!bHelpful.hasPermission(sender, "bhelpful.list.showvanish"))
+        	onlinePlayers = onlinePlayers - hidden.size();
+        
+        if (onlinePlayers == Bukkit.getServer().getMaxPlayers()) {
         	// display current users online and max users in gold
         	out.append(ChatColor.GOLD + Bukkit.getServer().getServerName() + ": " + ChatColor.GRAY + "Online " + ChatColor.GOLD + "(" + ChatColor.GOLD);
-        	out.append(players.length - hidden.size());
+        	out.append(onlinePlayers);
             	out.append("/");
             	out.append(Bukkit.getServer().getMaxPlayers());
             	out.append(") ");
@@ -123,14 +128,14 @@ public class PlayerList {
         } else {
         	// display current users online and max users
         	out.append(ChatColor.GOLD + Bukkit.getServer().getServerName() + ": " + ChatColor.GRAY + "Online (");
-        	out.append(players.length - hidden.size());
+        	out.append(onlinePlayers);
             	out.append("/");
             	out.append(Bukkit.getServer().getMaxPlayers());
             	out.append(") ");
             out.append(ChatColor.WHITE);
         }
        
-        if (players.length == 0) {
+        if (onlinePlayers == 0) {
         	return out.toString();
         }
         

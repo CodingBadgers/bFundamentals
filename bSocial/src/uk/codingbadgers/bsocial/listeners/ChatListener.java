@@ -1,39 +1,32 @@
 package uk.codingbadgers.bsocial.listeners;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import uk.codingbadgers.bsocial.ChatPlayer;
 import uk.codingbadgers.bsocial.bSocial;
 import uk.codingbadgers.bsocial.events.ChannelChatEvent;
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * @author James
  */
+@SuppressWarnings("deprecation")
 public class ChatListener implements Listener{
 
-	/** The players. */
-	public static List<ChatPlayer> players = new ArrayList<ChatPlayer>();
-	
 	/**
 	 * On player chat.
 	 *
 	 * @param event the chat event
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		ChatPlayer player = findPlayer(event.getPlayer());
+	public void onPlayerChat(PlayerChatEvent event) {
+		ChatPlayer player = bSocial.getPlayerManager().findPlayer(event.getPlayer());
 		
 		if(player == null)
 			return;
@@ -42,7 +35,6 @@ public class ChatListener implements Listener{
 		
 		// make it have events :D
 		ChannelChatEvent chatEvent = new ChannelChatEvent(player, player.getActiveChannel(), message);
-		// Bukkit.getServer() is thread safe
 		Bukkit.getServer().getPluginManager().callEvent(chatEvent);
 		
 		if (chatEvent.isCancelled()) {
@@ -63,7 +55,7 @@ public class ChatListener implements Listener{
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		ChatPlayer player = bSocial.getConfigManager().loadPlayer(event.getPlayer());
-		players.add(player);
+		bSocial.getPlayerManager().addPlayer(player);
 	}
 	
 	/**
@@ -73,8 +65,8 @@ public class ChatListener implements Listener{
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerLeave(PlayerQuitEvent event) {
-		bSocial.getConfigManager().savePlayer(findPlayer(event.getPlayer()));
-		players.remove(findPlayer(event.getPlayer()));
+		bSocial.getConfigManager().savePlayer(bSocial.getPlayerManager().findPlayer(event.getPlayer()));
+		bSocial.getPlayerManager().removePlayer(bSocial.getPlayerManager().findPlayer(event.getPlayer()));
 	}
 	
 	/**
@@ -84,23 +76,7 @@ public class ChatListener implements Listener{
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerLeave(PlayerKickEvent event) {
-		bSocial.getConfigManager().savePlayer(findPlayer(event.getPlayer()));
-		players.remove(findPlayer(event.getPlayer()));
-	}
-	
-	/**
-	 * Find a player based of the bukkit player.
-	 *
-	 * @param player the player
-	 * @return the chat player
-	 */
-	public static ChatPlayer findPlayer(Player player) {
-		Iterator<ChatPlayer> itr = players.iterator();
-		while(itr.hasNext()) {
-			ChatPlayer current = itr.next();
-			if (current.getPlayer().equals(player))
-				return current;
-		}
-		return null;
+		bSocial.getConfigManager().savePlayer(bSocial.getPlayerManager().findPlayer(event.getPlayer()));
+		bSocial.getPlayerManager().removePlayer(bSocial.getPlayerManager().findPlayer(event.getPlayer()));
 	}
 }

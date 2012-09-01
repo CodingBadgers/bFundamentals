@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 /**
  * The Basic Player class for all modules.
  */
-public class BasePlayer {
+public abstract class BasePlayer {
 
 	/** The Bukkit player. */
 	protected Player m_player = null;

@@ -3,9 +3,8 @@ package uk.codingbadgers.bmonitor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager;
-import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager.DatabaseType;
 import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bmonitor.CommandListener.ChatMessage;
 import uk.codingbadgers.bmonitor.CommandListener.Command;
 
@@ -15,13 +14,7 @@ public class DatabaseManager {
 	
 	public static void setupDatabase(JavaPlugin plugin) {
 		
-		m_database = BukkitDatabaseManager.CreateModuleDatabase("bMonitor", plugin, DatabaseType.SQLite, bMonitor.INSTANCE);
-	
-		// login if sql 
-		if (bMonitor.m_dbInfo.m_driver == DatabaseType.SQL) {
-			// logs in using values from the config
-			m_database.login(bMonitor.m_dbInfo.m_host, bMonitor.m_dbInfo.m_user, bMonitor.m_dbInfo.m_password, bMonitor.m_dbInfo.m_port);			
-		}
+		m_database = bFundamentals.getBukkitDatabase();
 				
 		if (!m_database.TableExists(bMonitor.m_dbInfo.m_tablePrefix + "commands")) {
 			String query = "CREATE TABLE " + bMonitor.m_dbInfo.m_tablePrefix + "commands (" +

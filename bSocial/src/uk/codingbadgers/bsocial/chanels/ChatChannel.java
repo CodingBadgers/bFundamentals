@@ -6,9 +6,9 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import uk.codingbadgers.bsocial.ChatPlayer;
-import uk.codingbadgers.bsocial.bSocial;
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bsocial.config.ConfigManager;
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * The object for a chat channel, handles sending messages and formating them.
@@ -172,9 +172,9 @@ public class ChatChannel {
 		
 		message = message.replace("[nick]", "[" + m_nick + "]");
 		message = message.replace("[ch]", "[" + m_name + "]");
-		message = message.replace("[prefix]", bSocial.getVaultChat().getPlayerPrefix(sender));
+		message = message.replace("[prefix]", bFundamentals.getChat().getPlayerPrefix(sender));
 		message = message.replace("[name]", sender.getDisplayName());
-		message = message.replace("[suffix]", bSocial.getVaultChat().getPlayerSuffix(sender));
+		message = message.replace("[suffix]", bFundamentals.getChat().getPlayerSuffix(sender));
 		message = message.replace("[colour]", m_colour.toString());
 		message = parseColour(message);
 		message += raw;

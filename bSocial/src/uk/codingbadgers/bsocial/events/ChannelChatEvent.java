@@ -2,8 +2,8 @@ package uk.codingbadgers.bsocial.events;
 
 import org.bukkit.event.HandlerList;
 
-import uk.codingbadgers.bsocial.ChatPlayer;
 import uk.codingbadgers.bsocial.chanels.ChatChannel;
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * ChannelChatEvent called whenever a player speaks in a channel

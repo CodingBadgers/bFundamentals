@@ -1,4 +1,4 @@
-package uk.codingbadgers.bsocial;
+package uk.codingbadgers.bsocial.players;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import uk.codingbadgers.bsocial.bSocial;
 import uk.codingbadgers.bsocial.chanels.ChatChannel;
 
 /**

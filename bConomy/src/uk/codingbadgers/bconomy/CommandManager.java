@@ -3,6 +3,7 @@ package uk.codingbadgers.bconomy;
 import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bconomy.account.Account;
@@ -13,8 +14,8 @@ public class CommandManager {
 	/* (non-Javadoc)
 	 * @see org.bukkit.plugin.java.JavaPlugin#onCommand(org.bukkit.command.Player, org.bukkit.command.Command, java.lang.String, java.lang.String[])
 	 */
-	public static boolean onCommand(Player sender, String commandLabel, String[] args) {
-
+	public static boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
+		
 		if (commandLabel.equalsIgnoreCase("money")) {
 						
 			// show the help
@@ -78,7 +79,7 @@ public class CommandManager {
 		return false;
 	}
 
-	private static void handleGrantAll(Player sender, String[] args) {
+	private static void handleGrantAll(CommandSender sender, String[] args) {
 
 		if (!Global.hasPermission(sender, "bconomy.admin.grant", true))
 			return;
@@ -115,7 +116,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 * @param args the args
 	 */
-	private static void handleTop(Player sender, String[] args) {
+	private static void handleTop(CommandSender sender, String[] args) {
 		
 		if (!Global.hasPermission(sender, "bconomy.top", true))
 			return;
@@ -145,7 +146,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 * @param args the args
 	 */
-	private static void handleReset(Player sender, String[] args) {
+	private static void handleReset(CommandSender sender, String[] args) {
 		
 		if (!Global.hasPermission(sender, "bconomy.admin.reset", true))
 			return;
@@ -175,7 +176,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 * @param args the args
 	 */
-	private static void handleSet(Player sender, String[] args) {
+	private static void handleSet(CommandSender sender, String[] args) {
 		
 		if (!Global.hasPermission(sender, "bconomy.admin.set", true))
 			return;
@@ -216,7 +217,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 * @param args the args
 	 */
-	private static void handleWithdraw(Player sender, String[] args) {
+	private static void handleWithdraw(CommandSender sender, String[] args) {
 
 		if (!Global.hasPermission(sender, "bconomy.admin.withdraw", true))
 			return;
@@ -263,7 +264,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 * @param args the args
 	 */
-	private static void handleGrant(Player sender, String[] args) {
+	private static void handleGrant(CommandSender sender, String[] args) {
 
 		if (!Global.hasPermission(sender, "bconomy.admin.grant", true))
 			return;
@@ -305,7 +306,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 * @param args the args
 	 */
-	private static void handlePay(Player sender, String[] args) {
+	private static void handlePay(CommandSender sender, String[] args) {
 		
 		if (!Global.hasPermission(sender, "bconomy.pay", true)) {
 			return;
@@ -362,7 +363,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 * @param args the args
 	 */
-	private static void handleMoney(Player sender, String[] args) {
+	private static void handleMoney(CommandSender sender, String[] args) {
 		
 		if (!Global.hasPermission(sender, "bconomy.money", true)) {
 			return;
@@ -398,7 +399,7 @@ public class CommandManager {
 	 * @param sender the sender
 	 */
 	//TODO change to use language
-	private static void showHelp(Player sender) {
+	private static void showHelp(CommandSender sender) {
 
 		sender.sendMessage(ChatColor.GOLD + "-- bConomy --");
 

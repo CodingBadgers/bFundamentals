@@ -15,7 +15,7 @@ import uk.codingbadgers.bFundamentals.module.Module;
 public class bMonitor extends Module {
 	
 	/** The Constant NAME. */
-	private static final String NAME = "bHuman";
+	private static final String NAME = "bMonitor";
 	
 	/** The Constant VERSION. */
 	private static final String VERSION = "1.0";

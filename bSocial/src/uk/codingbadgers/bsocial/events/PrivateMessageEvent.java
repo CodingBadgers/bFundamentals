@@ -2,7 +2,7 @@ package uk.codingbadgers.bsocial.events;
 
 import org.bukkit.event.HandlerList;
 
-import uk.codingbadgers.bsocial.ChatPlayer;
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * PrivateMessageEvent called whenever a pm is sent to another player

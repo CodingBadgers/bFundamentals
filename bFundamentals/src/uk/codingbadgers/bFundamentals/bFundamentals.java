@@ -218,6 +218,11 @@ public class bFundamentals extends JavaPlugin {
 			return;
 		}
 		
+		if (!m_permissions.has(sender, "bfundamentals.admin")) {
+			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry you do not have permission to do that");
+			return;
+		}
+		
 		if (args[0].equalsIgnoreCase("reload")) {
 			this.getPluginLoader().disablePlugin(this);
 			this.getPluginLoader().enablePlugin(this);
@@ -272,6 +277,25 @@ public class bFundamentals extends JavaPlugin {
 				m_moduleLoader.load();
 				m_moduleLoader.enable();
 				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");			
+				return;
+			}
+			
+			if (args[1].equalsIgnoreCase("debug")) {
+				
+				if (args.length != 3) {
+					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals module debug <module>");
+					return;
+				}
+				
+				Module module = m_moduleLoader.getModule(args[2]);
+				
+				if (module == null) {
+					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Module " + args[2] + " isn't loaded");
+					return;
+				}
+				
+				module.setDebug(!module.isDebug());
+				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + module.getName() + ": debug " + (module.isDebug() ? "enabled" : "disabled"));
 				return;
 			}
 			

@@ -9,7 +9,7 @@ import uk.codingbadgers.bsocial.chanels.ChatChannel;
 import uk.codingbadgers.bsocial.config.ConfigManager;
 import uk.codingbadgers.bsocial.events.ChannelChatEvent;
 import uk.codingbadgers.bsocial.events.PrivateMessageEvent;
-import uk.codingbadgers.bsocial.listeners.ChatListener;
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * The Class CommandHandler.
@@ -35,7 +35,7 @@ public class CommandHandler {
 			}
 			
 			
-			ChatPlayer player = ChatListener.findPlayer(sender);
+			ChatPlayer player = bSocial.getPlayerManager().findPlayer(sender);
 			
 			if (player == null) {
 				bSocial.sendMessage(bSocial.NAME, sender, "Sorry an error has occured and we cannot let you use this command, please tell the owner");
@@ -133,7 +133,7 @@ public class CommandHandler {
 		}
 		
 		ChatChannel channel = bSocial.getChannelManager().getChannel(command);
-		ChatPlayer player = ChatListener.findPlayer(sender);
+		ChatPlayer player = bSocial.getPlayerManager().findPlayer(sender);
 		
 		if (channel == null || player == null) {
 			bSocial.sendMessage(bSocial.NAME, sender, "Something is wrong, please tell the sever owner");
@@ -176,8 +176,8 @@ public class CommandHandler {
 			return;
 		}
 		
-		ChatPlayer player = ChatListener.findPlayer(sender);
-		ChatPlayer to = ChatListener.findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[0]));
+		ChatPlayer player = bSocial.getPlayerManager().findPlayer(sender);
+		ChatPlayer to = bSocial.getPlayerManager().findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[0]));
 		
 		if (player == null) {
 			bSocial.sendMessage(bSocial.NAME, sender, "Something is wrong, please tell the sever owner");
@@ -291,7 +291,7 @@ public class CommandHandler {
 			return;	
 		}
 		
-		ChatPlayer target = ChatListener.findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[1]));
+		ChatPlayer target = bSocial.getPlayerManager().findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[1]));
 		
 		if (target == null) {
 			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that player is not online");
@@ -325,7 +325,7 @@ public class CommandHandler {
 			return;	
 		}
 		
-		ChatPlayer target = ChatListener.findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[1]));
+		ChatPlayer target = bSocial.getPlayerManager().findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[1]));
 		
 		if (target == null) {
 			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that player is not online");

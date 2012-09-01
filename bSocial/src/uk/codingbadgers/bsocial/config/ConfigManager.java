@@ -11,9 +11,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import uk.codingbadgers.bsocial.ChatPlayer;
 import uk.codingbadgers.bsocial.bSocial;
 import uk.codingbadgers.bsocial.chanels.ChatChannel;
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * The config manager

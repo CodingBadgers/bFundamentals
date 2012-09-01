@@ -14,6 +14,9 @@ public class ConfigurationManager {
 	
 	/** Should we auto update modules. */
 	private boolean m_autoUpdate = false;
+	
+	/** whether modules should start in debug mode */
+	private boolean m_debug = false;
 
 	/**
 	 * Load configuration for the plugin.
@@ -25,6 +28,7 @@ public class ConfigurationManager {
 		
 		config.addDefault("general.language", "UK");
 		config.addDefault("general.auto-update", false);
+		config.addDefault("general.debug", false);
 		
         config.addDefault("database.driver", "SQLite");
         config.addDefault("database.host", "localhost");
@@ -40,6 +44,7 @@ public class ConfigurationManager {
 		
 		m_language = config.getString("general.language");
 		m_autoUpdate = config.getBoolean("general.auto-update");
+		m_debug = config.getBoolean("general.debug");
 	}
 	
 	/**
@@ -58,6 +63,16 @@ public class ConfigurationManager {
 	 */
 	public boolean getAutoUpdate() {
 		return m_autoUpdate;
+	}
+	
+	/**
+	 * Gets whether modules should start in debug mode
+	 * 
+	 * @return true if modules should start in debug, false if not
+	 * @return
+	 */
+	public boolean getDebug() {
+		return m_debug;
 	}
 
 }

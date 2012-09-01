@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-import uk.codingbadgers.bsocial.ChatPlayer;
 import uk.codingbadgers.bsocial.config.ConfigManager;
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * The ChannelManager.

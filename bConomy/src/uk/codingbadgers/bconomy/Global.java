@@ -148,7 +148,7 @@ public class Global {
 	 * @param sender the sender
 	 * @param message the message
 	 */
-	public static void output(Player sender, String message) {
+	public static void output(CommandSender sender, String message) {
 		sender.sendMessage(ChatColor.GOLD + "[bConomy] " + ChatColor.WHITE + message);
 	}
 	
@@ -200,7 +200,7 @@ public class Global {
 		
 		// by now they don't have perms so see if we are outputting a message
 		if (verbose) {
-			Global.output((Player)sender, getLanguage("NO-PERMISSION"));
+			Global.output(sender, getLanguage("NO-PERMISSION"));
 		}
 		
 		return false;		

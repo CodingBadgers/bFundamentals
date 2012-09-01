@@ -2,7 +2,8 @@ package uk.codingbadgers.bsocial.events;
 
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
-import uk.codingbadgers.bsocial.ChatPlayer;
+
+import uk.codingbadgers.bsocial.players.ChatPlayer;
 
 /**
  * The base bSocial event class

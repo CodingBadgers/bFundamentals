@@ -52,13 +52,16 @@ public class bHelpful extends Module {
     }
 
     /* (non-Javadoc)
-     * @see uk.codingbadgers.bFundamentals.module.Module#onEnable()
+     * @see uk.codingbadgers.bFundamentals.module.Module#onLoad()
      */
-    public void onEnable() {
-
+    public void onLoad() {
     	MODULE = this;
         PLUGIN = m_plugin;
-        
+    }
+    /* (non-Javadoc)
+     * @see uk.codingbadgers.bFundamentals.module.Module#onEnable()
+     */
+    public void onEnable() {        
         Configuration.loadConfig(this);
         
         register(new BadgerDocsListener(this));
