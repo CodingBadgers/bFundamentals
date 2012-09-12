@@ -25,6 +25,8 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import uk.codingbadgers.bhuman.bHuman;
+
 import com.topcat.npclib.entity.HumanNPC;
 import com.topcat.npclib.entity.NPC;
 import com.topcat.npclib.nms.BServer;
@@ -90,6 +92,7 @@ public class NPCManager {
 		@EventHandler
 		public void onPluginDisable(PluginDisableEvent event) {
 			if (event.getPlugin() == plugin) {
+				bHuman.getDBManager().save(getNPCs());
 				despawnAll();
 				Bukkit.getServer().getScheduler().cancelTask(taskid);
 			}

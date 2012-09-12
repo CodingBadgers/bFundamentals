@@ -27,6 +27,7 @@ public class CommandHandler {
 				HumanNPC npc = (HumanNPC)bHuman.getNPCManager().spawnHumanNPC(name, location);
 				npc.setItemInHand(Material.BOW);
 				bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Added npc " + name);
+				bHuman.getDBManager().save(npc);
 				return true;
 			}
 			
@@ -37,12 +38,20 @@ public class CommandHandler {
 				}
 				
 				String name = args[1];
+				HumanNPC npc = (HumanNPC) bHuman.getNPCManager().getHumanNPCByName(name).get(0);
+				
+				if (npc == null) {
+					bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Sorry that npc doesn't exit");
+					return true;
+				}
+				
 				bHuman.getNPCManager().despawnHumanByName(name);
 				bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Removed npc " + name);
+				bHuman.getDBManager().remove(npc);
 				return true;
 			}
 			
-			
+			return true;
 		}
 		return false;
 	}

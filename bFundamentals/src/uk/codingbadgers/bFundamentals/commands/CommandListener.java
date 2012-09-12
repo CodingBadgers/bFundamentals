@@ -36,6 +36,8 @@ public class CommandListener implements Listener {
 				if (module.onCommand(sender, command, args)) {
 					event.setCancelled(true);
 					return;
+				} else {
+					sender.sendMessage("/" + command);
 				}
 			}
 		}
@@ -58,6 +60,8 @@ public class CommandListener implements Listener {
 				if (module.onCommand(sender, command, args)) {
 					// need to find a way to cancel the event
 					return;
+				} else {
+					sender.sendMessage("/" + command);
 				}
 			}
 		}

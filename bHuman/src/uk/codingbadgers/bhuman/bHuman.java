@@ -1,7 +1,9 @@
 package uk.codingbadgers.bhuman;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.topcat.npclib.NPCManager;
@@ -24,15 +26,20 @@ public class bHuman extends Module {
 	public static bHuman MODULE = null;
 	
 	private static NPCManager m_npcManager = null;
+	private static DatabaseManager m_dbManager = null;
 	
 	/**
 	 * Instantiates a new bHuman module.
 	 */
 	public bHuman() {
 		super(NAME, VERSION);
-		m_npcManager = new NPCManager(m_plugin);
 	}
 
+	public void onLoad() {
+		m_npcManager = new NPCManager(m_plugin);
+		m_dbManager = new DatabaseManager();	
+	}
+	
 	/* (non-Javadoc)
 	 * @see uk.codingbadgers.bFundamentals.module.Module#onEnable()
 	 */
@@ -40,9 +47,15 @@ public class bHuman extends Module {
 	public void onEnable() {
 		MODULE = this;
 		
+		try {
+			m_dbManager.loadDatabase();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		registerCommand(new ModuleCommand("npc", "/npc help").setHelp("Access all npc commands"));
 		
-		register(new PlayerListener());
+		//register(new PlayerListener());
 		
 		log(Level.INFO, "bHuman has been enabled");
 	}
@@ -58,12 +71,17 @@ public class bHuman extends Module {
 	/* (non-Javadoc)
 	 * @see uk.codingbadgers.bFundamentals.module.Module#onCommand(org.bukkit.entity.Player, java.lang.String, java.lang.String[])
 	 */
-	public boolean onCommand(Player sender, String label, String[] args) {
-		return CommandHandler.onCommand(sender, label, args);
+	@Override
+	public boolean onCommand(CommandSender sender, String label, String[] args) {
+		return CommandHandler.onCommand((Player)sender, label, args);
 	}
 	
 	public static NPCManager getNPCManager() {
 		return m_npcManager;
+	}
+	
+	public static DatabaseManager getDBManager() {
+		return m_dbManager;
 	}
 
 }
