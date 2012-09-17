@@ -104,6 +104,14 @@ public class BlockListener implements Listener {
 		if (contextSign == null)
 			return;
 		
+		String location = contextSign.getLocation().getX() + "," + contextSign.getLocation().getY() + "," + contextSign.getLocation().getZ() + "," + contextSign.getLocation().getWorld().getName();
+		
+		String addSign = "DELETE FROM bSign " +
+				"WHERE Location = '" +
+				location + 
+				"'";
+		bSignModule.DATABASE.Query(addSign);
+		
 		bSignModule.SIGNS.remove(contextSign);
 		bSignModule.sendMessage("bSign", event.getPlayer(), bSignModule.MODULE.getLanguageValue("SIGN-REMOVED"));
 		
