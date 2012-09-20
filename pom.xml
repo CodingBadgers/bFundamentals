@@ -11,6 +11,17 @@
 
     <modules>
         <module>bFundamentals</module>
+        <module>bHelpful</module>
+        <module>bConomy</module>
+        <module>bCreative</module>
+        <module>bHuman</module>
+        <module>bMonitor</module>
+        <module>bPortalsHelper</module>
+        <module>bQuiet</module>
+        <module>bShortLinks</module>
+        <module>bSign</module>
+        <module>bSocial</module>
+        <module>bSocks</module>
     </modules>
     
     <repositories>
