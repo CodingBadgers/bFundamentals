@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
-
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -20,6 +18,7 @@ import uk.codingbadgers.bsign.sign.CommandSign;
 import uk.codingbadgers.bsign.sign.InfoSign;
 import uk.codingbadgers.bsign.sign.Sign;
 import uk.codingbadgers.bsign.sign.WebSign;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
  * The Class bSignModule.

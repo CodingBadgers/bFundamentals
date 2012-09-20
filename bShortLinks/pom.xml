@@ -9,8 +9,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>bHelpful</artifactId>
-
+    <artifactId>bShortLink</artifactId>
+     
     <dependencies>
         <dependency>
             <artifactId>bFundamentals</artifactId>

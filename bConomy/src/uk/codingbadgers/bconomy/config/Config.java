@@ -1,10 +1,9 @@
 package uk.codingbadgers.bconomy.config;
 
-import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager.DatabaseType;
-
 import org.bukkit.configuration.file.FileConfiguration;
 
 import uk.codingbadgers.bconomy.Global;
+import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
 
 public class Config {
 

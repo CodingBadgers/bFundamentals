@@ -9,8 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bconomy.Global;
 import uk.codingbadgers.bconomy.account.Account;
-
-import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager.DatabaseType;
+import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
 
 public class DatabaseManager {
 	

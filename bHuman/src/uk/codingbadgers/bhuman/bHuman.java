@@ -55,7 +55,7 @@ public class bHuman extends Module {
 		
 		registerCommand(new ModuleCommand("npc", "/npc help").setHelp("Access all npc commands"));
 		
-		//register(new PlayerListener());
+		register(new PlayerListener());
 		
 		log(Level.INFO, "bHuman has been enabled");
 	}

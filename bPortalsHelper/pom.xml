@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>bHelpful</artifactId>
+    <artifactId>bPortalHelper</artifactId>
 
     <dependencies>
         <dependency>

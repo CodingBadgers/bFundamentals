@@ -1,64 +1,55 @@
 package uk.codingbadgers.bhuman;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.topcat.npclib.entity.HumanNPC;
+import com.topcat.npclib.entity.NPC;
 import com.topcat.npclib.nms.NPCEntity;
+import com.topcat.npclib.nms.NpcEntityTargetEvent;
 
 public class PlayerListener implements Listener {
 
-	private static ArrayList<NpcPlayer> players = new ArrayList<NpcPlayer>();
-	
-	@EventHandler (priority = EventPriority.NORMAL)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		NpcPlayer player = new NpcPlayer(event.getPlayer());
-		players.add(player);
-	}
-	
-	@EventHandler (priority = EventPriority.NORMAL)
-	public void onPlayerLeave(PlayerQuitEvent event) {
-		players.remove(getPlayer(event.getPlayer().getName()));
-	}
-	
-	@EventHandler (priority = EventPriority.NORMAL)
-	public void onPlayerLeave(PlayerKickEvent event) {
-		players.remove(getPlayer(event.getPlayer().getName()));
-	}
-	
-	@EventHandler (priority = EventPriority.NORMAL)
-	public void onPlayerInteract(PlayerInteractEntityEvent event) {
-		NpcPlayer player = getPlayer(event.getPlayer().getName());
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onNPCTarget(NpcEntityTargetEvent event) {
 		
-		if (!(event.getRightClicked() instanceof NPCEntity))
+		if (!(event.getTarget() instanceof Player)) 
 			return;
 		
-		NPCEntity entity = (NPCEntity)event.getRightClicked();
-		String id = bHuman.getNPCManager().getNPCIdFromEntity((Entity)entity);
-		HumanNPC npc = (HumanNPC)bHuman.getNPCManager().getNPC(id);
+		Player player = (Player)event.getTarget();
+		NPC npc = bHuman.getNPCManager().getNPC(bHuman.getNPCManager().getNPCIdFromEntity(event.getEntity()));
 		
-		player.setTarget(npc);
-		bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "");
-	}
-	
-	public static NpcPlayer getPlayer(String player) {
-		Iterator<NpcPlayer> itr = players.iterator();
+		if(!(npc instanceof HumanNPC))
+			return;
 		
-		while(itr.hasNext()) {
-			NpcPlayer current = itr.next();
-			if (current.getPlayer().getName().equalsIgnoreCase(player))
-				return current;
+		HumanNPC hNpc = (HumanNPC)npc;
+		
+		bHuman.MODULE.debugConsole(player.getName() + " targeted " + hNpc.getName());
+		
+		if (hNpc.canTalk()) {
+			player.sendMessage(hNpc.getMessage());
 		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onNPCDeath(EntityDamageEvent event) {
 		
-		return null;
+		if (!(event.getEntity() instanceof NPCEntity))
+			return;
+		
+		NPC bnpc = bHuman.getNPCManager().getNPC(bHuman.getNPCManager().getNPCIdFromEntity(event.getEntity()));
+		
+		if (!(bnpc instanceof HumanNPC))
+			return;
+		
+		HumanNPC npc = (HumanNPC)bnpc;
+		
+		if (!npc.canDie())
+			return;
+		
+		event.setCancelled(true);
 	}
 }

@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -19,6 +18,7 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bconomy.account.Account;
 import uk.codingbadgers.bconomy.account.PlayerAccounts;
 import uk.codingbadgers.bconomy.config.Config;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
  * The Class Global.

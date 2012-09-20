@@ -99,5 +99,21 @@ public class HumanNPC extends NPC {
 	public String getMessage() {
 		return m_chatMessage;
 	}
+	
+	public boolean canDie() {
+		return m_canTalk;
+	}
+	
+	public void setInvincible(boolean canDie) {
+		m_canTalk = !canDie;
+	}
+	
+	public void setHealth(int i) {
+		((NPCEntity)getEntity()).setHealth(i);
+	}
+
+	public int getHealth() {
+		return ((NPCEntity)getEntity()).getHealth();
+	}
 
 }
