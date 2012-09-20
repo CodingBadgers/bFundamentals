@@ -18,7 +18,7 @@
         </repository>
         <repository>
             <id>worldedit-repo</id>
-            <url>http://maven.sk89q.com/artifactory/simple/libs-release-local/com/sk89q/</url>
+            <url>http://maven.sk89q.com/artifactory/simple/libs-release-local/</url>
         </repository>
     </repositories>
     
