@@ -11,11 +11,32 @@
 
     <artifactId>bPortalHelper</artifactId>
 
+    <repositories>
+        <repository>
+            <id>multiverse-repo</id>
+            <url>http://repo.onarandombox.com/content/repositories/multiverse/</url>
+        </repository>
+        <repository>
+            <id>worldedit-repo</id>
+            <url>http://maven.sk89q.com/artifactory/simple/libs-release-local/com/sk89q/</url>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <dependency>
-            <artifactId>bFundamentals</artifactId>
-            <groupId>uk.thecodingbadgers</groupId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>Multiverse-Core</artifactId>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <version>2.5</version>
+        </dependency>      
+        <dependency>
+            <artifactId>worldedit</artifactId>
+            <groupId>com.sk89q</groupId>
+            <version>5.4.1</version>
+        </dependency>     
+        <dependency>
+            <artifactId>worldguard</artifactId>
+            <groupId>com.sk89q</groupId>
+            <version>5.5.1</version>
         </dependency>
     </dependencies>
 </project>
