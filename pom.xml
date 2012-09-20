@@ -4,7 +4,7 @@
 
     <groupId>uk.thecodingbadgers</groupId>
     <artifactId>bFundamentalsBuild</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${build.version}</version>
     <packaging>pom</packaging>
     <name>bFundamentalsBuild</name>
     <url>http://www.mcbadgercraft.com</url>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.3.2-R0.1</version>
+            <version>${bukkit.version}</version>
         </dependency>
     </dependencies>
     
@@ -112,5 +112,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <bukkit.version>1.3.2-R0.1</bukkit.version>
         <build.number>Unknown</build.number>
+        <build.version>1.0-SNAPSHOT</build.version>
     </properties>
 </project>

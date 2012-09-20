@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.thecodingbadgers</groupId>
         <artifactId>bFundamentalsBuild</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${build.version}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -22,7 +22,7 @@
         <dependency>
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${build.version}</version>
         </dependency>
         <dependency>
           <groupId>ru.tehkode</groupId>
