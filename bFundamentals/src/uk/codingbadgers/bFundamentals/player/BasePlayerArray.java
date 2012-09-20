@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 /**
  * The BasePlayer Array.
  */
-public class BasePlayerArray<T extends BasePlayer> extends ArrayList<T> {
+public class BasePlayerArray<K extends BasePlayer> extends ArrayList<K> {
 
 	/** Auto generated UID. */
 	private static final long serialVersionUID = -5142104058202469125L;
@@ -19,7 +19,7 @@ public class BasePlayerArray<T extends BasePlayer> extends ArrayList<T> {
 	 * @param player the bukkit player
 	 * @return the player
 	 */
-	public T getPlayer(Player player) {
+	public K getPlayer(Player player) {
 		return getPlayer(player.getName());
 	}
 	
@@ -29,11 +29,11 @@ public class BasePlayerArray<T extends BasePlayer> extends ArrayList<T> {
 	 * @param player the player's name
 	 * @return the player
 	 */
-	public T getPlayer(String player) {
-		Iterator<T> itr = iterator();
+	public K getPlayer(String player) {
+		Iterator<K> itr = iterator();
 		
 		while(itr.hasNext()) {
-			T current = itr.next();
+			K current = itr.next();
 			if (current.getPlayer().getName().equalsIgnoreCase(player))
 				return current;
 		}
@@ -47,7 +47,7 @@ public class BasePlayerArray<T extends BasePlayer> extends ArrayList<T> {
 	 * @param player the bukkit player
 	 */
 	public void removePlayer(Player player) {
-		T bPlayer = getPlayer(player);
+		K bPlayer = getPlayer(player);
 		
 		if (bPlayer != null) 
 			remove(bPlayer);

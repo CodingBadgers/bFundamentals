@@ -9,8 +9,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
@@ -23,6 +23,7 @@ import com.nodinchan.ncbukkit.loader.Loadable;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
  * The base Module class.
@@ -43,6 +44,9 @@ public abstract class Module extends Loadable implements Listener {
 	
 	/** The name of the module. */
 	private String m_name = null;
+	
+	/** The logger for this module */
+	private final ModuleLogger m_log;
 	
 	/** The language map. */
 	private HashMap<String, String> m_languageMap = new HashMap<String, String>();
@@ -76,6 +80,7 @@ public abstract class Module extends Loadable implements Listener {
 		m_permissions = bFundamentals.getPermissions();
 		m_name = name;
 		m_debug = bFundamentals.getConfigurationManager().getDebug();
+		m_log = new ModuleLogger(this);
 	}
 	
 	/**
@@ -131,7 +136,16 @@ public abstract class Module extends Loadable implements Listener {
 	 * @param string the message
 	 */
 	public void log(Level level, String string) {
-		bFundamentals.log(level, "[" + super.getName() + "] " + string);
+		m_log.log(Level.INFO, string);
+	}
+	
+	/**
+	 * Get the logger
+	 * 
+	 * @return this modules logger
+	 */
+	public Logger getLogger() {
+		return m_log;
 	}
 	
 	/**

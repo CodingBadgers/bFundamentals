@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager;
-import n3wton.me.BukkitDatabaseManager.BukkitDatabaseManager.DatabaseType;
-import n3wton.me.BukkitDatabaseManager.Database.BukkitDatabase;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -19,6 +16,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.codingbadgers.bFundamentals.commands.CommandListener;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
+import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 public class bFundamentals extends JavaPlugin {
 	
@@ -141,7 +141,7 @@ public class bFundamentals extends JavaPlugin {
 	 */
 	public static BukkitDatabase getBukkitDatabase() {
 		if (m_database == null) {
-			m_database = BukkitDatabaseManager.CreateDatabase("bFundamentals", m_instance, DatabaseType.SQLite);
+			m_database = bDatabaseManager.CreateDatabase("bFundamentals", m_instance, DatabaseType.SQLite);
 		}
 		return m_database;
 	}
