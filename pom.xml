@@ -31,23 +31,23 @@
     <dependencies>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
-                <artifactId>Vault</artifactId>
-          <version>1.2.19-SNAPSHOT</version>
+            <artifactId>Vault</artifactId>
+            <version>1.2.19-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>uk.thecodingbadgers</groupId>
-                <artifactId>bDatabaseManager</artifactId>
-          <version>1.0.0</version>
+            <artifactId>bDatabaseManager</artifactId>
+            <version>1.0.0</version>
         </dependency>  
         <dependency>
             <groupId>com.nodinchan</groupId>
-                <artifactId>NC-BukkitLib</artifactId>
-          <version>Custom-v2.2</version>
+            <artifactId>NC-BukkitLib</artifactId>
+            <version>Custom-v2.2</version>
         </dependency> 
         <dependency>
             <groupId>org.bukkit</groupId>
-            <artifactId>Bukkit</artifactId>
-          <version>1.3.2-R0.1</version>
+            <artifactId>bukkit</artifactId>
+            <version>1.3.2-R0.1</version>
         </dependency>
     </dependencies>
     
@@ -85,9 +85,9 @@
         </plugins>
     </build>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <bukkit.version>1.3.2-R0.1</bukkit.version>
-    <build.number>Unknown</build.number>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <bukkit.version>1.3.2-R0.1</bukkit.version>
+        <build.number>Unknown</build.number>
+    </properties>
 </project>
