@@ -100,7 +100,7 @@
                     <execution>
                         <id>attach-javadocs</id>
                         <goals>
-                            <goal>zip</goal>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
