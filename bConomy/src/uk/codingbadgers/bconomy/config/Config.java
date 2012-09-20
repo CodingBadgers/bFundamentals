@@ -45,7 +45,7 @@ public class Config {
 			
 			// currency info config
 			config.addDefault("currency.name", "pounds");
-			config.addDefault("currency.symbol", "£");
+			config.addDefault("currency.symbol", "$");
 			config.addDefault("currency.format", "@##0.00");
 			
 			// economy config
@@ -69,7 +69,7 @@ public class Config {
 		
 		m_currency = new Currency();
 		m_currency.name = config.getString("currency.name", "pounds");
-		m_currency.symbol = config.getString("currency.symbol", "£").toCharArray()[0];
+		m_currency.symbol = config.getString("currency.symbol", "$").toCharArray()[0];
 		m_currency.format = config.getString("currency.fomat", "@#,##0.00").replace('@', m_currency.symbol);
 		
 		m_startingBalance = config.getInt("economy.startingBalance", 30);
