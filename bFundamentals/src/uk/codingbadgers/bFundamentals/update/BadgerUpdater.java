@@ -25,7 +25,7 @@ public class BadgerUpdater extends Updater {
 			throw new IllegalArgumentException("Badger updater can only be used on coding badger modules");
 		
 		try {
-			m_repository = new URL("http://repository-codingbadgers.forge.cloudbees.com/snapshot/uk/thecodingbadgers/" + module);
+			m_repository = new URL("http://repository-codingbadgers.forge.cloudbees.com/snapshot/uk/thecodingbadgers/" + module.getName());
 			System.out.println(m_repository.getHost() + m_repository.getPath());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
