@@ -23,6 +23,8 @@ import com.nodinchan.ncbukkit.loader.Loadable;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
+import uk.codingbadgers.bFundamentals.update.UpdateThread;
+import uk.codingbadgers.bFundamentals.update.Updater;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
@@ -33,20 +35,23 @@ public abstract class Module extends Loadable implements Listener {
 	/** The base plugin. */
 	protected final bFundamentals m_plugin;
 	
+	/** The logger for this module */
+	private final ModuleLogger m_log;
+	
+	/** The version of the module. */
+	private final String m_version;
+	
+	/** The name of the module. */
+	private final String m_name;
+	
+	/** The Update thread for this module */
+	private UpdateThread m_updater;
+	
 	/** The config. */
 	protected FileConfiguration m_config;
 	
 	/** The config file. */
 	protected File m_configFile = null;
-	
-	/** The version of the module. */
-	private String m_version = null;
-	
-	/** The name of the module. */
-	private String m_name = null;
-	
-	/** The logger for this module */
-	private final ModuleLogger m_log;
 	
 	/** The language map. */
 	private HashMap<String, String> m_languageMap = new HashMap<String, String>();
@@ -81,6 +86,20 @@ public abstract class Module extends Loadable implements Listener {
 		m_name = name;
 		m_debug = bFundamentals.getConfigurationManager().getDebug();
 		m_log = new ModuleLogger(this);
+	}
+	
+	protected void setUpdater(Updater updater) {
+		m_updater = new UpdateThread(updater);
+		log(Level.INFO, "Set new updater to " + m_updater.getUpdater().getUpdater());
+	}
+	
+	public void update() {
+		if (m_updater == null) {
+			log(Level.INFO, "Updater is null, cannot check for updates");
+			return;
+		}
+		
+		m_updater.start();
 	}
 	
 	/**

@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bFundamentals.update.BadgerUpdater;
 import uk.codingbadgers.bcreative.containers.PlayerManager;
 import uk.codingbadgers.bcreative.containers.WorldManager;
 import uk.codingbadgers.bcreative.listeners.BlockListener;
@@ -58,6 +59,8 @@ public class bCreative extends Module {
 		register(m_gmPlayerListener);
 		
 		registerCommand((new ModuleCommand("bcreative", "/bcreative")).setHelp("Access all bCreative commands"));
+		
+		setUpdater(new BadgerUpdater(this));
 		
 		log(Level.INFO, NAME + " has been enabled successfuly");
 	}

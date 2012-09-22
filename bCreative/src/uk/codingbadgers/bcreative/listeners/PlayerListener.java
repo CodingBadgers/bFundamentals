@@ -63,7 +63,7 @@ public class PlayerListener implements Listener {
 		
 		GamemodeWorld world = player.getWorld();
 		
-		if (isRedstone(event.getClickedBlock()) && bCreative.getConfigmanager().isRedstoneMonitored()) {
+		if (isRedstone(event.getClickedBlock())) {
 			String permission = "bcreative.redstone." + event.getClickedBlock().toString().toLowerCase().replaceAll("_", "") + "." + player.getWorld().getWorld().getName();
 			bCreative.getInstance().debugConsole(permission);
 			

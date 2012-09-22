@@ -16,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.codingbadgers.bFundamentals.commands.CommandListener;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bFundamentals.module.ModuleLoader;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
@@ -62,6 +63,11 @@ public class bFundamentals extends JavaPlugin {
 		m_moduleLoader.load();
 		m_moduleLoader.enable();
 		
+		// check if any of the modules need updating
+		if (m_configuration.getAutoUpdate()) 
+			m_moduleLoader.update();
+		
+		// register the command listener
 		this.getServer().getPluginManager().registerEvents(m_commandListener, this);
 		
 		bFundamentals.log(Level.INFO, "bFundamentals Loaded.");

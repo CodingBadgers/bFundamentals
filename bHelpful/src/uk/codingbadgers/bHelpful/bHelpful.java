@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bFundamentals.update.BadgerUpdater;
 import uk.codingbadgers.bHelpful.commands.Announcement;
 import uk.codingbadgers.bHelpful.commands.Help;
 import uk.codingbadgers.bHelpful.commands.Maintenance;
@@ -25,11 +26,17 @@ import uk.codingbadgers.bHelpful.commands.Vote;
  */
 public class bHelpful extends Module {
 
+	/** The Constant NAME. */
+	public static final String NAME = "bHelpful";
+	
+	/** The Constant VERSION. */
+	public static final String VERSION = "1.0";
+	
 	/**
 	 * Instantiates a new b helpful.
 	 */
 	public bHelpful() {
-		super("bHelpful", "1.1");
+		super(NAME, VERSION);
 	}
 	
 	/** The plugin instance. */
@@ -58,6 +65,7 @@ public class bHelpful extends Module {
     	MODULE = this;
         PLUGIN = m_plugin;
     }
+    
     /* (non-Javadoc)
      * @see uk.codingbadgers.bFundamentals.module.Module#onEnable()
      */
@@ -91,6 +99,8 @@ public class bHelpful extends Module {
         registerCommand(new ModuleCommand("vote", "/vote").setHelp("shows the vote info"));
         registerCommand(new ModuleCommand("bHelpful", "/bhelpful <reload/disable/version>").setHelp("bHelpful admin commands"));
         registerCommand(new ModuleCommand("list", "/list").addAliase("players").addAliase("who").setHelp("List all players online on the server"));
+        
+        this.setUpdater(new BadgerUpdater(this));
         
         log(Level.INFO, "bHelpful enabled");
         		

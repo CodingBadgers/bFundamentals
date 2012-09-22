@@ -1,4 +1,4 @@
-package uk.codingbadgers.bFundamentals;
+package uk.codingbadgers.bFundamentals.module;
 
 import java.io.File;
 import java.util.Iterator;
@@ -11,8 +11,7 @@ import org.bukkit.event.Listener;
 
 import com.nodinchan.ncbukkit.loader.Loader;
 
-import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.bFundamentals.module.ModuleHelpTopic;
+import uk.codingbadgers.bFundamentals.bFundamentals;
 
 /**
  * The ModuleLoader.
@@ -142,7 +141,23 @@ public class ModuleLoader {
 	public List<Module> getModules() {
 		return m_modules;
 	}
+	
+	
+	/**
+	 * Update all the loaded modules if an updater is set
+	 */
+	public void update() {
+		for (Module module : m_modules) {
+			module.update();
+		}
+	}
 
+	/**
+	 * Gets the module from its name.
+	 *
+	 * @param string the string
+	 * @return the module
+	 */
 	public Module getModule(String string) {
 		Iterator<Module> itr = m_modules.iterator();
 		while(itr.hasNext()) {
@@ -153,6 +168,12 @@ public class ModuleLoader {
 		return null;		
 	}
 	
+	/**
+	 * Gets the module from its file.
+	 *
+	 * @param file the file
+	 * @return the module
+	 */
 	public Module getModule(File file) {
 		Iterator<Module> itr = m_modules.iterator();
 		while(itr.hasNext()) {

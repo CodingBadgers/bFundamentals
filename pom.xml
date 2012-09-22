@@ -73,13 +73,21 @@
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
         <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
         <resources>
-          <resource>
-            <directory>${project.basedir}/src</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>*.*</include>
-            </includes>
-          </resource>
+            <resource>
+                <directory\>${basedir}/src/main/resources/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>config.yml</include>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.*</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>

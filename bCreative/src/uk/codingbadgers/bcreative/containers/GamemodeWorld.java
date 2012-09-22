@@ -18,7 +18,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.block.Action;
 
-import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bcreative.GameModeHelper;
 import uk.codingbadgers.bcreative.bCreative;
 
@@ -61,7 +60,7 @@ public class GamemodeWorld {
 			loadConfig();
 			loadBlacklist();
 		} catch (IOException ex) {
-			bFundamentals.getInstance().getLogger().log(Level.INFO, null, ex);
+			ex.printStackTrace();
 		}
 	}
 	
@@ -131,13 +130,15 @@ public class GamemodeWorld {
 		int lineNumber;
 		String line;
 		
-		if (!m_placeBlacklistFile.exists()) {
-			m_placeBlacklistFile.createNewFile();
+		if (!file.exists()) {
+			bCreative.getInstance().log(Level.INFO, "Creating config file " + file.getName());
+			
+			file.createNewFile();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 					
 			writer.write("# This the " + file.getName().substring(0, file.getName().indexOf('.')) + " blacklist file for world " + m_world.getName() + "\n");
-			writer.write("# Please either use id's or full bukkit Material names (Case insensitive)\n");
-			writer.write("# Bukkit material names can be found at \"https://github.com/Bukkit/Bukkit/blob/master/src/main/java/org/bukkit/Material.java\"");
+			writer.write("# Please either use id's or full bukkit Material names (This is not case sensative)\n");
+			writer.write("# Bukkit material names can be found at \"https://github.com/Bukkit/Bukkit/blob/master/src/main/java/org/bukkit/Material.java\"\n");
 			writer.write(Material.BEDROCK.toString().toLowerCase() + "\n");
 					
 			writer.flush();

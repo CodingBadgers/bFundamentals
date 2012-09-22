@@ -14,6 +14,8 @@ public class ConfigurationManager {
 	
 	/** Should we auto update modules. */
 	private boolean m_autoUpdate = false;
+	private boolean m_autoDownload = false;
+	private boolean m_autoApply = false;
 	
 	/** whether modules should start in debug mode */
 	private boolean m_debug = false;
@@ -27,8 +29,11 @@ public class ConfigurationManager {
 		FileConfiguration config = plugin.getConfig();
 		
 		config.addDefault("general.language", "UK");
-		config.addDefault("general.auto-update", false);
 		config.addDefault("general.debug", false);
+		
+		config.addDefault("general.update.enabled", false);
+		config.addDefault("general.update.download", false);
+		config.addDefault("general.update.apply", false);
 		
         config.addDefault("database.driver", "SQLite");
         config.addDefault("database.host", "localhost");
@@ -43,8 +48,11 @@ public class ConfigurationManager {
 		plugin.saveConfig();
 		
 		m_language = config.getString("general.language");
-		m_autoUpdate = config.getBoolean("general.auto-update");
 		m_debug = config.getBoolean("general.debug");
+		
+		m_autoUpdate = config.getBoolean("general.update.enabled");
+		m_autoDownload = config.getBoolean("general.update.download");
+		m_autoApply = config.getBoolean("general.update.apply");
 	}
 	
 	/**
@@ -57,6 +65,16 @@ public class ConfigurationManager {
 	}
 	
 	/**
+	 * Gets whether modules should start in debug mode
+	 * 
+	 * @return true if modules should start in debug, false if not
+	 * @return
+	 */
+	public boolean getDebug() {
+		return m_debug;
+	}
+	
+	/**
 	 * Gets whether auto update is enabled.
 	 *
 	 * @return true if auto update is enabled, false if not
@@ -66,13 +84,21 @@ public class ConfigurationManager {
 	}
 	
 	/**
-	 * Gets whether modules should start in debug mode
-	 * 
-	 * @return true if modules should start in debug, false if not
-	 * @return
+	 * Gets whether auto download for the updater is enabled.
+	 *
+	 * @return true if auto download is enabled, false if not
 	 */
-	public boolean getDebug() {
-		return m_debug;
+	public boolean getAutoDownload() {
+		return m_autoDownload;
+	}
+	
+	/**
+	 * Gets whether auto applying of updates is enabled.
+	 *
+	 * @return true if auto apply is enabled, false if not
+	 */
+	public boolean getAutoApply() {
+		return m_autoApply;
 	}
 
 }
