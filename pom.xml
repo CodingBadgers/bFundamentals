@@ -74,11 +74,12 @@
         <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
         <resources>
             <resource>
-                <directory>${basedir}/src/main/resources/</directory>
+                <directory>${basedir}</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>config.yml</include>
                     <include>plugin.yml</include>
+                    <include>path.yml</include>
                 </includes>
             </resource>
             <resource>
