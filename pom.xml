@@ -74,7 +74,7 @@
         <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
         <resources>
             <resource>
-                <directory\>${basedir}/src/main/resources/</directory>
+                <directory>${basedir}/src/main/resources/</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>config.yml</include>
