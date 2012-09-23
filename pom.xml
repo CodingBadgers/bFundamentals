@@ -4,7 +4,7 @@
 
     <groupId>uk.thecodingbadgers</groupId>
     <artifactId>bFundamentalsBuild</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>bFundamentalsBuild</name>
     <url>http://www.mcbadgercraft.com</url>

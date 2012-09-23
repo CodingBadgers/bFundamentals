@@ -16,8 +16,16 @@ import com.google.common.io.Files;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
+/**
+ * The Updater for all coding badger modules.
+ */
 public class BadgerUpdater extends Updater {
 
+	/**
+	 * Instantiates a new badger updater.
+	 *
+	 * @param module the module to update
+	 */
 	public BadgerUpdater(Module module) {
 		super(module, "BadgerUpdater");
 		
@@ -32,10 +40,13 @@ public class BadgerUpdater extends Updater {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.codingbadgers.bFundamentals.update.Updater#checkUpdate()
+	 */
 	@Override
 	public boolean checkUpdate() {
 		boolean upToDate = true;
-		String current = "1.0";
+		String current = m_module.getVersion();
 		String website = "";
 		
 		try {
@@ -59,6 +70,10 @@ public class BadgerUpdater extends Updater {
 			e.printStackTrace();
 		}
 		
+		if (website.endsWith("-SNAPSHOT")) {
+			website = website.substring(0, website.indexOf("-SNAPSHOT"));
+		}
+		
 		String[] currentArray = current.split("\\.");
 		String[] webArray = website.split("\\.");
 		// 1.0 1.1
@@ -71,6 +86,10 @@ public class BadgerUpdater extends Updater {
 					upToDate = false;
 					break;
 				} else if (curPart == webPart) {
+					if (i == currentArray.length-1 && website.endsWith("-SNAPSHOT")) {
+						upToDate = true;
+						break;
+					}
 					continue;
 				}
 				break;
@@ -82,21 +101,25 @@ public class BadgerUpdater extends Updater {
 		if (!upToDate) {
 			m_newVersion = website;
 			m_download = true;
-			m_log.info("Module " + m_module + " is out of date, current:" + current + " new:" + website);
+			m_log.info("Module " + m_module.getName() + " is out of date, current:" + current + " new:" + website);
 		} else {
 			m_newVersion = current;
 			m_download = false;
-			m_log.info("Module " + m_module + " isn't out of date");
+			m_log.info("Module " + m_module.getName() + " isn't out of date");
 		}
 		
 		return !upToDate;
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.codingbadgers.bFundamentals.update.Updater#downloadUpdate()
+	 */
 	@Override
 	public void downloadUpdate() throws Exception {
-		//if (!m_download)
-			//return;
+		if (!m_download)
+			return;
 		
+		m_log.info("Automaticaly downloading update for " + m_module.getName() + " version: " + m_newVersion);
 		String artifact = m_module.getName();
 		try {
 			URL metadata = new URL(m_repository + "/maven-metadata.xml");
@@ -134,8 +157,12 @@ public class BadgerUpdater extends Updater {
 		UpdaterUtils.download(m_downloadLink, output);
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.codingbadgers.bFundamentals.update.Updater#applyUpdate()
+	 */
 	@Override
 	public void applyUpdate() throws Exception{
+		m_log.info("Applying update for " + m_module.getName() + " version: " + m_newVersion);
 		File output = new File(m_downloadFolder + File.separator + m_module.getName() + ".jar");
 		if (output.exists()) {
 			return;

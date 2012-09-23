@@ -6,13 +6,15 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
+
 /**
  * The Module Logger.
  */
 public class ModuleLogger extends Logger {
 
-	/** The module name. */
-	String moduleName;
+	/** The logger prefix. */
+	String prefix;
 	
 	/**
 	 * Instantiates a new module logger.
@@ -21,7 +23,7 @@ public class ModuleLogger extends Logger {
 	 */
 	public ModuleLogger(Module module) {
 		super(module.getName(), null);
-		 moduleName = new StringBuilder().append("[M] ").append("[").append(module.getName()).append("] ").toString();
+		 prefix = new StringBuilder().append(bFundamentals.getConfigurationManager().getLogPrefix() + " ").append("[").append(module.getName()).append("] ").toString();
 	     setParent(Bukkit.getServer().getLogger());
 	     setLevel(Level.ALL);
 	}
@@ -30,7 +32,7 @@ public class ModuleLogger extends Logger {
 	 * @see java.util.logging.Logger#log(java.util.logging.LogRecord)
 	 */
 	public void log(LogRecord logRecord) {
-        logRecord.setMessage(moduleName + logRecord.getMessage());
+        logRecord.setMessage(prefix + logRecord.getMessage());
         super.log(logRecord);
 	}
 

@@ -2,6 +2,7 @@ package uk.codingbadgers.bFundamentals;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ConfigurationManager.
  * Handles loading of the configuration and access to
@@ -14,11 +15,18 @@ public class ConfigurationManager {
 	
 	/** Should we auto update modules. */
 	private boolean m_autoUpdate = false;
+	
+	/** Whether to automatically download updates. */
 	private boolean m_autoDownload = false;
+	
+	/** Whether to automatically apply updates. */
 	private boolean m_autoApply = false;
 	
-	/** whether modules should start in debug mode */
+	/** whether modules should start in debug mode. */
 	private boolean m_debug = false;
+	
+	/** The logger prefix. */
+	private String m_logPrefix = null;
 
 	/**
 	 * Load configuration for the plugin.
@@ -31,9 +39,11 @@ public class ConfigurationManager {
 		config.addDefault("general.language", "UK");
 		config.addDefault("general.debug", false);
 		
-		config.addDefault("general.update.enabled", false);
-		config.addDefault("general.update.download", false);
-		config.addDefault("general.update.apply", false);
+		config.addDefault("module.update.enabled", false);
+		config.addDefault("module.update.download", false);
+		config.addDefault("module.update.apply", false);
+		
+		config.addDefault("module.logging.prefix", "[Module]");
 		
         config.addDefault("database.driver", "SQLite");
         config.addDefault("database.host", "localhost");
@@ -53,6 +63,8 @@ public class ConfigurationManager {
 		m_autoUpdate = config.getBoolean("general.update.enabled");
 		m_autoDownload = config.getBoolean("general.update.download");
 		m_autoApply = config.getBoolean("general.update.apply");
+		
+		m_logPrefix = config.getString("module.logging.prefix");
 	}
 	
 	/**
@@ -65,10 +77,9 @@ public class ConfigurationManager {
 	}
 	
 	/**
-	 * Gets whether modules should start in debug mode
-	 * 
+	 * Gets whether modules should start in debug mode.
+	 *
 	 * @return true if modules should start in debug, false if not
-	 * @return
 	 */
 	public boolean getDebug() {
 		return m_debug;
@@ -99,6 +110,15 @@ public class ConfigurationManager {
 	 */
 	public boolean getAutoApply() {
 		return m_autoApply;
+	}
+	
+	/**
+	 * Gets the log prefix.
+	 *
+	 * @return the log prefix
+	 */
+	public String getLogPrefix() {
+		return m_logPrefix;
 	}
 
 }
