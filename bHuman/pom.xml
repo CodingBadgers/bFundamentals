@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.thecodingbadgers</groupId>
         <artifactId>bFundamentalsBuild</artifactId>
-        <version>${project.buildVersion}</version>
+        <version>1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -15,12 +15,12 @@
         <dependency>
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
-            <version>${project.buildVersion}</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <artifactId>craftbukkit</artifactId>
             <groupId>org.bukkit</groupId>
-            <version>${project.bukkitVersion}</version>
+            <version>1.3.2-R0.1</version>
         </dependency>
     </dependencies>
 </project>
