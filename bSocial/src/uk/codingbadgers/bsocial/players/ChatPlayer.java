@@ -180,7 +180,7 @@ public class ChatPlayer {
 			return true;
 		
 		if (verbose)
-			bSocial.sendMessage(bSocial.NAME, m_player, "Sorry you do not have permission to do this");
+			bSocial.sendMessage(bSocial.MODULE.getName(), m_player, "Sorry you do not have permission to do this");
 		
 		return false;
 	}

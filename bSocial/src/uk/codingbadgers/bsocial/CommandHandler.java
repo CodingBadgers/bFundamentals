@@ -16,7 +16,7 @@ import uk.codingbadgers.bsocial.players.ChatPlayer;
  */
 public class CommandHandler {
 
-	// bSocial.sendMessage(bSocial.NAME, sender, "Channel command");
+	// bSocial.sendMessage(bSocial.MODULE.getName(), sender, "Channel command");
 	/**
 	 * Base command handling method.
 	 *
@@ -38,7 +38,7 @@ public class CommandHandler {
 			ChatPlayer player = bSocial.getPlayerManager().findPlayer(sender);
 			
 			if (player == null) {
-				bSocial.sendMessage(bSocial.NAME, sender, "Sorry an error has occured and we cannot let you use this command, please tell the owner");
+				bSocial.sendMessage(bSocial.MODULE.getName(), sender, "Sorry an error has occured and we cannot let you use this command, please tell the owner");
 				return true;
 			}
 			
@@ -128,7 +128,7 @@ public class CommandHandler {
 	 */
 	private static void handleMessageCommand(Player sender, String command, String[] args) {
 		if (args.length < 1) {
-			bSocial.sendMessage(bSocial.NAME, sender, "/" + command + " <message>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), sender, "/" + command + " <message>");
 			return;
 		}
 		
@@ -136,12 +136,12 @@ public class CommandHandler {
 		ChatPlayer player = bSocial.getPlayerManager().findPlayer(sender);
 		
 		if (channel == null || player == null) {
-			bSocial.sendMessage(bSocial.NAME, sender, "Something is wrong, please tell the sever owner");
+			bSocial.sendMessage(bSocial.MODULE.getName(), sender, "Something is wrong, please tell the sever owner");
 			return;
 		}
 		
 		if (!player.isPartOf(channel)) {
-			bSocial.sendMessage(bSocial.NAME, sender, "Sorry you have to join the channel before you can speak in it");
+			bSocial.sendMessage(bSocial.MODULE.getName(), sender, "Sorry you have to join the channel before you can speak in it");
 			return;
 		}
 		
@@ -172,7 +172,7 @@ public class CommandHandler {
 	 */
 	private static void handlePrivateMessage(Player sender, String[] args) {
 		if (args.length < 2) {
-			bSocial.sendMessage(bSocial.NAME, sender, "/pm <player> <message>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), sender, "/pm <player> <message>");
 			return;
 		}
 		
@@ -180,7 +180,7 @@ public class CommandHandler {
 		ChatPlayer to = bSocial.getPlayerManager().findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[0]));
 		
 		if (player == null) {
-			bSocial.sendMessage(bSocial.NAME, sender, "Something is wrong, please tell the sever owner");
+			bSocial.sendMessage(bSocial.MODULE.getName(), sender, "Something is wrong, please tell the sever owner");
 			return;
 		}
 		
@@ -188,7 +188,7 @@ public class CommandHandler {
 			return;
 		
 		if (to == null) {
-			bSocial.sendMessage(bSocial.NAME, sender, "Sorry that player is not online");
+			bSocial.sendMessage(bSocial.MODULE.getName(), sender, "Sorry that player is not online");
 			return;
 		}
 		
@@ -221,7 +221,7 @@ public class CommandHandler {
 		if (!player.hasPermission("bsocial.command.admin.reload", true))
 			return;
 		
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry you cannot reload this modules at the moment via commands");
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Sorry you cannot reload this modules at the moment via commands");
 		// reload the plugin, will sort out later
 	}
 
@@ -242,7 +242,7 @@ public class CommandHandler {
 		
 		List<ChatPlayer> players = channel.getPlayers();
 		
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), channel.getChannelName() + "(" + players.size() + ")");
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), channel.getChannelName() + "(" + players.size() + ")");
 		
 		StringBuilder message = new StringBuilder();
 		boolean first = true;
@@ -270,7 +270,7 @@ public class CommandHandler {
 			channel = bSocial.getChannelManager().getChannel(args[1]);
 		}
 		
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), channel.getChannelName() + ":");
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), channel.getChannelName() + ":");
 		player.getPlayer().sendMessage(ChatColor.GREEN + "Nick: " + ChatColor.WHITE + channel.getNick());
 		player.getPlayer().sendMessage(ChatColor.GREEN + "Format: " + ChatColor.WHITE + channel.getFormat());
 		player.getPlayer().sendMessage(ChatColor.GREEN + "Colour: " + ChatColor.WHITE + channel.getColour() + ConfigManager.convertChatColour(channel.getColour()).toLowerCase());
@@ -287,26 +287,26 @@ public class CommandHandler {
 			return;
 		
 		if (args.length != 2) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat mute <name>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat mute <name>");
 			return;	
 		}
 		
 		ChatPlayer target = bSocial.getPlayerManager().findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[1]));
 		
 		if (target == null) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that player is not online");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Sorry that player is not online");
 			return;
 		}
 		
 		if (!target.isMuted()) {
 			target.setMuted(true);
 		} else {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), target.getPlayer().getName() + " is already muted");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), target.getPlayer().getName() + " is already muted");
 			return;
 		}
 		
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), target.getPlayer().getName() + " has been muted");
-		bSocial.sendMessage(bSocial.NAME, target.getPlayer(), "You have been muted by " + player.getPlayer().getName());
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), target.getPlayer().getName() + " has been muted");
+		bSocial.sendMessage(bSocial.MODULE.getName(), target.getPlayer(), "You have been muted by " + player.getPlayer().getName());
 		
 	}
 	
@@ -321,26 +321,26 @@ public class CommandHandler {
 			return;
 		
 		if (args.length != 2) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat unmute <name>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat unmute <name>");
 			return;	
 		}
 		
 		ChatPlayer target = bSocial.getPlayerManager().findPlayer(bSocial.PLUGIN.getServer().getPlayer(args[1]));
 		
 		if (target == null) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that player is not online");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Sorry that player is not online");
 			return;
 		}
 		
 		if (target.isMuted()) {
 			target.setMuted(false);
 		} else {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), target.getPlayer().getName() + " not muted");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), target.getPlayer().getName() + " not muted");
 			return;
 		}
 		
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), target.getPlayer().getName() + " has been unmuted");
-		bSocial.sendMessage(bSocial.NAME, target.getPlayer(), "You have been unmuted by " + player.getPlayer().getName());
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), target.getPlayer().getName() + " has been unmuted");
+		bSocial.sendMessage(bSocial.MODULE.getName(), target.getPlayer(), "You have been unmuted by " + player.getPlayer().getName());
 		
 	}
 
@@ -356,7 +356,7 @@ public class CommandHandler {
 			return;
 		
 		List<ChatChannel> channels = bSocial.getChannelManager().getChannels();
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Channels:");
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Channels:");
 		
 		for (int i = 0; i < channels.size(); i++) {
 			ChatChannel channel = channels.get(i);
@@ -375,14 +375,14 @@ public class CommandHandler {
 			return;
 		
 		if (args.length != 2) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat join <channel>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat join <channel>");
 			return;
 		}
 		
 		ChatChannel channel = bSocial.getChannelManager().getChannel(args[1]);
 		
 		if (channel == null) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that channel does not exist");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Sorry that channel does not exist");
 			return;
 		}
 		
@@ -390,12 +390,12 @@ public class CommandHandler {
 			return;
 		
 		if (player.isPartOf(channel)) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "You are already in that channel, and cannot join it again");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "You are already in that channel, and cannot join it again");
 			return;
 		}
 		
 		player.joinChannel(channel);
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "You have joined " + channel.getChannelName());	
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "You have joined " + channel.getChannelName());	
 	}
 
 	/**
@@ -410,14 +410,14 @@ public class CommandHandler {
 			return;
 		
 		if (args.length != 2) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat leave <channel>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat leave <channel>");
 			return;
 		}
 		
 		ChatChannel channel = bSocial.getChannelManager().getChannel(args[1]);
 		
 		if (channel == null) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that channel does not exist");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Sorry that channel does not exist");
 			return;
 		}
 		
@@ -425,12 +425,12 @@ public class CommandHandler {
 			return;
 		
 		if (!player.isPartOf(channel)) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "You are not in that channel, so you cant leave it");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "You are not in that channel, so you cant leave it");
 			return;
 		}
 		
 		player.leaveChannel(channel);
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "You have left " + channel.getChannelName());			
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "You have left " + channel.getChannelName());			
 	}
 
 	/**
@@ -445,19 +445,19 @@ public class CommandHandler {
 			return;
 		
 		if (args.length != 2) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat focus <channel>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat focus <channel>");
 			return;
 		}
 		
 		ChatChannel channel = bSocial.getChannelManager().getChannel(args[1]);
 		
 		if (channel == null) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that channel does not exist");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Sorry that channel does not exist");
 			return;
 		}
 		
 		player.focusOn(channel);
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "You have focused on " + channel.getChannelName());					
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "You have focused on " + channel.getChannelName());					
 	}
 	
 	/**
@@ -472,7 +472,7 @@ public class CommandHandler {
 			return;
 		
 		if (args.length < 2) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat create <channel> [colour] [nick] [tweet]");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat create <channel> [colour] [nick] [tweet]");
 			return;
 		}
 		
@@ -493,7 +493,7 @@ public class CommandHandler {
 		
 		bSocial.getChannelManager().addChannel(channel);
 		bSocial.getConfigManager().createChannelConfig(channel);
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Channel " + name + " added to the game");
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Channel " + name + " added to the game");
 	}
 	
 	/**
@@ -508,20 +508,20 @@ public class CommandHandler {
 			return;
 		
 		if (args.length != 2) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat remove <channel>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat remove <channel>");
 			return;
 		}
 		
 		ChatChannel channel = bSocial.getChannelManager().getChannel(args[1]);
 		
 		if (channel == null) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "That channel doesn't exist so you can't remove it");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "That channel doesn't exist so you can't remove it");
 			return;
 		}
 		
 		bSocial.getChannelManager().removeChannel(channel);
 		bSocial.getConfigManager().removeChannel(channel);
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "You have removed " + channel.getChannelName());
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "You have removed " + channel.getChannelName());
 	}
 	
 	/**
@@ -535,14 +535,14 @@ public class CommandHandler {
 			return;
 		
 		if (args.length != 4) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "/chat edit <channel> <option> <value>");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "/chat edit <channel> <option> <value>");
 			return;
 		}
 		
 		ChatChannel channel = bSocial.getChannelManager().getChannel(args[1]);
 		
 		if (channel == null) {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "That channel doesn't exist so you can't edit it");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "That channel doesn't exist so you can't edit it");
 			return;
 		}
 		
@@ -555,17 +555,17 @@ public class CommandHandler {
 			try {
 				channel.setColour(ChatColor.valueOf(value.toUpperCase()));
 			} catch (Exception ex) {
-				bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "Sorry that is not a valid colour");
+				bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "Sorry that is not a valid colour");
 				return;
 			}
 		} else if (option.equalsIgnoreCase("tweet")) {
 			channel.setTweet(Boolean.valueOf(value));
 		} else {
-			bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "That is not a valid option, use on of: nick(nickname), colour or tweet");
+			bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "That is not a valid option, use on of: nick(nickname), colour or tweet");
 			return;
 		}
 		
-		bSocial.sendMessage(bSocial.NAME, player.getPlayer(), "You have set " + option + " to " + value + " in " + channel.getChannelName());
+		bSocial.sendMessage(bSocial.MODULE.getName(), player.getPlayer(), "You have set " + option + " to " + value + " in " + channel.getChannelName());
 		
 	}
 

@@ -17,12 +17,6 @@ import uk.codingbadgers.bsocial.players.PlayerManager;
  * The Class bSocial.
  */
 public class bSocial extends Module{
-
-	/** The Constant NAME. */
-	public static final String NAME = "bSocial";
-	
-	/** The Constant VERSION. */
-	public static final String VERSION = "1.0";
 	
 	/** The plugin. */
 	public static bFundamentals PLUGIN = null;
@@ -38,14 +32,6 @@ public class bSocial extends Module{
 	
 	/** The player manager. */
 	private static PlayerManager m_playerManager = null;
-	
-	
-	/**
-	 * Instantiates a new b social.
-	 */
-	public bSocial() {
-		super(NAME, VERSION);
-	}
 
 	/* (non-Javadoc)
 	 * @see uk.codingbadgers.bFundamentals.module.Module#onLoad()
@@ -75,7 +61,7 @@ public class bSocial extends Module{
 		
 		register(new ChatListener());
 		
-		log(Level.INFO, NAME + " v: " + VERSION + " is enabled");
+		log(Level.INFO, getName() + " v: " + getVersion() + " is enabled");
 	}
 
 	/* (non-Javadoc)
@@ -84,7 +70,7 @@ public class bSocial extends Module{
 	@Override
 	public void onDisable() {
 		m_channelManager.clear();
-		log(Level.INFO, NAME + " v: " + VERSION + " is disabled");
+		log(Level.INFO, getName() + " v: " + getVersion() + " is disabled");
 	}
 	 
 	 /**

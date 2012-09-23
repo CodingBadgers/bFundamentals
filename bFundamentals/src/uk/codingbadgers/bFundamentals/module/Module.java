@@ -77,13 +77,25 @@ public abstract class Module extends Loadable implements Listener {
 	 * @param name the name of the module
 	 * @param version the version of the module
 	 */
+	@Deprecated
 	public Module(String name, String version) {
-		super(name);
-		m_version = version;
+		super();
+		m_version = getDesciption().getVersion();
 		m_plugin = bFundamentals.getInstance();
 		m_database = bFundamentals.getBukkitDatabase();
 		m_permissions = bFundamentals.getPermissions();
-		m_name = name;
+		m_name = getDesciption().getName();;
+		m_debug = bFundamentals.getConfigurationManager().getDebug();
+		m_log = new ModuleLogger(this);
+	}
+	
+	public Module() {
+		super();
+		m_version = getDesciption().getVersion();
+		m_plugin = bFundamentals.getInstance();
+		m_database = bFundamentals.getBukkitDatabase();
+		m_permissions = bFundamentals.getPermissions();
+		m_name = getDesciption().getName();
 		m_debug = bFundamentals.getConfigurationManager().getDebug();
 		m_log = new ModuleLogger(this);
 	}

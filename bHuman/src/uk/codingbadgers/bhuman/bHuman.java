@@ -15,25 +15,11 @@ import uk.codingbadgers.bFundamentals.module.Module;
  * The base module class for bHuman
  */
 public class bHuman extends Module {
-
-	/** The Constant NAME. */
-	public static final String NAME = "bHuman";
-	
-	/** The Constant VERSION. */
-	public static final String VERSION = "1.0";
-	
 	/** The module instance. */
 	public static bHuman MODULE = null;
 	
 	private static NPCManager m_npcManager = null;
 	private static DatabaseManager m_dbManager = null;
-	
-	/**
-	 * Instantiates a new bHuman module.
-	 */
-	public bHuman() {
-		super(NAME, VERSION);
-	}
 
 	public void onLoad() {
 		m_npcManager = new NPCManager(m_plugin);

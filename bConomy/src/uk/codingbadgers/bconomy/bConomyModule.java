@@ -12,29 +12,15 @@ import uk.codingbadgers.bconomy.config.DatabaseManager;
 
 public class bConomyModule extends Module {
 
-	/** The Constant NAME of the module. */
-	final public static String NAME = "bConomy";
-	
-	/** The Constant VERSION of the module. */
-	final public static String VERSION = "1.00";
-
 	/** The player listener. */
 	private final PlayerListener m_playerListener = new PlayerListener();
-	
-	/**
-	 * The bConomy module constructor
-	 * passing the name and version to its base class
-	 */
-	public bConomyModule() {
-		super(NAME, VERSION);
-	}
 
 	/**
 	 * This is called when the module is unloaded
 	 */
 	@Override
 	public void onDisable() {
-		log(Level.INFO, NAME + " has been disabled successfuly");
+		log(Level.INFO, getDesciption().getName() + " has been disabled successfuly");
 	}
 
 	/**
@@ -61,7 +47,7 @@ public class bConomyModule extends Module {
 		Config.setupConfig();
 		DatabaseManager.setupDatabase(m_plugin);
 		
-		log(Level.INFO, NAME + " has been enabled successfuly");
+		log(Level.INFO, getDesciption().getName() + " has been enabled successfuly");
 	}
 	
 	/**

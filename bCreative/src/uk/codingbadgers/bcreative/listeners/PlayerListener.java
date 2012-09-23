@@ -27,7 +27,7 @@ public class PlayerListener implements Listener {
 			return;
 		
 		event.setCancelled(true);
-		bCreative.sendMessage(bCreative.NAME, player, "Sorry that gamemode is not enabled in this world");
+		bCreative.sendMessage(bCreative.getInstance().getDesciption().getName(), player, "Sorry that gamemode is not enabled in this world");
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

@@ -10,13 +10,6 @@ import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bsocks.threading.ListenerThread;
 
 public class bSocksModule extends Module {
-	
-	/** The Constant NAME of the module. */
-	final public static String NAME = "bSocks";
-	
-	/** The Constant VERSION of the module. */
-	final public static String VERSION = "1.00";
-
 	/** The listener thread. */
 	private ListenerThread m_listenerThread = null;
 	
@@ -28,20 +21,13 @@ public class bSocksModule extends Module {
 	
 	/** The password. */
 	private String m_password = "mypassword";
-	
-	/**
-	 * Instantiates a new bSocksModule.
-	 */
-	public bSocksModule() {
-		super(NAME, VERSION);
-	}
- 
+
 	/**
 	 * Called when the module is disabled. Here we need to kill the listener thread
 	 */
 	public void onDisable() {
 		m_listenerThread.kill();		
-		log(Level.INFO,  "Module Version " + VERSION + " disabled.");
+		log(Level.INFO,  "Module Version " + getVersion() + " disabled.");
 	}
 
 	/**
@@ -54,13 +40,13 @@ public class bSocksModule extends Module {
 		try {
 			m_listenSock = new ServerSocket(m_port);
 			m_listenerThread = new ListenerThread(m_plugin, m_listenSock, m_password, this);
-			m_listenerThread.setName(NAME + "-listenerThread");
+			m_listenerThread.setName(getName() + "-listenerThread");
 			m_listenerThread.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		log(Level.INFO,  "Module Version " + VERSION + " enabled.");
+		log(Level.INFO,  "Module Version " + getVersion() + " enabled.");
 	}
 	
 	/**

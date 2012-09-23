@@ -36,7 +36,7 @@ public class GamemodePlayer extends BasePlayer{
 	}
 	
 	public void sendMessage(String message) {
-		bCreative.sendMessage(bCreative.NAME, m_player, message);
+		bCreative.sendMessage(bCreative.getInstance().getDesciption().getName(), m_player, message);
 	}
 
 	public boolean hasPermission(String node, boolean verbose) {

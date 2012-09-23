@@ -13,7 +13,7 @@ public class CommandHandler {
 		
 		if (commandLabel.equalsIgnoreCase("npc")) {
 			if (args.length == 0) {
-				bHuman.sendMessage(bHuman.NAME, player, "/npc help");
+				bHuman.sendMessage(bHuman.MODULE.getName(), player, "/npc help");
 				return true;
 			}
 			
@@ -44,7 +44,7 @@ public class CommandHandler {
 	
 	private static void handleInvincibleCommand(Player player, String[] args) {
 		if (args.length < 2) {
-			bHuman.sendMessage(bHuman.NAME, player, "/npc health <name> [health]");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player, "/npc health <name> [health]");
 			return;
 		}
 		
@@ -52,12 +52,12 @@ public class CommandHandler {
 		HumanNPC npc = (HumanNPC) bHuman.getNPCManager().getHumanNPCByName(name).get(0);
 		
 		if (npc == null) {
-			bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Sorry that npc doesn't exit");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player.getPlayer(), "Sorry that npc doesn't exit");
 			return;
 		}
 		
 		if (args.length == 2) {
-			bHuman.sendMessage(bHuman.NAME, player, name + " has " + npc.getHealth() + " lives left");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player, name + " has " + npc.getHealth() + " lives left");
 			return;
 		}
 		
@@ -71,18 +71,18 @@ public class CommandHandler {
 			
 			npc.setHealth(health);
 		} catch (NumberFormatException ex) {
-			bHuman.sendMessage(bHuman.NAME, player, "Could not parse " + args[2] + " as a number");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player, "Could not parse " + args[2] + " as a number");
 			return;
 		}
 		
-		bHuman.sendMessage(bHuman.NAME, player, "Set " + npc.getName() + "'s health to " + npc.getHealth());
+		bHuman.sendMessage(bHuman.MODULE.getName(), player, "Set " + npc.getName() + "'s health to " + npc.getHealth());
 		bHuman.getDBManager().updateHealth(npc);
 		return;
 	}
 
 	private static void handleCreateCommand(Player player, String[] args) {
 		if (args.length < 2 || args.length > 3) {
-			bHuman.sendMessage(bHuman.NAME, player, "/npc create <name> [item]");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player, "/npc create <name> [item]");
 			return;
 		}
 		
@@ -96,14 +96,14 @@ public class CommandHandler {
 		HumanNPC npc = (HumanNPC)bHuman.getNPCManager().spawnHumanNPC(name, location);
 		npc.setItemInHand(item);
 		npc.lookAtPoint(player.getTargetBlock(null, 100).getLocation());
-		bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Added npc " + name);
+		bHuman.sendMessage(bHuman.MODULE.getName(), player.getPlayer(), "Added npc " + name);
 		bHuman.getDBManager().saveNPC(npc);
 		return;
 	}
 
 	private static void handleRemoveCommand(Player player, String[] args) {
 		if (args.length != 2) {
-			bHuman.sendMessage(bHuman.NAME, player, "/npc remove <name>");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player, "/npc remove <name>");
 			return;
 		}
 		
@@ -111,19 +111,19 @@ public class CommandHandler {
 		HumanNPC npc = (HumanNPC) bHuman.getNPCManager().getHumanNPCByName(name).get(0);
 		
 		if (npc == null) {
-			bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Sorry that npc doesn't exit");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player.getPlayer(), "Sorry that npc doesn't exit");
 			return;
 		}
 		
 		bHuman.getNPCManager().despawnHumanByName(name);
-		bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Removed npc " + name);
+		bHuman.sendMessage(bHuman.MODULE.getName(), player.getPlayer(), "Removed npc " + name);
 		bHuman.getDBManager().removeNPC(npc);
 		return;
 	}
 
 	private static void handleChatMessageChange(Player player, String[] args) {
 		if (args.length <= 2) {
-			bHuman.sendMessage(bHuman.NAME, player, "/npc chat <name> [message]");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player, "/npc chat <name> [message]");
 			return;
 		}
 		
@@ -131,7 +131,7 @@ public class CommandHandler {
 		HumanNPC npc = (HumanNPC) bHuman.getNPCManager().getHumanNPCByName(name).get(0);
 		
 		if (npc == null) {
-			bHuman.sendMessage(bHuman.NAME, player.getPlayer(), "Sorry that npc doesn't exit");
+			bHuman.sendMessage(bHuman.MODULE.getName(), player.getPlayer(), "Sorry that npc doesn't exit");
 			return;
 		}
 		
@@ -142,7 +142,7 @@ public class CommandHandler {
 		String chatMessage = sb.toString().trim();
 		
 		npc.setMessage(formatString(chatMessage));
-		bHuman.sendMessage(bHuman.NAME, player, "Changed " + npc.getName() + "'s message to " + formatString(chatMessage));
+		bHuman.sendMessage(bHuman.MODULE.getName(), player, "Changed " + npc.getName() + "'s message to " + formatString(chatMessage));
 		bHuman.getDBManager().addChatMessage(npc);
 		return;
 	}

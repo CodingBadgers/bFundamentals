@@ -26,12 +26,6 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
  */
 public class bSignModule extends Module {
 	
-	/** The Constant NAME of the module. */
-	final public static String NAME = "bSign";
-	
-	/** The Constant VERSION of the module. */
-	final public static String VERSION = "1.10";
-	
 	/** The player listener. */
 	PlayerListener m_playerListener = new PlayerListener();
 	
@@ -53,13 +47,6 @@ public class bSignModule extends Module {
 	/** Access to the bFundamental database. */
 	public static BukkitDatabase DATABASE = null;
 	
-	/**
-	 * The bSign module constructor
-	 * passing the name and version to its base class
-	 */
-	public bSignModule() {
-		super(NAME, VERSION);
-	}
 
 	/**
 	 * This is called when the module is unloaded
@@ -67,7 +54,7 @@ public class bSignModule extends Module {
 	@Override
 	public void onDisable() {
 		SIGNS.clear();
-		log(Level.INFO,  "Module Version " + VERSION + " disabled.");
+		log(Level.INFO,  getName() + " version " + getVersion() + " disabled.");
 	}
 
 	/**
@@ -102,7 +89,7 @@ public class bSignModule extends Module {
 		register(m_blockListener);	
 		register(m_worldListener);
 		
-		log(Level.INFO,  "Module Version " + VERSION + " enabled.");
+		log(Level.INFO,  getName() + " version " + getVersion() + " disabled.");
 	}
 
 	public static void LoadSignsFromDatabase(String worldName) {

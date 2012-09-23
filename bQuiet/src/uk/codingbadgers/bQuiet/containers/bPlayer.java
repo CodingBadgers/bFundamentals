@@ -61,7 +61,7 @@ public class bPlayer {
 			return true;
 		}
 		
-		bQuiet.sendMessage(bQuiet.NAME, m_player, "You can not talk for the first " + (ConfigManager.LOGINSILENCE * 0.001) + " seconds of logging in.");		
+		bQuiet.sendMessage(bQuiet.getInstance().getName(), m_player, "You can not talk for the first " + (ConfigManager.LOGINSILENCE * 0.001) + " seconds of logging in.");		
 		return false;
 	}
 
@@ -91,14 +91,14 @@ public class bPlayer {
 			if (currentMessage.getMessage().equalsIgnoreCase(chatMessage.getMessage())) {
 				
 				if (chatMessage.getTime() - currentMessage.getTime() < ConfigManager.REPEATMESSAGETIME) {
-					bQuiet.sendMessage(bQuiet.NAME, m_player, "Please do not spam the chat.");
+					bQuiet.sendMessage(bQuiet.getInstance().getName(), m_player, "Please do not spam the chat.");
 					return true;
 				}
 			}
 			
 			if (chatMessage.getTime() - currentMessage.getTime() < ConfigManager.CHATSPEED) {
-				bQuiet.sendMessage(bQuiet.NAME, m_player, "You are speaking too quickly...");
-				bQuiet.sendMessage(bQuiet.NAME, m_player, "Please do not spam the chat.");
+				bQuiet.sendMessage(bQuiet.getInstance().getName(), m_player, "You are speaking too quickly...");
+				bQuiet.sendMessage(bQuiet.getInstance().getName(), m_player, "Please do not spam the chat.");
 				return true;
 			}
 						
@@ -134,7 +134,7 @@ public class bPlayer {
 					chatMessage.forceLowerCase();
 					return false;
 				} else {
-					bQuiet.sendMessage(bQuiet.NAME, m_player, "Please don't speak in all caps.");
+					bQuiet.sendMessage(bQuiet.getInstance().getName(), m_player, "Please don't speak in all caps.");
 					return true;
 				}
 			}
@@ -171,7 +171,7 @@ public class bPlayer {
 		    Matcher hostMatcher = hostPattern.matcher(word);
 
 			if (ipmatcher.matches() || ipPortMatcher.matches() || hostMatcher.matches()) {
-				bQuiet.sendMessage(bQuiet.NAME, m_player, "Please dont advertise other servers");
+				bQuiet.sendMessage(bQuiet.getInstance().getName(), m_player, "Please dont advertise other servers");
 				return true;
 			}
 		}

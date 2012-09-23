@@ -15,9 +15,6 @@ import uk.codingbadgers.bcreative.listeners.PlayerListener;
 import uk.codingbadgers.bcreative.listeners.TeleportListener;
 
 public class bCreative extends Module {
-
-	public static final String NAME = "bCreative";
-	public static final String VERSION = "1.2";
 	
 	private static bCreative m_instance = null;
 	
@@ -30,10 +27,6 @@ public class bCreative extends Module {
 	private TeleportListener m_tpListener = null;
 	private BlockListener m_blockListener = null;
 	private GamemodePlayerListener m_gmPlayerListener = null;
-	
-	public bCreative() {
-		super(NAME, VERSION);
-	}
 	
 	public void onLoad() {
 		m_instance = this;
@@ -62,12 +55,12 @@ public class bCreative extends Module {
 		
 		setUpdater(new BadgerUpdater(this));
 		
-		log(Level.INFO, NAME + " has been enabled successfuly");
+		log(Level.INFO, getDesciption().getName() + " has been enabled successfuly");
 	}
 
 	@Override
 	public void onDisable() {
-		log(Level.INFO, NAME + " has been disabled successfuly");
+		log(Level.INFO, getDesciption().getName() + " has been disabled successfuly");
 	}
 	
 	@Override
