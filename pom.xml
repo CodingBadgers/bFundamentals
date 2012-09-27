@@ -27,6 +27,7 @@
         <module>bSign</module>
         <module>bSocial</module>
         <module>bSocks</module>
+        <module>bAdmin</module>
     </modules>
     
     <repositories>
@@ -63,7 +64,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.3.2-R0.1</version>
+            <version>1.3.2-R0.2</version>
         </dependency>
     </dependencies>
     
