@@ -244,7 +244,13 @@ public class bFundamentals extends JavaPlugin {
 			
 			if (args[1].equalsIgnoreCase("unload")) {
 				if (args.length == 3) {
-					m_moduleLoader.unload(m_moduleLoader.getModule(args[2]));
+					Module module = m_moduleLoader.getModule(args[2]);
+					
+					if (module == null) {
+						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on this server, do /modules for a list that are");
+						return;
+					}
+					m_moduleLoader.unload(module);
 					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Unloaded " + args[2]);
 					return;
 				}
@@ -272,7 +278,13 @@ public class bFundamentals extends JavaPlugin {
 			if (args[1].equalsIgnoreCase("reload")) {
 				
 				if (args.length == 3) {
-					m_moduleLoader.unload(m_moduleLoader.getModule(args[2]));
+					Module module = m_moduleLoader.getModule(args[2]);
+					
+					if (module == null) {
+						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on this server, do /modules for a list that are");
+						return;
+					}
+					m_moduleLoader.unload(module);
 					m_moduleLoader.load(args[2]);
 					m_moduleLoader.getModule(args[2]).onEnable();
 					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "ReLoaded " + args[2]);
@@ -305,9 +317,16 @@ public class bFundamentals extends JavaPlugin {
 				return;
 			}
 			
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "use /bFundamentals <reload/load>");
+			if (args[1].equalsIgnoreCase("help")) {
+				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals commands");
+				sender.sendMessage(ChatColor.DARK_AQUA + "module " + ChatColor.WHITE + "- access module load/unload/reload commands");
+				sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a given module");
+				sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
+			}
+			
+			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "use /bFundamentals help");
 			return;
 		}
-		sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals");
+		sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals help");
 	}
 }

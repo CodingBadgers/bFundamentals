@@ -9,9 +9,8 @@ import java.util.logging.Level;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-import com.nodinchan.ncbukkit.loader.Loader;
-
 import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.module.loader.Loader;
 
 /**
  * The ModuleLoader.
@@ -20,7 +19,7 @@ public class ModuleLoader {
 	
 	/** The List of modules. */
 	private final List<Module> m_modules;
-	private Loader<Module> m_loader;
+	private Loader m_loader;
 
 	/**
 	 * Instantiates a new module loader.
@@ -44,7 +43,7 @@ public class ModuleLoader {
 	 * Loads the modules.
 	 */
 	public void load() {
-		m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
+		m_loader = new Loader(bFundamentals.getInstance(), getModuleDir());
 		m_modules.addAll(m_loader.sort(m_loader.load()));
 		
 		for (Module module : m_modules) {
@@ -72,7 +71,7 @@ public class ModuleLoader {
 	 */
 	public void load(File file) {
 		if (m_loader == null) 
-			m_loader = new Loader<Module>(bFundamentals.getInstance(), getModuleDir());
+			m_loader = new Loader(bFundamentals.getInstance(), getModuleDir());
 		
 		if (getModule(file) != null)
 			throw new IllegalArgumentException("Module " + file.getName() + " is already loaded");

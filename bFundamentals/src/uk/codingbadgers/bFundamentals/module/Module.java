@@ -19,10 +19,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import com.nodinchan.ncbukkit.loader.Loadable;
-
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
+import uk.codingbadgers.bFundamentals.module.loader.Loadable;
 import uk.codingbadgers.bFundamentals.update.UpdateThread;
 import uk.codingbadgers.bFundamentals.update.Updater;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
@@ -39,10 +38,10 @@ public abstract class Module extends Loadable implements Listener {
 	private final ModuleLogger m_log;
 	
 	/** The version of the module. */
-	private final String m_version;
+	private String m_version;
 	
 	/** The name of the module. */
-	private final String m_name;
+	private String m_name;
 	
 	/** The Update thread for this module */
 	private UpdateThread m_updater;
@@ -74,30 +73,20 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Instantiates a new module.
 	 *
-	 * @param name the name of the module
-	 * @param version the version of the module
+	 * @param ldf the modules desciption file
 	 */
-	@Deprecated
-	public Module(String name, String version) {
-		super();
-		m_version = getDesciption().getVersion();
-		m_plugin = bFundamentals.getInstance();
-		m_database = bFundamentals.getBukkitDatabase();
-		m_permissions = bFundamentals.getPermissions();
-		m_name = getDesciption().getName();;
-		m_debug = bFundamentals.getConfigurationManager().getDebug();
-		m_log = new ModuleLogger(this);
-	}
-	
 	public Module() {
 		super();
-		m_version = getDesciption().getVersion();
 		m_plugin = bFundamentals.getInstance();
 		m_database = bFundamentals.getBukkitDatabase();
-		m_permissions = bFundamentals.getPermissions();
-		m_name = getDesciption().getName();
 		m_debug = bFundamentals.getConfigurationManager().getDebug();
 		m_log = new ModuleLogger(this);
+		m_permissions = bFundamentals.getPermissions();
+	}
+	
+	public void init() {
+		m_version = getDesciption().getVersion();
+		m_name = getDesciption().getName();
 	}
 	
 	protected void setUpdater(Updater updater) {

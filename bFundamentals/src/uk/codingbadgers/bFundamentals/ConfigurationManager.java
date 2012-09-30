@@ -2,7 +2,6 @@ package uk.codingbadgers.bFundamentals;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ConfigurationManager.
  * Handles loading of the configuration and access to
