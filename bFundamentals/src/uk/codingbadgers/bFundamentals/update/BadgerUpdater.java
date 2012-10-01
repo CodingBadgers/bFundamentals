@@ -34,7 +34,6 @@ public class BadgerUpdater extends Updater {
 		
 		try {
 			m_repository = new URL("http://repository-codingbadgers.forge.cloudbees.com/snapshot/uk/thecodingbadgers/" + module.getName());
-			System.out.println(m_repository.getHost() + m_repository.getPath());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -72,6 +71,10 @@ public class BadgerUpdater extends Updater {
 		
 		if (website.endsWith("-SNAPSHOT")) {
 			website = website.substring(0, website.indexOf("-SNAPSHOT"));
+		}
+		
+		if (current.endsWith("-SNAPSHOT")) {
+			current = current.substring(0, website.indexOf("-SNAPSHOT"));
 		}
 		
 		String[] currentArray = current.split("\\.");
@@ -145,7 +148,6 @@ public class BadgerUpdater extends Updater {
 		}
 		
 		m_downloadLink = new URL(m_repository + "/" + m_newVersion + "/" + artifact + "-" + m_newVersion + ".jar");
-		System.out.println(m_downloadLink);
 		
 		File output = new File(m_downloadFolder + File.separator + m_module.getName() + ".jar");
 		if (output.exists()) {

@@ -59,9 +59,9 @@ public class ConfigurationManager {
 		m_language = config.getString("general.language");
 		m_debug = config.getBoolean("general.debug");
 		
-		m_autoUpdate = config.getBoolean("general.update.enabled");
-		m_autoDownload = config.getBoolean("general.update.download");
-		m_autoApply = config.getBoolean("general.update.apply");
+		m_autoUpdate = config.getBoolean("module.update.enabled");
+		m_autoDownload = config.getBoolean("module.update.download");
+		m_autoApply = config.getBoolean("module.update.apply");
 		
 		m_logPrefix = config.getString("module.logging.prefix");
 	}

@@ -35,7 +35,7 @@ public abstract class Module extends Loadable implements Listener {
 	protected final bFundamentals m_plugin;
 	
 	/** The logger for this module */
-	private final ModuleLogger m_log;
+	private ModuleLogger m_log;
 	
 	/** The version of the module. */
 	private String m_version;
@@ -80,13 +80,13 @@ public abstract class Module extends Loadable implements Listener {
 		m_plugin = bFundamentals.getInstance();
 		m_database = bFundamentals.getBukkitDatabase();
 		m_debug = bFundamentals.getConfigurationManager().getDebug();
-		m_log = new ModuleLogger(this);
 		m_permissions = bFundamentals.getPermissions();
 	}
 	
 	public void init() {
 		m_version = getDesciption().getVersion();
 		m_name = getDesciption().getName();
+		m_log = new ModuleLogger(this);
 	}
 	
 	protected void setUpdater(Updater updater) {
