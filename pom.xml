@@ -27,7 +27,7 @@
         <module>bSign</module>
         <module>bSocial</module>
         <module>bSocks</module>
-        <module>bAdmin</module>
+        <!--<module>bAdmin</module> -->
     </modules>
     
     <repositories>
