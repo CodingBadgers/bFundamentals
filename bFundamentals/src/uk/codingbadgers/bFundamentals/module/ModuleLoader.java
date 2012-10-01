@@ -99,6 +99,9 @@ public class ModuleLoader {
 	 */
 	public void unload(Module module) {
 		module.onDisable();
+		for (Listener listener : module.getListeners()) {
+			HandlerList.unregisterAll(listener);
+		}
 		m_modules.remove(module);
 	}
 	
