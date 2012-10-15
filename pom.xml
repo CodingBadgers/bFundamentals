@@ -17,6 +17,7 @@
     
     <modules>
         <module>bFundamentals</module>
+		<module>bAnimalCare</module>
         <module>bHelpful</module>
         <module>bConomy</module>
         <module>bCreative</module>
