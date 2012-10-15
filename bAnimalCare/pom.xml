@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -12,27 +11,40 @@
     <artifactId>bAnimalCare</artifactId>
 	
 	<repositories>
+	    
+	    <repository>
+      		<id>spout-repo</id>
+     	 	<url>http://repo.spout.org</url>
+    	</repository>
+    	
 		<repository>
-			<id>sk89q-repo</id>
-			<url>http://maven.sk89q.com/repo/</url>
+			<id>sk89q-maven</id>
+			<url>http://maven.sk89q.com/repo</url>
 		</repository>
+		
 	</repositories>
-
+	
     <dependencies>
+        <dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldedit</artifactId>
+			<version>5.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldguard</artifactId>
+			<version>5.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
         <dependency>
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
-        </dependency>
-		<dependency>
-            <artifactId>worldedit</artifactId>
-            <groupId>com.sk89q</groupId>
-            <version>5.5-SNAPSHOT</version>
-        </dependency>
-		<dependency>
-            <artifactId>worldguard</artifactId>
-            <groupId>com.sk89q</groupId>
-            <version>5.6-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
