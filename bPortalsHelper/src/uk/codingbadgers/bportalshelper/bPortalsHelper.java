@@ -45,16 +45,6 @@ public class bPortalsHelper extends Module {
 	private static MultiversePortals m_multiversePortals = null;
 
 	/**
-	 * Instantiates the bPortals modules.
-	 *
-	 * @param name the name
-	 * @param version the version
-	 */
-	public bPortalsHelper() {
-		super(NAME, VERSION);
-	}
-
-	/**
 	 * Called when the module is disabled.
 	 */
 	public void onDisable() {

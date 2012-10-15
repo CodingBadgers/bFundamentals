@@ -23,7 +23,7 @@
         <module>bCreative</module>
         <module>bHuman</module>
 		<module>bLogBackup</module>
-        <!--<module>bPortalsHelper</module> seems to be shitting itself building this module, something todo with spout, probably multiverse fucking up-->
+        <module>bPortalsHelper</module>
         <module>bQuiet</module>
         <module>bShortLinks</module>
         <module>bSign</module>
