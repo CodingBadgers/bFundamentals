@@ -19,7 +19,6 @@
         <module>bFundamentals</module>
 		<module>bAnimalCare</module>
         <module>bHelpful</module>
-        <module>bConomy</module>
         <module>bCreative</module>
         <module>bHuman</module>
 		<module>bLogBackup</module>
@@ -29,7 +28,6 @@
         <module>bSign</module>
         <module>bSocial</module>
         <module>bSocks</module>
-        <!--<module>bAdmin</module> -->
     </modules>
     
     <repositories>
