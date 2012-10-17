@@ -3,6 +3,7 @@ package uk.codingbadgers.banimalcare;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -44,19 +45,13 @@ public class bAnimalCare extends Module implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerAttack(EntityDamageByEntityEvent event) {
 		
-		debugConsole("OnPlayerAttack");
-		
 		// If the damager isnt a player, return
 		if (!(event.getDamager() instanceof Player))
 			return;
 		
-		debugConsole("Attacker is Human");
-		
 		// If the entity isnt a mob, return
 		if (event.getEntity() instanceof Player)
 			return;
-		
-		debugConsole("entity isnt a player");
 		
 		final Player attacker = (Player)event.getDamager();
 		final Entity mob = event.getEntity();
@@ -90,14 +85,10 @@ public class bAnimalCare extends Module implements Listener {
 		if (isHarmful)
 			return;
 		
-		debugConsole("mob is peaceful");
-		
 		// get the region from the mobs location
 		final ProtectedRegion region = getChildRegionFromLocation(attacker, mob.getLocation());
 		if (region == null)
 			return;
-		
-		debugConsole("in a region");
 		
 		// if they are a owner, then continue with the event
 		Iterator<String> owners = region.getOwners().getPlayers().iterator();
@@ -115,9 +106,11 @@ public class bAnimalCare extends Module implements Listener {
         		return;
         }
 		
-        attacker.sendMessage("&b[bAnimalCare] &fYou can not kill animals in this safezone.");
-        attacker.sendMessage("&b[bAnimalCare] &fYou must own or be a member of the safezone first.");
-        event.setCancelled(true);        
+        if (!Module.hasPermission(attacker, "banimalcare.override")) {
+	        attacker.sendMessage(ChatColor.DARK_AQUA + "[bAnimalCare] " + ChatColor.WHITE + "You can not kill animals in this safezone.");
+	        attacker.sendMessage(ChatColor.DARK_AQUA + "[bAnimalCare] " + ChatColor.WHITE + "You must own or be a member of the safezone first.");
+	        event.setCancelled(true);        
+        }
 	}
 	
 	/**
