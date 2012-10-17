@@ -34,6 +34,8 @@ public class bAnimalCare extends Module implements Listener {
 	 */
 	public void onEnable() {
 		WORLDGUARD = (WorldGuardPlugin)m_plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+		
+		register(this);
 	}
 	
 	/**
@@ -42,13 +44,19 @@ public class bAnimalCare extends Module implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerAttack(EntityDamageByEntityEvent event) {
 		
+		debugConsole("OnPlayerAttack");
+		
 		// If the damager isnt a player, return
 		if (!(event.getDamager() instanceof Player))
 			return;
 		
+		debugConsole("Attacker is Human");
+		
 		// If the entity isnt a mob, return
 		if (event.getEntity() instanceof Player)
 			return;
+		
+		debugConsole("entity isnt a player");
 		
 		final Player attacker = (Player)event.getDamager();
 		final Entity mob = event.getEntity();
@@ -77,10 +85,14 @@ public class bAnimalCare extends Module implements Listener {
 		if (mob.getType() != EntityType.WOLF)
 			return;
 		
+		debugConsole("mob is peaceful");
+		
 		// get the region from the mobs location
 		final ProtectedRegion region = getChildRegionFromLocation(attacker, mob.getLocation());
 		if (region == null)
 			return;
+		
+		debugConsole("in a region");
 		
 		// if they are a owner, then continue with the event
 		Iterator<String> owners = region.getOwners().getPlayers().iterator();
