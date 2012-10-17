@@ -61,28 +61,33 @@ public class bAnimalCare extends Module implements Listener {
 		final Player attacker = (Player)event.getDamager();
 		final Entity mob = event.getEntity();
 		
+		boolean isHarmful = true;
+		
 		if (mob.getType() != EntityType.CHICKEN)
-			return;
+			isHarmful = false;
 		
 		if (mob.getType() != EntityType.COW)
-			return;
+			isHarmful = false;
 		
 		if (mob.getType() != EntityType.MUSHROOM_COW)
-			return;
+			isHarmful = false;
 		
 		if (mob.getType() != EntityType.OCELOT)
-			return;
+			isHarmful = false;
 		
 		if (mob.getType() != EntityType.PIG)
-			return;
+			isHarmful = false;
 		
 		if (mob.getType() != EntityType.SHEEP)
-			return;
+			isHarmful = false;
 		
 		if (mob.getType() != EntityType.VILLAGER)
-			return;
+			isHarmful = false;
 		
 		if (mob.getType() != EntityType.WOLF)
+			isHarmful = false;
+		
+		if (isHarmful)
 			return;
 		
 		debugConsole("mob is peaceful");
