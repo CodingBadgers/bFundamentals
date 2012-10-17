@@ -28,6 +28,7 @@
         <module>bSign</module>
         <module>bSocial</module>
         <module>bSocks</module>
+		<module>bFixingOtherWankPlugins</module>
     </modules>
     
     <repositories>
