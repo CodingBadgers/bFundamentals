@@ -64,18 +64,28 @@ public class bLogBackup extends Module {
 	 */
 	private String backupLog() {
 		
+		final Date date = new Date();
 		final String currentDir = System.getProperty("user.dir");
-		
 		final File logFile = new File(currentDir + File.separatorChar + "server.log");
 			
-		final File logBackupFolder = new File(currentDir + File.separatorChar + "logBackups");
+		String logFolder = currentDir + File.separatorChar + "logBackups";
+				
+		DateFormat dateFormat = new SimpleDateFormat("yyyy");
+		logFolder += File.separatorChar + dateFormat.format(date);
+		
+		dateFormat = new SimpleDateFormat("MMMM");
+		logFolder += File.separatorChar + dateFormat.format(date);
+		
+		dateFormat = new SimpleDateFormat("dd");
+		logFolder += File.separatorChar + dateFormat.format(date);
+		
+		final File logBackupFolder = new File(logFolder);
 		if (!logBackupFolder.exists())
-			logBackupFolder.mkdir();
+			logBackupFolder.mkdirs();
 		
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy.HH-mm-ss");
-		Date date = new Date();		
-		final String backupLogName = currentDir + File.separatorChar + "logBackups" + File.separatorChar + "server." + dateFormat.format(date) + ".log";
-		
+		dateFormat = new SimpleDateFormat("dd-MM-yyyy.HH-mm-ss");
+		final String backupLogName = logFolder + File.separatorChar + "server." + dateFormat.format(date) + ".log";
+				
 		try {
 			copyFile(logFile, new File(backupLogName));
 		}
