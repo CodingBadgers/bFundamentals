@@ -1,10 +1,9 @@
-package uk.codingbadgers.bHelpful.commands;
+package uk.codingbadgers.bHelpful;
 
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
-import uk.codingbadgers.bHelpful.bHelpful;
 
 /**
  *  
@@ -29,7 +28,7 @@ public class Output{
      * @param msg1 the prefix
      * @param msg2 the message
      */
-    static public void player(Player player, String msg1, String msg2) {
+    static public void player(CommandSender player, String msg1, String msg2) {
         player.sendMessage(ChatColor.GREEN + msg1 + ChatColor.WHITE + " " + msg2);
     }
     
@@ -39,7 +38,7 @@ public class Output{
      * @param player the player
      * @param msg the msg
      */
-    static public void playerWarning(Player player, String msg) {
+    static public void playerWarning(CommandSender player, String msg) {
         player.sendMessage(ChatColor.GREEN + "[bHelpful]" + ChatColor.RED + " " + msg);
     }
     
@@ -58,7 +57,7 @@ public class Output{
      *
      * @param player the player
      */
-    static public void noPermission(Player player) {
+    static public void noPermission(CommandSender player) {
     	player.sendMessage(ChatColor.RED + "You do not have permission to do this.");
     }
 }

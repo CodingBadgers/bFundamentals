@@ -3,6 +3,7 @@ package uk.codingbadgers.bHelpful.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import ru.tehkode.permissions.PermissionGroup;
@@ -33,18 +34,21 @@ public class PlayerList {
 	 * 
 	 * @param sender the command sender
 	 */
-	public static void displayList(Player sender) {
+	public static void displayList(CommandSender sender) {
 		if (sender == null)
 			return;
 		
 		StringBuilder out = new StringBuilder();
 
-		out.append(listPlayers(sender));
+		if (!(sender instanceof Player))
+			return;
+		
+		out.append(listPlayers((Player)sender));
 		
 	    String[] lines = out.toString().split("\n");
 
 	    for (String line : lines) {
-	    	sender.getPlayer().sendMessage(line);
+	    	sender.sendMessage(line);
 	    }
 	}
 	

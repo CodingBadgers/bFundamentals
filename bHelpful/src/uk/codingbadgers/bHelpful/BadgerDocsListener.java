@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import uk.codingbadgers.bHelpful.commands.Maintenance;
 import uk.codingbadgers.bHelpful.commands.Motd;
 import uk.codingbadgers.bHelpful.commands.News;
-import uk.codingbadgers.bHelpful.commands.Output;
 import uk.codingbadgers.bHelpful.commands.PlayerList;
 
 /**

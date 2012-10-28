@@ -1,6 +1,6 @@
 package uk.codingbadgers.bHelpful.commands;
 
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 import uk.codingbadgers.bHelpful.Configuration;
 
@@ -13,12 +13,12 @@ public class Register {
     /**
      * Display register.
      *
-     * @param player the player
+     * @param sender the player
      */
-    static public void displayRegister(Player player) {
+    static public void displayRegister(CommandSender sender) {
     	
     	for( int i = 0; i < Configuration.REGISTER.size(); ++i ) {
-    		player.sendMessage(Configuration.REGISTER.get(i));
+    		sender.sendMessage(Configuration.REGISTER.get(i));
     	}
     	    	
     }

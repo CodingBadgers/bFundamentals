@@ -1,5 +1,6 @@
 package uk.codingbadgers.bHelpful.commands;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bHelpful.Configuration;
@@ -10,32 +11,32 @@ public class Motd {
 	/**
 	 * Display motd.
 	 *
-	 * @param player the player
+	 * @param sender the player
 	 */
-	public static void displayMotd(Player player) {
+	public static void displayMotd(CommandSender sender) {
 		
 		// minimap perms
 		String minimapPerms = "&0&0";
-		if (bHelpful.hasPermission(player, "bhelpful.minimap.cavemapping"))
+		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.cavemapping"))
 			minimapPerms += "&1";
-		if (bHelpful.hasPermission(player, "bhelpful.minimap.player"))
+		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.player"))
 			minimapPerms += "&2";
-		if (bHelpful.hasPermission(player, "bhelpful.minimap.animal"))
+		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.animal"))
 			minimapPerms += "&3";
-		if (bHelpful.hasPermission(player, "bhelpful.minimap.mob"))
+		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.mob"))
 			minimapPerms += "&4";
-		if (bHelpful.hasPermission(player, "bhelpful.minimap.slime"))
+		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.slime"))
 			minimapPerms += "&5";
-		if (bHelpful.hasPermission(player, "bhelpful.minimap.squid"))
+		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.squid"))
 			minimapPerms += "&6";
-		if (bHelpful.hasPermission(player, "bhelpful.minimap.other"))
+		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.other"))
 			minimapPerms += "&7";
 		minimapPerms += "&e&f";
 		
-		player.sendMessage(Configuration.replaceColors(minimapPerms));
+		sender.sendMessage(Configuration.replaceColors(minimapPerms));
 		
 		for (int i = 0; i<Configuration.MOTD.size(); i++) {
-			player.sendMessage(Configuration.MOTD.get(i));
+			sender.sendMessage(Configuration.MOTD.get(i));
 		}
 		
 	}

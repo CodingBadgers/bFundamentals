@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bHelpful.Configuration;
+import uk.codingbadgers.bHelpful.Output;
 import uk.codingbadgers.bHelpful.bHelpful;
 
 /**

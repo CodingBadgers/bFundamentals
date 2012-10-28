@@ -3,6 +3,7 @@ package uk.codingbadgers.bHelpful;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
@@ -13,7 +14,6 @@ import uk.codingbadgers.bHelpful.commands.Help;
 import uk.codingbadgers.bHelpful.commands.Maintenance;
 import uk.codingbadgers.bHelpful.commands.Motd;
 import uk.codingbadgers.bHelpful.commands.News;
-import uk.codingbadgers.bHelpful.commands.Output;
 import uk.codingbadgers.bHelpful.commands.PlayerList;
 import uk.codingbadgers.bHelpful.commands.Register;
 import uk.codingbadgers.bHelpful.commands.Rules;
@@ -96,7 +96,10 @@ public class bHelpful extends Module {
 	/* (non-Javadoc)
 	 * @see uk.codingbadgers.bFundamentals.module.Module#onCommand(org.bukkit.entity.Player, java.lang.String, java.lang.String[])
 	 */
-	public boolean onCommand(Player sender, String command, String[] args) {
+    @Override
+	public boolean onCommand(CommandSender sender, String command, String[] args) {
+		debugConsole("Executing command " + command + " for " + sender.getName());
+		
 		 // /rankhelp cmd
         if (command.equalsIgnoreCase("rankhelp")) {
             Help.displayHelp(sender);     
@@ -144,6 +147,7 @@ public class bHelpful extends Module {
         
         if (command.equalsIgnoreCase("list") || command.equalsIgnoreCase("who") || command.equalsIgnoreCase("players")) {
         	PlayerList.displayList(sender);
+        	debugConsole("Executing command list");
         	return true;
         }
         
@@ -156,7 +160,7 @@ public class bHelpful extends Module {
             }
             
             if (args[0].equalsIgnoreCase("reload")) {
-                if(hasPermission(sender, "bhelpful.admin.reload") || sender.isOp()) {
+                if(sender instanceof Player && !hasPermission((Player)sender, "bhelpful.admin.reload") || sender.isOp()) {
                 	m_plugin.reloadModule(this);
                 	Output.player(sender, "[bHelpful] ", "Reloaded Plugin");
                 	return true;
@@ -170,7 +174,7 @@ public class bHelpful extends Module {
             }
             
             if (args[0].equalsIgnoreCase("disable")) {
-                if(hasPermission(sender, "bhelpful.admin.disable") || sender.isOp()) {
+                if(sender instanceof Player && !hasPermission((Player)sender, "bhelpful.admin.disable") || sender.isOp()) {
                 	sender.sendMessage(ChatColor.RED + "bHelpful disabling");
                 	m_plugin.disableModule(this);
                 	return true;

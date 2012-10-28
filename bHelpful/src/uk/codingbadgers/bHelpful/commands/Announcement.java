@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bHelpful.Configuration;
+import uk.codingbadgers.bHelpful.Output;
 import uk.codingbadgers.bHelpful.bHelpful;
 
 public class Announcement extends Thread {
@@ -170,26 +172,26 @@ public class Announcement extends Thread {
 	 * @param args the args
 	 * @return true, if successful
 	 */
-	public static boolean onCommand(Player player, String commandLabel, String[] args) {
+	public static boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
         
         if (commandLabel.equalsIgnoreCase("announce")) {
         	
         	if (args.length < 1) {
-        		Output.player(player, "[bHelpful]", "/Announce <list/broadcast/add/remove>");
+        		Output.player(sender, "[bHelpful]", "/Announce <list/broadcast/add/remove>");
         		return true;
         	}
         	
         	if (args[0].equalsIgnoreCase("list")) {
         		
-        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.list")) {
-        			Output.noPermission(player);
+        		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.announcement.list")) {
+        			Output.noPermission(sender);
         			return true;
         		}
         		
         		for (int i = 0; i<Configuration.ANNOUCNEMENTS.size(); i++) {
         			String index = String.valueOf(i + 1);
         			String announcement = Configuration.ANNOUCNEMENTS.get(i).toString();
-        			Output.player(player, ChatColor.GREEN + index + ".", ChatColor.WHITE + announcement);
+        			Output.player(sender, ChatColor.GREEN + index + ".", ChatColor.WHITE + announcement);
         		}
         		
         		return true;
@@ -198,8 +200,8 @@ public class Announcement extends Thread {
         	
         	if (args[0].equalsIgnoreCase("add")) {
         		
-        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.add")) {
-        			Output.noPermission(player);
+        		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.announcement.add")) {
+        			Output.noPermission(sender);
         			return true;
         		}
         		
@@ -216,7 +218,7 @@ public class Announcement extends Thread {
         		trimedAnnouncement.replace(",", "\n ");
         		addAnnouncement(trimedAnnouncement);
         		
-        		Output.player(player, "[bHelpful]", "Announcement added.");
+        		Output.player(sender, "[bHelpful]", "Announcement added.");
         		
         		return true;
         		
@@ -224,13 +226,13 @@ public class Announcement extends Thread {
         	
         	if (args[0].equalsIgnoreCase("remove")) {
         		
-        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.remove")) {
-        			Output.noPermission(player);
+        		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.announcement.remove")) {
+        			Output.noPermission(sender);
         			return true;
         		}
         		
         		if (args.length != 2) {
-        			Output.playerWarning(player, "/announce remove <id>");
+        			Output.playerWarning(sender, "/announce remove <id>");
         			return true;
         		}
         		
@@ -238,30 +240,30 @@ public class Announcement extends Thread {
         		try {
         			index = Integer.parseInt(args[1]);
         		} catch (NumberFormatException ex) {
-        			Output.player(player, "[bHelpful]", "There was a error parsing the number you enterd");
+        			Output.player(sender, "[bHelpful]", "There was a error parsing the number you enterd");
         		}
         		
         		if (index > Configuration.ANNOUCNEMENTS.size()){
-        			Output.player(player, "[bHelpful]", "That announcement does not exist");
+        			Output.player(sender, "[bHelpful]", "That announcement does not exist");
         			return true;
         		}
         		
         		removeAnnouncement(index - 1);
         		
-        		Output.player(player, "[bHelpful]", "Announcement removed");
+        		Output.player(sender, "[bHelpful]", "Announcement removed");
         		
         		return true;
         	}
         	
         	if (args[0].equalsIgnoreCase("broadcast")) {
         		
-        		if (!bHelpful.hasPermission(player, "bhelpful.announcement.broadcast")) {
-        			Output.noPermission(player);
+        		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.announcement.broadcast")) {
+        			Output.noPermission(sender);
         			return true;
         		}
         		
         		if (args.length != 2) {
-        			Output.playerWarning(player, "/announce broadcast <id>");
+        			Output.playerWarning(sender, "/announce broadcast <id>");
         			return true;
         		}
         		
@@ -269,17 +271,17 @@ public class Announcement extends Thread {
         		try {
         			index = Integer.parseInt(args[1]);
         		} catch (NumberFormatException ex) {
-        			Output.player(player, "[bHelpful]", "There was a error parsing the number you enterd");
+        			Output.player(sender, "[bHelpful]", "There was a error parsing the number you enterd");
         		}
         		
         		if (index > Configuration.ANNOUCNEMENTS.size()){
-        			Output.player(player, "[bHelpful]", "That announcement does not exist");
+        			Output.player(sender, "[bHelpful]", "That announcement does not exist");
         			return true;
         		}
         		
         		broadcast(index - 1);
         		
-        		Output.player(player, "[bHelpful]", "Announcement broadcasted");
+        		Output.player(sender, "[bHelpful]", "Announcement broadcasted");
         		
         		return true;
         		

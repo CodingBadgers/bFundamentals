@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bHelpful.Configuration;
@@ -19,22 +20,29 @@ public class Help {
 	/**
 	 * Display help.
 	 *
-	 * @param player the player
+	 * @param sender the player
 	 */
-	public static void displayHelp(Player player) {
+	public static void displayHelp(CommandSender sender) {
+		
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("No help for you, :P");
+			return;
+		}
+		
+		Player player = (Player)sender;
 		
 		Permission permission = bHelpful.MODULE.getPermissions();
 		
 		if (permission == null) {
-			player.sendMessage("Help is based upon player rank.");
-			player.sendMessage("This server has no ranks.");
+			sender.sendMessage("Help is based upon player rank.");
+			sender.sendMessage("This server has no ranks.");
 			return;
 		}
 				
 		ArrayList<String> help = Configuration.getHelp(permission.getPrimaryGroup(player));
 		
 		if (help == null) {
-			player.sendMessage("No help exists for your rank.");
+			sender.sendMessage("No help exists for your rank.");
 			return;
 		}
 		
@@ -42,10 +50,10 @@ public class Help {
 		String rank = permission.getPrimaryGroup(player);
 		rank = rank.substring(0, 1).toUpperCase() + rank.substring(1);
 		
-		player.sendMessage(ChatColor.RED + "You are rank " + ChatColor.GRAY + "[" + rank + "]");
+		sender.sendMessage(ChatColor.RED + "You are rank " + ChatColor.GRAY + "[" + rank + "]");
 		
 		for (int i = 0; i < help.size(); ++i ) {
-			player.sendMessage(help.get(i));
+			sender.sendMessage(help.get(i));
 		}		
 	}
       
