@@ -10,12 +10,29 @@
     </parent>
 
     <artifactId>bSocks</artifactId>
-
+    
+	<repositories>
+        <repository>
+            <id>permissionsEx-repo</id>
+            <url>http://repo.tehkode.ru/repository/bukkit-plugins/</url>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <dependency>
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+	      	<groupId>ru.tehkode</groupId>
+	      	<artifactId>PermissionsEx</artifactId>
+	      	<version>1.20-SNAPSHOT</version>
+	    </dependency>
+	    <dependency>
+	    	<groupId>com.btbb</groupId>
+			<artifactId>FigAdmin</artifactId>
+			<version>1.0</version>
+		</dependency>
     </dependencies>
 </project>

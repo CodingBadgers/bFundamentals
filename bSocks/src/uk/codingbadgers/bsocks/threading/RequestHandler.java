@@ -153,7 +153,8 @@ public class RequestHandler extends Thread {
 		
 		for (Player player : onlinePlayers) {
 			JSONObject jplayer = new JSONObject();
-			jplayer.put("player-name", player.getDisplayName());
+			jplayer.put("player-name", player.getName());
+			jplayer.put("player-display-name", player.getDisplayName());
 			
 			JSONArray groups = new JSONArray();
 			for (String group : m_module.getPermissions().getPlayerGroups(player)) {
