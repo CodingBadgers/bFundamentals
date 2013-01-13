@@ -14,7 +14,7 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 public class ModuleLogger extends Logger {
 
 	/** The logger prefix. */
-	String prefix;
+	private String m_prefix;
 	
 	/**
 	 * Instantiates a new module logger.
@@ -23,17 +23,16 @@ public class ModuleLogger extends Logger {
 	 */
 	public ModuleLogger(Module module) {
 		super(module.getName(), null);
-		 prefix = new StringBuilder().append(bFundamentals.getConfigurationManager().getLogPrefix() + " ").append("[").append(module.getName()).append("] ").toString();
-	     setParent(Bukkit.getServer().getLogger());
-	     setLevel(Level.ALL);
+		m_prefix = new StringBuilder().append(bFundamentals.getConfigurationManager().getLogPrefix() + " ").append("[").append(module.getName()).append("] ").toString();
+	    setParent(Bukkit.getServer().getLogger());
+	    setLevel(Level.ALL);
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.util.logging.Logger#log(java.util.logging.LogRecord)
 	 */
 	public void log(LogRecord logRecord) {
-        logRecord.setMessage(prefix + logRecord.getMessage());
+        logRecord.setMessage(m_prefix + logRecord.getMessage());
         super.log(logRecord);
 	}
-
 }

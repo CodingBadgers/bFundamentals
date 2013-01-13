@@ -268,6 +268,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * @param command the command
 	 */
 	protected void registerCommand(ModuleCommand command) {
+		debugConsole("Registering command " + command.getLabel());
 		m_commands.add(command);
 		m_plugin.getServer().getHelpMap().addTopic(command.getHelpTopic());
 	}

@@ -203,7 +203,7 @@ public class bFundamentals extends JavaPlugin {
 	 */
 	private void handleModulesCommand(CommandSender sender) {
 		List<Module> modules = m_moduleLoader.getModules();
-		String moduleString = ChatColor.GREEN + "Modules: ";
+		String moduleString = ChatColor.GREEN + "Modules(" + modules.size() + "): ";
 		boolean first = true;
 		
 		for (Module module : modules) {
@@ -272,7 +272,14 @@ public class bFundamentals extends JavaPlugin {
 				
 				if (args.length == 3) {
 					m_moduleLoader.load(args[2]);
-					m_moduleLoader.getModule(args[2]).onEnable();
+					Module module = m_moduleLoader.getModule(args[2]);
+					
+					if(module == null) {
+						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
+						return;
+					}
+					
+					module.onEnable();
 					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded " + args[2]);
 					return;
 				}
@@ -294,7 +301,14 @@ public class bFundamentals extends JavaPlugin {
 					}
 					m_moduleLoader.unload(module);
 					m_moduleLoader.load(args[2]);
-					m_moduleLoader.getModule(args[2]).onEnable();
+					module = m_moduleLoader.getModule(args[2]);
+					
+					if(module == null) {
+						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
+						return;
+					}
+					
+					module.onEnable();
 					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "ReLoaded " + args[2]);
 					return;
 				}
