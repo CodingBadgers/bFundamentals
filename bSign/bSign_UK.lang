@@ -1,0 +1,17 @@
+#SIGN-CONTEXT-SET
+Sign context sucessfully set
+
+#INVALID-SIGN-CONTEXT
+The sign context for this sign is incorrect
+
+#WEBSIGN-SETUP
+Web sign setup sucessfully
+
+#COMMANDSIGN-SETUP
+Command sign setup sucessfully
+
+#INFOSIGN-SETUP
+Information sign setup sucessfully
+
+#SIGN-REMOVED
+bSign has been sucessfully removed
