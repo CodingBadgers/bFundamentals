@@ -18,7 +18,6 @@
     <modules>
         <module>bFundamentals</module>
 		<module>bAnimalCare</module>
-        
         <module>bCreative</module>
         <module>bHuman</module>
 		<module>bLogBackup</module>
@@ -27,8 +26,6 @@
         <module>bShortLinks</module>
         <module>bSign</module>
         <module>bSocial</module>
-        
-		<module>bFixingOtherWankPlugins</module>
 		<module>bEnchanted</module>
     </modules>
     
