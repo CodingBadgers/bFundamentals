@@ -94,8 +94,7 @@ public class bEnchanted extends Module implements Listener {
 				}
 				
 				FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-				config.addDefault("enabled", true);
-				config.setDefaults(config);
+				config.set("enabled", true);
 				
 				log(Level.INFO, "Creating config for: " + enchantmentSet.getValue());
 			}
