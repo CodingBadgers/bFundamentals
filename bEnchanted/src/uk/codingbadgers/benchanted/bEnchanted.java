@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,6 +36,8 @@ public class bEnchanted extends Module implements Listener {
 	 * Called when the module is loaded.
 	 */
 	public void onEnable() {
+		
+		log(Level.INFO, "Enabling bEnchanted, Checking Configs...");
 		
 		// register events
 		register(this);
@@ -81,7 +84,7 @@ public class bEnchanted extends Module implements Listener {
 		File folder = this.getDataFolder();
 		for (Entry<Enchantment, String> enchantmentSet : m_enchantmentNames.entrySet())
 		{
-			File configFile = new File(folder + File.pathSeparator + enchantmentSet.getValue() + ".yml");
+			File configFile = new File(folder + File.separator + enchantmentSet.getValue() + ".yml");
 			if (!configFile.exists()) {
 				try {
 					configFile.createNewFile();
@@ -92,6 +95,9 @@ public class bEnchanted extends Module implements Listener {
 				
 				FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 				config.addDefault("enabled", true);
+				config.setDefaults(config);
+				
+				log(Level.INFO, "Creating config for: " + enchantmentSet.getValue());
 			}
 		}
 	}
@@ -104,7 +110,7 @@ public class bEnchanted extends Module implements Listener {
 		File folder = this.getDataFolder();
 		for (Entry<Enchantment, String> enchantmentSet : m_enchantmentNames.entrySet())
 		{
-			File configFile = new File(folder + File.pathSeparator + enchantmentSet.getValue() + ".yml");
+			File configFile = new File(folder + File.separator + enchantmentSet.getValue() + ".yml");
 			if (!configFile.exists()) {
 				continue;
 			}
