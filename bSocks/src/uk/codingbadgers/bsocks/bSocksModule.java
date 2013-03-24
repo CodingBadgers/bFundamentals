@@ -3,15 +3,19 @@ package uk.codingbadgers.bsocks;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bsocks.commands.WebCommand;
 import uk.codingbadgers.bsocks.threading.ListenerThread;
 import uk.codingbadgers.bsocks.web.AdminListener;
 import uk.codingbadgers.bsocks.web.PermissionsListener;
 import uk.codingbadgers.bsocks.web.RequestType;
+import uk.codingbadgers.bsocks.web.VoteListener;
 import uk.codingbadgers.bsocks.web.WebHandler;
 
 /**
@@ -36,7 +40,7 @@ public class bSocksModule extends Module {
 
 	/** The instance of the module. */
 	private static bSocksModule m_instance = null;
-
+	
 	/**
 	 * Called when the module is disabled. Here we need to kill the listener thread
 	 */
@@ -63,6 +67,10 @@ public class bSocksModule extends Module {
 		if (isPluginEnabled("FigAdmin")) {
 			register(new AdminListener());
 			log(Level.INFO, "Listening for FigAdmin events");
+		}
+		if (isPluginEnabled("Votifier")) {
+			register(new VoteListener());
+			log(Level.INFO, "Listening for Votifier events");
 		}
 		
 		// setup the listener thread
@@ -148,5 +156,6 @@ public class bSocksModule extends Module {
 	public static bSocksModule getInstance() {
 		return m_instance;
 	}
+	
 
 }

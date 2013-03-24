@@ -11,13 +11,6 @@
 
     <artifactId>bSocks</artifactId>
     
-	<repositories>
-        <repository>
-            <id>permissionsEx-repo</id>
-            <url>http://repo.tehkode.ru/repository/bukkit-plugins/</url>
-        </repository>
-    </repositories>
-    
     <dependencies>
         <dependency>
             <artifactId>bFundamentals</artifactId>
@@ -25,9 +18,16 @@
             <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <artifactId>votifier</artifactId>
+            <groupId>com.vexsoftware</groupId>
+            <version>1.9</version>
+            <scope>system</scope>
+			<systemPath>${project.basedir}/lib/Votifier.jar</systemPath>
+        </dependency>
+        <dependency>
 	      	<groupId>ru.tehkode</groupId>
 	      	<artifactId>PermissionsEx</artifactId>
-	      	<version>1.20-SNAPSHOT</version>
+	      	<version>1.19.5</version>
 	    </dependency>
 	    <dependency>
 	    	<groupId>com.btbb</groupId>

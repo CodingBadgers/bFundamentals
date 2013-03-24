@@ -20,6 +20,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import uk.codingbadgers.bsocks.bSocksModule;
+import uk.codingbadgers.bsocks.commands.WebCommand;
+import uk.codingbadgers.bsocks.commands.WebCommandHandler;
 
 public class RequestHandler extends Thread {
 	
@@ -81,15 +83,30 @@ public class RequestHandler extends Thread {
     		
     		String type = (String)json.get("command");
 
-			if (type.equals("message"))
+			if (type.equals("message")) {
 				handleMessage(json);	
-			else if (type.equals("serverstats"))
+			} else if (type.equals("serverstats")) {
 				handleServerStatsCommand(json, m_sock);
-			else if (type.equals("lookup"))
+			} else if (type.equals("lookup")) {
 				handleLookup(json, m_sock);
-			else if (type.equals("executeCommand"))
+			} else if (type.equals("executeCommand")) {
 				handleExecuteCommand(json);
-			
+			} else {
+				for (WebCommand command : WebCommandHandler.getCommands()) {
+					if (command.getLabel().equalsIgnoreCase(type)) {
+						JSONObject responce = command.handleCommand(json);
+						
+						if (responce != null) {
+							BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(m_sock.getOutputStream()));
+							bw.write(responce.toJSONString() + "\n");
+							bw.flush();
+							bw.close();
+						}
+						
+						break;
+					}
+				}
+			}
 			br.close();
 			m_sock.close();
 			
