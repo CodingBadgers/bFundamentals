@@ -108,6 +108,7 @@ public class Loader implements Listener {
                         if (loadables.contains(loadable)) {
                             getLogger().log(Level.WARNING, "The loadable " + file.getName() + " is already loaded and cannot be reloaded");
                             getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
+                            jarFile.close();
                             return loadables;
                         }
                         
@@ -122,7 +123,7 @@ public class Loader implements Listener {
 
                         LoadEvent<Loadable> event = new LoadEvent<Loadable>(plugin, loadable, jarFile);
                         plugin.getServer().getPluginManager().callEvent(event);
-                            
+                           
                     } else { 
                         jarFile.close(); throw new ClassNotFoundException(); 
                     }

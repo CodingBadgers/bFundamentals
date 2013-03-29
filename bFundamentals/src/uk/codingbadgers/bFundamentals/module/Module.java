@@ -21,6 +21,7 @@ import org.bukkit.event.Listener;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
+import uk.codingbadgers.bFundamentals.commands.ModuleCommandHandler;
 import uk.codingbadgers.bFundamentals.module.loader.Loadable;
 import uk.codingbadgers.bFundamentals.update.UpdateThread;
 import uk.codingbadgers.bFundamentals.update.Updater;
@@ -248,19 +249,6 @@ public abstract class Module extends Loadable implements Listener {
 		player.sendMessage(ChatColor.DARK_PURPLE + "[" + name + "] " + ChatColor.RESET + message);
 	}
 	
-	/**
-	 * Checks if is command registered.
-	 *
-	 * @param command the command
-	 * @return true, if is command registered
-	 */
-	public boolean isCommandRegistered(String command) {
-		for (ModuleCommand cmd : m_commands) {
-			if (cmd.equals(command))
-				return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Register command.
@@ -268,9 +256,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * @param command the command
 	 */
 	protected void registerCommand(ModuleCommand command) {
-		debugConsole("Registering command " + command.getLabel());
-		m_commands.add(command);
-		m_plugin.getServer().getHelpMap().addTopic(command.getHelpTopic());
+		ModuleCommandHandler.registerCommand(this, command);
 	}
 	
 	/**

@@ -8,6 +8,7 @@ import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -108,6 +109,8 @@ public class bFundamentals extends JavaPlugin {
 	 * Disable a specific module
 	 */
 	public void disableModule(Module module) {
+		Validate.notNull(module, "Moudule cannot be null");
+		
 		m_moduleLoader.unload(module);
 	}
 
@@ -115,6 +118,8 @@ public class bFundamentals extends JavaPlugin {
 	 * Reloads a specific module
 	 */
 	public void reloadModule(Module module) {
+		Validate.notNull(module, "Moudule cannot be null");
+		
 		m_moduleLoader.unload(module);
 		m_moduleLoader.load(module.getFile());
 		m_moduleLoader.getModule(module.getName()).onEnable();
@@ -132,6 +137,9 @@ public class bFundamentals extends JavaPlugin {
 	 * Access to the logging methods
 	 */
 	public static void log(Level level, String msg) {
+		Validate.notNull(level, "Log level cannot be null");
+		Validate.notNull(msg, "Message cannot be null");
+		
 		m_log.log(level, "[" + m_instance.getDescription().getName() +"] " + msg);
 	}
 	

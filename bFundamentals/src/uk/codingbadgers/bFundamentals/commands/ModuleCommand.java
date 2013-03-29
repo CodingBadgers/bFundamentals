@@ -3,6 +3,8 @@ package uk.codingbadgers.bFundamentals.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.command.CommandSender;
+
 /**
  * The command object.
  *
@@ -121,5 +123,16 @@ public class ModuleCommand {
 	 */
 	public List<String> getAliases() {
 		return m_aliases;
+	}
+	
+	/**
+	 * Handle the command
+	 * 
+	 * @param sender the command sender
+	 * @param label the label of the command
+	 * @param args the arguments added to the command
+	 */
+	public boolean onCommand(CommandSender sender, String label, String[] args) {
+		return false;
 	}
 }
