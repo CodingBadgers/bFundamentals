@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -275,7 +276,15 @@ public abstract class Module extends Loadable implements Listener {
 	 * @return the language value
 	 */
 	public String getLanguageValue(String key) {
-		return m_languageMap.get(key);
+		Validate.notNull(key, "Language key cannot be null");
+		
+		String value = m_languageMap.get(key);
+		
+		if (value == null) {
+			value = key.toLowerCase().replace("-", " ");
+		}
+		
+		return value;
 	}
 	
 
