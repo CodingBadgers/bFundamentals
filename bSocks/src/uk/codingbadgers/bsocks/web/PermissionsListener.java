@@ -42,7 +42,6 @@ public class PermissionsListener implements Listener {
 	 *
 	 * @param event the event
 	 */
-	@SuppressWarnings("deprecation")
 	public void onRankChange(PermissionEntityEvent event) {
 		PermissionEntity entity = event.getEntity();
 		

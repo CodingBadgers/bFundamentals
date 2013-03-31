@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 /**
  * The command object.
  *
- * @author james.
+ * @author James.
  */
 public class ModuleCommand {
 
@@ -27,6 +27,9 @@ public class ModuleCommand {
 	/** The help topic. */
 	protected ModuleCommandHelpTopic m_helpTopic = null;
 	
+	/** The permission for this command. */
+	protected String m_permission = null;
+	
 	/**
 	 * Instantiates a new module command.
 	 *
@@ -37,6 +40,7 @@ public class ModuleCommand {
 		m_label = label;
 		m_usage = usage;
 		m_helpTopic = new ModuleCommandHelpTopic(this);
+		m_permission = "bfundamentals.command." + m_label;
 	}
 	
 	/**
@@ -52,6 +56,7 @@ public class ModuleCommand {
 	 * Sets the usage.
 	 *
 	 * @param usage the new usage
+	 * @return the module command
 	 */
 	public ModuleCommand setUsage(String usage) {
 		m_usage = usage;
@@ -101,6 +106,7 @@ public class ModuleCommand {
 	 * Sets the help.
 	 *
 	 * @param helpText the new help
+	 * @return the module command
 	 */
 	public ModuleCommand setHelp(String helpText) {
 		m_help = helpText;
@@ -126,13 +132,32 @@ public class ModuleCommand {
 	}
 	
 	/**
-	 * Handle the command
-	 * 
+	 * Handle the command.
+	 *
 	 * @param sender the command sender
 	 * @param label the label of the command
 	 * @param args the arguments added to the command
+	 * @return true, if successful
 	 */
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 		return false;
+	}
+
+	/**
+	 * Gets the permission for this command.
+	 *
+	 * @return the permission
+	 */
+	public String getPermission() {
+		return m_permission;
+	}
+	
+	/**
+	 * Sets the permission for this command.
+	 *
+	 * @param permission the new permission
+	 */
+	public void setPermission(String permission) {
+		this.m_permission = permission;
 	}
 }

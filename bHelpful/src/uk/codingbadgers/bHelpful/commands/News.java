@@ -10,7 +10,6 @@ import java.util.Date;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bHelpful.Configuration;
 import uk.codingbadgers.bHelpful.Output;
