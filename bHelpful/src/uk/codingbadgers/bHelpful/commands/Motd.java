@@ -17,19 +17,19 @@ public class Motd {
 		
 		// minimap perms
 		String minimapPerms = "&0&0";
-		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.cavemapping"))
+		if (sender instanceof Player && bHelpful.hasPermission((Player)sender, "bhelpful.minimap.cavemapping"))
 			minimapPerms += "&1";
-		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.player"))
+		if (sender instanceof Player && bHelpful.hasPermission((Player)sender, "bhelpful.minimap.player"))
 			minimapPerms += "&2";
-		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.animal"))
+		if (sender instanceof Player && bHelpful.hasPermission((Player)sender, "bhelpful.minimap.animal"))
 			minimapPerms += "&3";
-		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.mob"))
+		if (sender instanceof Player && bHelpful.hasPermission((Player)sender, "bhelpful.minimap.mob"))
 			minimapPerms += "&4";
-		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.slime"))
+		if (sender instanceof Player && bHelpful.hasPermission((Player)sender, "bhelpful.minimap.slime"))
 			minimapPerms += "&5";
-		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.squid"))
+		if (sender instanceof Player && bHelpful.hasPermission((Player)sender, "bhelpful.minimap.squid"))
 			minimapPerms += "&6";
-		if (sender instanceof Player && !bHelpful.hasPermission((Player)sender, "bhelpful.minimap.other"))
+		if (sender instanceof Player && bHelpful.hasPermission((Player)sender, "bhelpful.minimap.other"))
 			minimapPerms += "&7";
 		minimapPerms += "&e&f";
 		

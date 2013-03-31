@@ -89,7 +89,15 @@ public class Announcement extends Thread {
 	 */
 	public static void addAnnouncement(String announcement) {
 		
-		Configuration.ANNOUCNEMENTS.clear();
+		ArrayList<ArrayList<String>> announcements = Configuration.ANNOUCNEMENTS;
+		ArrayList<String> announceArray = new ArrayList<String>();
+			
+		for(String part : announcement.split(";")) {
+			announceArray.add(part.trim());
+		}
+		
+		announcements.add(announceArray);
+		
 		File announcementConfig = Configuration.ANNOUNCEMENT_CONIFG;	
     	
     	try {
@@ -97,7 +105,9 @@ public class Announcement extends Thread {
 			BufferedWriter writer = new BufferedWriter(fstream);
 
 			writer.write("\n~ANNOUNCEMENT~\n");
-			writer.write(announcement + "\n");
+			for (String part : announceArray) {
+				writer.write(part + "\n");
+			}
 			writer.write("~ENDANNOUNCEMENT~\n");
 
 			writer.close();
@@ -105,8 +115,6 @@ public class Announcement extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	
-    	Configuration.LoadAnnouncemnetConfig(announcementConfig);
 	}
 	
 	/**
@@ -116,30 +124,31 @@ public class Announcement extends Thread {
 	 */
 	public static void removeAnnouncement(int id)  {
 		
-		ArrayList<ArrayList<String>> ANNOUNCEMENTS = Configuration.ANNOUCNEMENTS;
+		ArrayList<ArrayList<String>> announcements = Configuration.ANNOUCNEMENTS;
 
-		ANNOUNCEMENTS.remove(id);
+		announcements.remove(id);
 		
 		File announcementConfig = Configuration.ANNOUNCEMENT_CONIFG;	
 		
-		for (int i = 0; i<ANNOUNCEMENTS.size(); i++) {
+		try {
+			FileWriter fstream = new FileWriter(announcementConfig.getPath());
+			BufferedWriter writer = new BufferedWriter(fstream);
 			
-			try {
-	    		FileWriter fstream = new FileWriter(announcementConfig.getPath());
-				BufferedWriter writer = new BufferedWriter(fstream);
+			for (int i = 0; i<announcements.size(); i++) {		
 				
-				String announcement = ANNOUNCEMENTS.get(i).toString();				
+				String announcement = "";
+				
+				for (int j = 0; j < announcements.get(i).size(); j++) {
+					announcement += announcements.get(i).get(j) + "\n";
+				}
 				
 				writer.write("~ANNOUNCEMENT~\n");
-				writer.write(announcement + "\n");
+				writer.write(announcement);
 				writer.write("~ENDANNOUNCEMENT~\n");
-
-				writer.close();
-
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			
+			writer.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 	

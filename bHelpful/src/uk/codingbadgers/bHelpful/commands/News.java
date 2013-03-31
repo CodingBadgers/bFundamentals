@@ -28,7 +28,7 @@ public class News {
      * @param player the player
      * @param noofEvent the number of events to be shown
      */
-    static public void displayNews(Player player, int noofEvents) {
+    static public void displayNews(CommandSender player, int noofEvents) {
     	
     	if (noofEvents == -1)
     		noofEvents = Configuration.NEWS.size() + 1;
@@ -72,21 +72,20 @@ public class News {
     }
     
     public static boolean onCommand(CommandSender sender, String commandLabel, String[] args) {
-		Player player = (Player) sender;
-        
+		
         if (commandLabel.equalsIgnoreCase("news")) {
         	
         	if (args.length == 0) {
         		
-        		displayNews(player, 6);
+        		displayNews(sender, 6);
         		
         		return true;
         	}
         	
         	if (args[0].equalsIgnoreCase("add")) {
         		
-        		if (!bHelpful.hasPermission(player, "bhelpful.news.add")) {
-        			Output.noPermission(player);
+        		if (!bHelpful.hasPermission(sender, "bhelpful.news.add")) {
+        			Output.noPermission(sender);
         			return false;
         		}
         		
@@ -98,11 +97,11 @@ public class News {
         			
         		}
         		
-        		trimedNews.trim();
+        		trimedNews = trimedNews.trim();
         		
         		addNews(trimedNews);
         		
-        		Output.player(player, "[bHelpful]", "News story added.");
+        		Output.player(sender, "[bHelpful]", "News story added.");
         		
         		return true;
         	}

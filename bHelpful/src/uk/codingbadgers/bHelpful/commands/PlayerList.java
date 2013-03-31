@@ -64,23 +64,24 @@ public class PlayerList {
         String prefix = bFundamentals.getChat().getGroupPrefix(world, group);
         
         while(prefix.indexOf("&") != -1) {
-
 			String code = prefix.substring(prefix.indexOf("&") + 1, prefix.indexOf("&") + 2);
-
-			prefix = prefix.substring(0, prefix.indexOf("&")) +  ChatColor.getByChar(code) + prefix.substring(prefix.indexOf("&") + 2);
-								
+			prefix = prefix.substring(0, prefix.indexOf("&")) +  ChatColor.getByChar(code) + prefix.substring(prefix.indexOf("&") + 2);								
 		}
         
         while(prefix.indexOf("[") != -1) {
-
-			prefix = prefix.substring(0, prefix.indexOf("[")) + prefix.substring(prefix.indexOf("[") + 1);
-								
+			prefix = prefix.substring(0, prefix.indexOf("[")) + prefix.substring(prefix.indexOf("[") + 1);						
 		}
         
         while(prefix.indexOf("]") != -1) {
-
 			prefix = prefix.substring(0, prefix.indexOf("]")) + prefix.substring(prefix.indexOf("]") + 1);
-								
+		}
+        
+        while(prefix.indexOf("<") != -1) {
+			prefix = prefix.substring(0, prefix.indexOf("<")) + prefix.substring(prefix.indexOf("<") + 1);						
+		}
+        
+        while(prefix.indexOf(">") != -1) {
+			prefix = prefix.substring(0, prefix.indexOf(">")) + prefix.substring(prefix.indexOf(">") + 1);
 		}
         
         return prefix.length() > 0 ? prefix : group;
@@ -121,24 +122,26 @@ public class PlayerList {
         if (!bHelpful.hasPermission(sender, "bhelpful.list.showvanish"))
         	onlinePlayers = onlinePlayers - hidden.size();
         
+        // if the server is full
         if (onlinePlayers == Bukkit.getServer().getMaxPlayers()) {
         	// display current users online and max users in gold
         	out.append(ChatColor.GOLD + Bukkit.getServer().getServerName() + ": " + ChatColor.GRAY + "Online " + ChatColor.GOLD + "(" + ChatColor.GOLD);
         	out.append(onlinePlayers);
-            	out.append("/");
-            	out.append(Bukkit.getServer().getMaxPlayers());
-            	out.append(") ");
+            out.append("/");
+            out.append(Bukkit.getServer().getMaxPlayers());
+            out.append(") ");
             out.append(ChatColor.WHITE);
         } else {
         	// display current users online and max users
         	out.append(ChatColor.GOLD + Bukkit.getServer().getServerName() + ": " + ChatColor.GRAY + "Online (");
         	out.append(onlinePlayers);
-            	out.append("/");
-            	out.append(Bukkit.getServer().getMaxPlayers());
-            	out.append(") ");
+            out.append("/");
+            out.append(Bukkit.getServer().getMaxPlayers());
+            out.append(") ");
             out.append(ChatColor.WHITE);
         }
        
+        // no point continuing as no-one is online, can only be reached by the console
         if (onlinePlayers == 0) {
         	return out.toString();
         }
@@ -159,7 +162,7 @@ public class PlayerList {
         	inGroup = entry.getValue().size();
         	
         	for (int i = 0; i < entry.getValue().size(); i++) {
-        		if (!sender.canSee(entry.getValue().get(i)) && !bHelpful.hasPermission(sender, "belpful.list.showvanish")) {
+        		if (!sender.canSee(entry.getValue().get(i)) && !bHelpful.hasPermission(sender, "bhelpful.list.showvanish")) {
         			hiddenGroup.add(entry.getValue().get(i));
         		}
         	}
@@ -171,7 +174,7 @@ public class PlayerList {
         	}
         	
             out.append("\n");
-            out.append(getRank(sender.getWorld(), entry.getKey()));
+            out.append(getRank(sender.getWorld(), entry.getKey()).trim());
             out.append(ChatColor.WHITE + ": ");
 
             // To keep track of commas

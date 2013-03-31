@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.thecodingbadgers</groupId>
@@ -11,15 +11,13 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <bukkitVersion>1.3.2-R0.1</bukkitVersion>
         <buildNumber>Unknown</buildNumber>
     </properties>
     
     <modules>
         <module>bFundamentals</module>
 		<module>bAnimalCare</module>
-        <module>bCreative</module>
-        <module>bHuman</module>
+        <module>bConomy</module>
 		<module>bLogBackup</module>
         <module>bPortalsHelper</module>
         <module>bQuiet</module>
@@ -66,6 +64,7 @@
         <finalName>${project.name}</finalName>
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
         <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
+		
         <resources>
             <resource>
                 <directory>${basedir}</directory>
@@ -84,6 +83,7 @@
                 </includes>
             </resource>
         </resources>
+		
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -96,7 +96,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -115,16 +115,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-              <artifactId>maven-assembly-plugin</artifactId>
-              <version>2.3</version>
-              <configuration>
-                <descriptors>
-                  <descriptor>package.xml</descriptor>
-                </descriptors>
-              </configuration>
-            </plugin>
         </plugins>
     </build>
-
 </project>

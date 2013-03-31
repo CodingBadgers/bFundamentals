@@ -185,5 +185,13 @@ public class bHelpful extends Module {
         
         return false;
 	}
+
+	public static boolean hasPermission(CommandSender sender, String node) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		
+		return hasPermission((Player)sender, node);
+	}
     
 }

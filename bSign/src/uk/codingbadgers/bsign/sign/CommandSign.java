@@ -1,8 +1,10 @@
 package uk.codingbadgers.bsign.sign;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import uk.codingbadgers.bsign.bSignModule;
 
@@ -29,7 +31,14 @@ public class CommandSign extends Sign {
 		// replace macros
 		String command = m_context.replaceAll("<<player>>", player.getName());
 		
-		bSignModule.PLUGIN.getServer().dispatchCommand(player, command);
+		
+		PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, command);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		
+		if (event.isCancelled())
+			return;
+		
+		Bukkit.getServer().dispatchCommand(event.getPlayer(), event.getMessage());
 	}
 	
 	@Override
