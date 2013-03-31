@@ -2,6 +2,8 @@ package uk.codingbadgers.bFundamentals;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
+
 /**
  * The Class ConfigurationManager.
  * Handles loading of the configuration and access to
@@ -26,6 +28,9 @@ public class ConfigurationManager {
 	
 	/** The logger prefix. */
 	private String m_logPrefix = null;
+	
+	/** The database settings. */
+	private DatabaseSettings m_databaseSettings = null;
 
 	/**
 	 * Load configuration for the plugin.
@@ -64,6 +69,21 @@ public class ConfigurationManager {
 		m_autoApply = config.getBoolean("module.update.apply");
 		
 		m_logPrefix = config.getString("module.logging.prefix");
+		
+		m_databaseSettings = new DatabaseSettings();
+		m_databaseSettings.type = config.getString("database.driver").equalsIgnoreCase("sqlite") ? DatabaseType.SQLite : DatabaseType.SQL;
+		m_databaseSettings.host = config.getString("database.host", "localhost");
+		m_databaseSettings.name = config.getString("database.name", "bFundamentals");
+		m_databaseSettings.prefix = config.getString("database.tablePrefix", "bFundamentals_");
+		m_databaseSettings.user = config.getString("database.user", "root");
+		m_databaseSettings.password = config.getString("database.password", "");
+		m_databaseSettings.port = config.getInt("database.port", 3306);
+		m_databaseSettings.updaterate =  config.getInt("database.updateRate", 5);
+		
+	}
+	
+	public DatabaseSettings getDatabaseSettings() {
+		return m_databaseSettings;
 	}
 	
 	/**

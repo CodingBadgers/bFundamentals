@@ -155,7 +155,11 @@ public class bFundamentals extends JavaPlugin {
 	 */
 	public static BukkitDatabase getBukkitDatabase() {
 		if (m_database == null) {
-			m_database = bDatabaseManager.CreateDatabase("bFundamentals", m_instance, DatabaseType.SQLite);
+			DatabaseSettings settings = m_configuration.getDatabaseSettings();
+			m_database = bDatabaseManager.CreateDatabase("bFundamentals", m_instance, settings.type);
+			if (settings.type == DatabaseType.SQL) {
+				m_database.login(settings.host, settings.user, settings.password, settings.port);
+			}
 		}
 		return m_database;
 	}
