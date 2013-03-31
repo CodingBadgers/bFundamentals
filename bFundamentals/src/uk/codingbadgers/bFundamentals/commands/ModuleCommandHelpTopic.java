@@ -3,7 +3,10 @@ package uk.codingbadgers.bFundamentals.commands;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
+
+import uk.codingbadgers.bFundamentals.module.Module;
 
 /**
  * The help topic for module commands
@@ -29,8 +32,14 @@ public class ModuleCommandHelpTopic extends HelpTopic {
 	 * @see org.bukkit.help.HelpTopic#canSee(org.bukkit.command.CommandSender)
 	 */
 	@Override
-	public boolean canSee(CommandSender arg0) {
-		return true;
+	public boolean canSee(CommandSender sender) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		
+		Player player = (Player) sender;
+		
+		return Module.hasPermission(player, m_command.getPermission());
 	}
 	
 	/* (non-Javadoc)
