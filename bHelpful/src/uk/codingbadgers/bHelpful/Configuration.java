@@ -3,34 +3,36 @@ package uk.codingbadgers.bHelpful;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-
-
-/**
- * 
- * @author James
- */
 public class Configuration {
 
-	static private Hashtable<String, ArrayList<String>> m_help = new Hashtable<String, ArrayList<String>>();
-	static public ArrayList<String> REGISTER = new ArrayList<String>();
-	static public ArrayList<String> NEWS = new ArrayList<String>();
-	static public ArrayList<String> MOTD = new ArrayList<String>();
-	static public ArrayList<ArrayList<String>> ANNOUCNEMENTS =  new ArrayList<ArrayList<String>>();
-    static public ArrayList<String> RULES = new ArrayList<String> ();
-    static public ArrayList<String> VOTE = new ArrayList<String>();
+	static private Map<String, ArrayList<String>> m_help = new HashMap<String, ArrayList<String>>();
+	static public List<String> REGISTER = new ArrayList<String>();
+	static public List<String> NEWS = new ArrayList<String>();
+	static public List<String> MOTD = new ArrayList<String>();
+	static public List<ArrayList<String>> ANNOUCNEMENTS =  new ArrayList<ArrayList<String>>();
+    static public List<String> RULES = new ArrayList<String> ();
+    static public List<String> VOTE = new ArrayList<String>();
     
     public static FileConfiguration config = bHelpful.MODULE.getConfig();
     
@@ -46,6 +48,7 @@ public class Configuration {
     public static boolean STAFF_STATE = false;
     
     public static String m_servername = "Minecraft Server";
+	private static String NEWS_LINK = null;
 
 	public static boolean loadConfig(bHelpful plugin) {
 		
@@ -84,6 +87,8 @@ public class Configuration {
         NORMAL_STATE = config.getBoolean("maintenance.state.normal");
         STAFF_STATE = config.getBoolean("maintenance.state.staff");
     	
+        NEWS_LINK = config.getString("news.weblink", "http://mcbadgercraft.com/thecodingbadgers/bSocks/web/news.php");
+        
     	bHelpful.MODULE.saveConfig();
         
 		File folder = new File(plugin.getDataFolder() + File.separator
@@ -114,12 +119,6 @@ public class Configuration {
 
 		// load in the register config file, storing it in the register member
 		loadRegisterConfig(registerConfig);
-
-		// see if the News.cfg exists, if not make a default one
-		NEWS_CONFIG = new File(plugin.getDataFolder() + File.separator
-				+ "News.cfg");
-		if (!NEWS_CONFIG.exists())
-			createDefaultNewsConfig(NEWS_CONFIG);
 
 		// load in the news config file, storing it in the news member
 		loadNewsConfig(NEWS_CONFIG);
@@ -290,62 +289,46 @@ public class Configuration {
 
 	public static void loadNewsConfig(File newsConfig) {
 
-		if (!newsConfig.exists()) {
-			Output.log(Level.SEVERE, "Config file News.cfg does not exist");
-			return;
-		}
+		Bukkit.getScheduler().runTaskAsynchronously(bHelpful.PLUGIN, new Runnable() {
+			@Override
+			public void run() {
+				try {
+					HttpURLConnection con = (HttpURLConnection) new URL(NEWS_LINK).openConnection();
+					con.setDoOutput(true);
+					con.setDoInput(true);
+					con.setRequestMethod("GET");
+					OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
 
-		Output.log(Level.INFO, "Loading config file 'News.cfg'");
+		            //write parameters
+		            writer.write("");
+		            writer.flush();
+		            
+		            // Get the response
+		            InputStreamReader isr = new InputStreamReader(con.getInputStream());
+		            writer.close();
 
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(newsConfig.getPath()));
-
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				line = line.trim();
-
-				// ignore comments and empty lines
-				if (line.startsWith("#") || line.length() == 0)
-					continue;
-
-				// store the line into the array of help, which will be added to
-				// the help HashMap
-				NEWS.add(replaceColors(line));
+		            JSONParser parser = new JSONParser();
+		            JSONArray json = (JSONArray)  parser.parse(isr);
+	            	String message = "";
+		            
+		            for (int i = 0; i < json.size(); i++) {
+		            	JSONObject post = (JSONObject) json.get(i);
+			            message += ChatColor.RED + "[" + (String) post.get("date") + "] " + ChatColor.RESET;
+			            message += (String)post.get("title") + "\n";
+			            message += "                      ";
+			            message += ChatColor.DARK_AQUA + (String)post.get("link");
+			            NEWS.add(message);
+			            message = "";
+		            }
+		            
+				} catch (FileNotFoundException e1) {
+					bHelpful.MODULE.getLogger().warning(e1.getMessage());
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
 			}
-
-			reader.close();
 			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public static void createDefaultNewsConfig(File newsConfig) {
-
-		try {
-			newsConfig.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(
-					newsConfig.getPath()));
-
-			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-			Date date = new Date();
-
-			writer.write(ChatColor.RED + "[" + dateFormat.format(date) + "] "
-					+ ChatColor.YELLOW + "Added bHelpful Plugin.\n");
-
-			writer.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		});
 	}
 
 	public static void loadRegisterConfig(File registerConfig) {

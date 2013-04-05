@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
@@ -89,7 +90,7 @@ public class Announcement extends Thread {
 	 */
 	public static void addAnnouncement(String announcement) {
 		
-		ArrayList<ArrayList<String>> announcements = Configuration.ANNOUCNEMENTS;
+		List<ArrayList<String>> announcements = Configuration.ANNOUCNEMENTS;
 		ArrayList<String> announceArray = new ArrayList<String>();
 			
 		for(String part : announcement.split(";")) {
@@ -124,7 +125,7 @@ public class Announcement extends Thread {
 	 */
 	public static void removeAnnouncement(int id)  {
 		
-		ArrayList<ArrayList<String>> announcements = Configuration.ANNOUCNEMENTS;
+		List<ArrayList<String>> announcements = Configuration.ANNOUCNEMENTS;
 
 		announcements.remove(id);
 		

@@ -64,28 +64,27 @@ public class Maintenance {
 	 * @return true, if successful
 	 */
 	public static boolean maintenanceCommand(CommandSender sender, String commandLabel, String[] args) {
-		Player player = (Player) sender;
 
 		// maintenance cmd
         if (commandLabel.equalsIgnoreCase("maintenance") || commandLabel.equalsIgnoreCase("mm")) {
-        	if (!bHelpful.hasPermission(player, "bhelpful.maintenance")) {
-        		Output.player(player, "[bhelpful]", "You do not have permission to do this");
+        	if (!bHelpful.hasPermission(sender, "bhelpful.maintenance")) {
+        		Output.player(sender, "[bhelpful]", "You do not have permission to do this");
     			return true;
     		}
 
         	if (args.length > 1) {
-        		Output.playerWarning(player, "/maintenance [staff]");
+        		Output.playerWarning(sender, "/maintenance [staff]");
         		return true;
         	}
 
         	if (args.length == 0 || args[0].equalsIgnoreCase("normal")) {
         		if (Maintenance.isMaintenance()) {
         			Maintenance.setMaintenance(false);
-        			Output.player(player, "[bHelpful] ", "Maintenance mode disabled");
+        			Output.player(sender, "[bHelpful] ", "Maintenance mode disabled");
         			Output.server("[bHelpful] ", Configuration.NORMAL_DISABLED);
         		} else {
         			Maintenance.setMaintenance(true);
-        			Output.player(player, "[bHelpful]", "Maintenance mode enabled");
+        			Output.player(sender, "[bHelpful]", "Maintenance mode enabled");
         			Output.server("[bHelpful] ", Configuration.NORMAL_ENABLED);
         		}
         		return false;
@@ -94,7 +93,7 @@ public class Maintenance {
         	if (args[0].equalsIgnoreCase("staff")) {
         		if (Maintenance.isStaffMaintenance()) {
         			Maintenance.setStaffMaintenance(false);
-        			Output.player(player, "[bHelpful] ", "Staff maintenance mode disabled");
+        			Output.player(sender, "[bHelpful] ", "Staff maintenance mode disabled");
 
         			Player[] oPlayer = bHelpful.PLUGIN.getServer().getOnlinePlayers();
 
@@ -106,7 +105,7 @@ public class Maintenance {
 
         		} else {
         			Maintenance.setStaffMaintenance(true);
-        			Output.player(player, "[bHelpful] ", "Staff maintenance mode enabled");
+        			Output.player(sender, "[bHelpful] ", "Staff maintenance mode enabled");
 
         			Player[] oPlayer = bHelpful.PLUGIN.getServer().getOnlinePlayers();
 

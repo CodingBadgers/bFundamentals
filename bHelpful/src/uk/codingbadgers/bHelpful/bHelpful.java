@@ -42,6 +42,13 @@ public class bHelpful extends Module {
      * @see uk.codingbadgers.bFundamentals.module.Module#onDisable()
      */
     public void onDisable() {
+    	Configuration.ANNOUCNEMENTS.clear();
+    	Configuration.REGISTER.clear();
+    	Configuration.NEWS.clear();
+    	Configuration.MOTD.clear();
+    	Configuration.RULES.clear();
+    	Configuration.VOTE.clear();
+    	
     	log(Level.INFO, "bHelpful disabled");
     }
 
