@@ -25,7 +25,7 @@ public class ModuleCommandHandler {
 	public static boolean handleCommad(CommandSender sender, String label, String[] args) {
 		for (Map.Entry<Module, List<ModuleCommand>> entry : commands.entrySet()) {
 			for (ModuleCommand cmd : entry.getValue()) {
-				if (cmd.getLabel().equalsIgnoreCase(label)) {
+				if (cmd.isCommand(label)) {
 					if (!cmd.onCommand(sender, label, args) && !entry.getKey().onCommand(sender, label, args)) {
 						sender.sendMessage(cmd.getUsage());
 					}

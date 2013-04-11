@@ -270,7 +270,7 @@ public abstract class Module extends Loadable implements Listener {
 	 *
 	 * @param sender the sender
 	 * @param label the label
-	 * @param args the args
+	 * @param args the arguments
 	 * @return true, if successful
 	 */
 	public boolean onCommand(CommandSender sender, String label, String[] args){

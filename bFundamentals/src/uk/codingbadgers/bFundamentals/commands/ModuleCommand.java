@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import uk.codingbadgers.bFundamentals.module.Module;
+
 /**
  * The command object.
  *
@@ -79,18 +81,21 @@ public class ModuleCommand {
 	 * @return the module command
 	 */
 	public ModuleCommand addAliase(String aliase) {
-		m_aliases.add(aliase);
+		m_aliases.add(aliase.toLowerCase());
 		return this;
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+	 * Checks if is this command.
+	 *
+	 * @param label the label inputed by the user
+	 * @return true, if it is this command
 	 */
-	public boolean equals(Object label) {
+	public boolean isCommand(Object label) {
 		if (!(label instanceof String))
 			return false;
 		
-		return m_label.equalsIgnoreCase((String)label) || m_aliases.contains((String)label);
+		return m_label.equalsIgnoreCase((String)label) || m_aliases.contains(((String)label).toLowerCase());
 	}
 	
 	/**
@@ -137,7 +142,8 @@ public class ModuleCommand {
 	 * @param sender the command sender
 	 * @param label the label of the command
 	 * @param args the arguments added to the command
-	 * @return true, if successful
+	 * @return true, if successful, false falls through to default module command handling
+	 * @see Module#onCommand(CommandSender, String, String[])
 	 */
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 		return false;
