@@ -3,6 +3,9 @@ package uk.codingbadgers.bFundamentals.module;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.FileInputStream;
@@ -13,7 +16,9 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -71,6 +76,9 @@ public abstract class Module extends Loadable implements Listener {
 	
 	/** Whether this module is in debug mode */
 	private boolean m_debug = false;
+
+	/** Whether the language file is loaded. */
+	private boolean loadedLanguageFile;
 	
 	/**
 	 * Instantiates a new module.
@@ -113,21 +121,61 @@ public abstract class Module extends Loadable implements Listener {
 		
 		if (!languageFile.exists()) {
 			log(Level.SEVERE, "Missing language file '" + languageFile.getAbsolutePath() + "'!");
-			return;
+			
+			boolean foundLangFile = false;
+			InputStream stream = null;
+			FileOutputStream fstream = null;
+			
+			try {
+				stream = getClass().getResourceAsStream("/" + languageFile.getName());
+				
+				// if default file exists in jar, copy it out to the right directory
+				if (stream != null) {
+					fstream = new FileOutputStream(languageFile);
+					
+					foundLangFile = true;
+					IOUtils.copy(stream, fstream);
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (stream != null) {
+						stream.close();
+					}
+					
+					if (fstream != null) {
+						fstream.close();
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+			
+			if (foundLangFile) {
+				log(Level.INFO, "Copied default language file from jar file");
+			} else {
+				return;
+			}
 		}
 		
 		log(Level.INFO, "Loading Language File: " + languageFile.getName());
 		
+		FileInputStream fstream = null;
+		DataInputStream in = null;
+		BufferedReader br = null;
+		
 		try {
-			FileInputStream fstream = new FileInputStream(languageFile);
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			fstream = new FileInputStream(languageFile);
+			in = new DataInputStream(fstream);
+			br = new BufferedReader(new InputStreamReader(in));
 			
 			String line = null;
 			String key = null;
 			while ((line = br.readLine()) != null)   {
 				
-				if (line.isEmpty())
+				if (line.isEmpty() || line.startsWith("//"))
 					continue;
 				
 				if (line.startsWith("#")) {
@@ -143,10 +191,23 @@ public abstract class Module extends Loadable implements Listener {
 				m_languageMap.put(key, line);				
 			}
 			
-			br.close();
-			
+			loadedLanguageFile = true;
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (fstream != null) {
+					fstream.close();		
+				}
+				if (in != null) {
+					in.close();
+				}
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	
 	}
@@ -277,6 +338,10 @@ public abstract class Module extends Loadable implements Listener {
 	 */
 	public String getLanguageValue(String key) {
 		Validate.notNull(key, "Language key cannot be null");
+		
+		if (!loadedLanguageFile) {
+			log(Level.SEVERE, "Cannot get language value before loading language file");
+		}
 		
 		String value = m_languageMap.get(key);
 		
