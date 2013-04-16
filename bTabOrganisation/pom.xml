@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>uk.thecodingbadgers</groupId>
+        <artifactId>bFundamentalsBuild</artifactId>
+        <version>1.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>bTabOrganisation</artifactId>
+
+    <repositories>
+        <repository>
+            <id>pex-repo</id>
+            <url>http://repo.tehkode.ru/repository/bukkit-plugins/</url>
+        </repository>
+		<repository>
+			<id>comphenix-rep</id>
+			<name>Comphenix Repository</name>
+			<url>http://repo.comphenix.net/content/groups/public</url>
+		</repository>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+            <artifactId>bFundamentals</artifactId>
+            <groupId>uk.thecodingbadgers</groupId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>ru.tehkode</groupId>
+          <artifactId>PermissionsEx</artifactId>
+          <version>1.19.5</version>
+        </dependency>
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+    </dependencies>
+</project>

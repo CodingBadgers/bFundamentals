@@ -16,6 +16,7 @@
     
     <modules>
         <module>bFundamentals</module>
+		<module>bTabOrganisation</module>
 		<module>bAnimalCare</module>
         <module>bConomy</module>
 		<module>bLogBackup</module>
