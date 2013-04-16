@@ -74,7 +74,7 @@ public class BadgerUpdater extends Updater {
 		}
 		
 		if (current.endsWith("-SNAPSHOT")) {
-			current = current.substring(0, website.indexOf("-SNAPSHOT"));
+			current = current.substring(0, current.indexOf("-SNAPSHOT"));
 		}
 		
 		String[] currentArray = current.split("\\.");

@@ -1,5 +1,6 @@
 package uk.codingbadgers.bFundamentals.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,7 +26,14 @@ public class CommandListener implements Listener {
 		String command = event.getMessage().substring(1, event.getMessage().indexOf(' ') != -1 ? event.getMessage().indexOf(' ') : event.getMessage().length());
 		String[] args = event.getMessage().indexOf(' ') != -1 ? event.getMessage().substring(event.getMessage().indexOf(' ') + 1).split(" ") : new String[0];
 		
-		if (ModuleCommandHandler.handleCommad(sender, command, args)) {
+		try {
+			if (ModuleCommandHandler.handleCommad(sender, command, args)) {
+				event.setCancelled(true);
+			}
+		} catch (Exception ex) {
+			sender.sendMessage(ChatColor.RED + "Error executing command");
+			sender.sendMessage(ex.getMessage());
+			ex.printStackTrace();
 			event.setCancelled(true);
 		}
 	}
@@ -45,7 +53,14 @@ public class CommandListener implements Listener {
 		String[] args = event.getCommand().indexOf(' ') != -1 ? event.getCommand().substring(event.getCommand().indexOf(' ') + 1).split(" ") : new String[0];
 		
 
-		if (ModuleCommandHandler.handleCommad(sender, command, args)) {
+		try {
+			if (ModuleCommandHandler.handleCommad(sender, command, args)) {
+				return;
+			}
+		} catch (Exception ex) {
+			sender.sendMessage(ChatColor.RED + "Error executing command");
+			sender.sendMessage(ex.getMessage());
+			ex.printStackTrace();
 			return;
 		}
 	}

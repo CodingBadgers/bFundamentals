@@ -28,9 +28,7 @@ public class bLogBackup extends Module {
 	 * Called when the module is loaded.
 	 */
 	public void onEnable() {
-
 		registerCommand(new ModuleCommand("logbackup", "/logbackup").setHelp("Backup the log file."));
-		
 	}
 	
 	/**
@@ -83,13 +81,12 @@ public class bLogBackup extends Module {
 		if (!logBackupFolder.exists())
 			logBackupFolder.mkdirs();
 		
-		dateFormat = new SimpleDateFormat("dd-MM-yyyy.HH-mm-ss");
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd.kk-mm-ss");
 		final String backupLogName = logFolder + File.separatorChar + "server." + dateFormat.format(date) + ".log";
 				
 		try {
 			copyFile(logFile, new File(backupLogName));
-		}
-		catch(Exception ex) {
+		} catch(Exception ex) {
 			return null;
 		}
 		

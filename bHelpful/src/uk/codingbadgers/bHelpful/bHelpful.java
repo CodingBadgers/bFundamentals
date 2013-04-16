@@ -49,6 +49,8 @@ public class bHelpful extends Module {
     	Configuration.RULES.clear();
     	Configuration.VOTE.clear();
     	
+    	m_announcement.kill();
+    	
     	log(Level.INFO, "bHelpful disabled");
     }
 
