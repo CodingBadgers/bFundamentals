@@ -12,17 +12,24 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.codingbadgers.bFundamentals.commands.CommandListener;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleLoader;
+import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
+import uk.codingbadgers.bFundamentals.player.FundamentalPlayerArray;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
-public class bFundamentals extends JavaPlugin {
+public class bFundamentals extends JavaPlugin implements Listener {
 	
 	private static final Logger m_log = Logger.getLogger("bFundamentals");
 	private static bFundamentals m_instance = null;
@@ -36,6 +43,8 @@ public class bFundamentals extends JavaPlugin {
 	
 	private static ModuleLoader m_moduleLoader = null;
 	private static ConfigurationManager m_configuration = null;
+	
+	public static FundamentalPlayerArray Players = new FundamentalPlayerArray(); 
 	
 	/**
 	 * Called on loading. This is called before onEnable.
@@ -65,11 +74,15 @@ public class bFundamentals extends JavaPlugin {
 		m_moduleLoader.enable();
 		
 		// check if any of the modules need updating
-		if (m_configuration.getAutoUpdate()) 
+		if (m_configuration.getAutoUpdate()) {
 			m_moduleLoader.update();
-		
+		}
+				
 		// register the command listener
 		this.getServer().getPluginManager().registerEvents(m_commandListener, this);
+		
+		// Register this as a listener
+		this.getServer().getPluginManager().registerEvents(this, this);
 		
 		bFundamentals.log(Level.INFO, "bFundamentals Loaded.");
 	}
@@ -365,4 +378,26 @@ public class bFundamentals extends JavaPlugin {
 		sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
 		return;
 	}
+		
+	/**
+	 * Handle a player join event
+	 *
+	 * @param event The player join event
+	 */
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		FundamentalPlayer newPlayer = new FundamentalPlayer(event.getPlayer());
+		bFundamentals.Players.add(newPlayer);
+	}
+	
+	/**
+	 * Handle a player join event
+	 *
+	 * @param event The player join event
+	 */
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		bFundamentals.Players.removePlayer(event.getPlayer());
+	}
+	
 }
