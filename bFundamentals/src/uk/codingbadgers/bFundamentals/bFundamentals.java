@@ -1,5 +1,6 @@
 package uk.codingbadgers.bFundamentals;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,9 +10,11 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,6 +22,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import ru.tehkode.permissions.PermissionGroup;
+import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import uk.codingbadgers.bFundamentals.commands.CommandListener;
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -398,6 +406,34 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		bFundamentals.Players.removePlayer(event.getPlayer());
+	}
+		
+	/**
+	 * Get a list of online players for a given rank or group
+	 * 
+	 * @param rank	The rank to get the list of online players from
+	 * @return An array list of online players within a given rank or group
+	 */
+	public ArrayList<Player> getPlayersOfRank(String rank) {
+		
+		PermissionManager pexmanager = PermissionsEx.getPermissionManager();
+		PermissionGroup group = pexmanager.getGroup(rank);
+		
+		// If the group doesn't exist just leave.
+		if (group == null) {
+			return null;
+		}
+				
+		// 
+		ArrayList<Player> players = new ArrayList<Player>();
+		for (PermissionUser user : group.getUsers()) {
+			Player player = Bukkit.getPlayer(user.getName());
+			if (player != null) {
+				players.add(player);
+			}
+		}
+		
+		return players;		
 	}
 	
 }
