@@ -9,8 +9,9 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
 /**
+ * Listener to handle commands for each module in bFundamentals
  *
- * @see CommandEvent
+ * @see ModuleCommand
  */
 public class CommandListener implements Listener {
 

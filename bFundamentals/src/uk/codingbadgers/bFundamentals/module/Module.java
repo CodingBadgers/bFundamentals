@@ -82,8 +82,6 @@ public abstract class Module extends Loadable implements Listener {
 	
 	/**
 	 * Instantiates a new module.
-	 *
-	 * @param ldf the modules desciption file
 	 */
 	public Module() {
 		super();

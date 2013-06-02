@@ -39,7 +39,7 @@ public class ModuleCommandHelpTopic extends HelpTopic {
 		
 		Player player = (Player) sender;
 		
-		return Module.hasPermission(player, m_command.getPermission());
+		return Module.hasPermission(player, m_command.getPermission()) || Module.hasPermission(player, "bfundamentals.admin");
 	}
 	
 	/* (non-Javadoc)
