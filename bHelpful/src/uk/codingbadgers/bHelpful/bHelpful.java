@@ -18,6 +18,8 @@ import uk.codingbadgers.bHelpful.commands.PlayerList;
 import uk.codingbadgers.bHelpful.commands.Register;
 import uk.codingbadgers.bHelpful.commands.Rules;
 import uk.codingbadgers.bHelpful.commands.Vote;
+import uk.codingbadgers.bHelpful.commands.rw.ConfigCommand;
+import uk.codingbadgers.bHelpful.commands.rw.HelpfulCommandHandler;
 
 /**
  * The base bHelpful module class
@@ -84,6 +86,11 @@ public class bHelpful extends Module {
         if (Configuration.STAFF_STATE) {
         	Maintenance.setStaffMaintenance(true);
         }     
+        
+        // new command handling
+        for (ConfigCommand command : HelpfulCommandHandler.getCommands()) {
+        	registerCommand(command);
+        }
         
         registerCommand(new ModuleCommand("news", "/news").setHelp("shows the latest news."));
         registerCommand(new ModuleCommand("announce", "/announce <subcmd>").setHelp("announcement commands"));

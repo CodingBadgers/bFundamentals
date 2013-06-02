@@ -47,12 +47,12 @@ public class Configuration {
     public static boolean NORMAL_STATE = false;
     public static boolean STAFF_STATE = false;
     
-    public static String m_servername = "Minecraft Server";
-	private static String NEWS_LINK = null;
+    public static String SERVER_NAME = null;
+	public static String NEWS_LINK = null;
 
 	public static boolean loadConfig(bHelpful plugin) {
 		
-		m_servername = bHelpful.PLUGIN.getServer().getServerName();
+		SERVER_NAME = bHelpful.PLUGIN.getServer().getServerName();
 
 		m_help.clear();
 		REGISTER.clear();
@@ -277,7 +277,7 @@ public class Configuration {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(
 					motdConfig.getPath()));
 
-			writer.write(ChatColor.RED + "Welcome to " + m_servername + "!\n");
+			writer.write(ChatColor.RED + "Welcome to " + SERVER_NAME + "!\n");
 
 			writer.close();
 
