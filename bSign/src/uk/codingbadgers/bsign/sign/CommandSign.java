@@ -31,14 +31,19 @@ public class CommandSign extends Sign {
 		// replace macros
 		String command = m_context.replaceAll("<<player>>", player.getName());
 		
+		bSignModule.MODULE.debugConsole("Running command " + command + " for " + player.getName());
 		
 		PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, command);
-		Bukkit.getServer().getPluginManager().callEvent(event);
+		//Bukkit.getServer().getPluginManager().callEvent(event);
 		
-		if (event.isCancelled())
+		if (event.isCancelled()) {
+			bSignModule.MODULE.debugConsole("Plugin canceled event");
 			return;
+		}
+
+		bSignModule.MODULE.debugConsole("Running command " + event.getMessage() + " for " + player.getName());
 		
-		Bukkit.getServer().dispatchCommand(event.getPlayer(), event.getMessage());
+		Bukkit.getServer().dispatchCommand(event.getPlayer(), command);
 	}
 	
 	@Override

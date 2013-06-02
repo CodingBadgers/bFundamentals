@@ -7,6 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -15,6 +18,39 @@ import uk.codingbadgers.bportalshelper.PortalPlayer;
 import uk.codingbadgers.bportalshelper.bPortalsHelper;
 
 public class PlayerListener implements Listener {
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		
+		if (player == null) {
+			return;
+		}
+		
+		bPortalsHelper.createPlayer(player);
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerLeave(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		
+		if (player == null) {
+			return;
+		}
+		
+		bPortalsHelper.removePlayer(player);
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerLeave(PlayerKickEvent event) {
+		Player player = event.getPlayer();
+		
+		if (player == null) {
+			return;
+		}
+		
+		bPortalsHelper.removePlayer(player);
+	}
 	
 	/**
 	 * Handle a player interact event

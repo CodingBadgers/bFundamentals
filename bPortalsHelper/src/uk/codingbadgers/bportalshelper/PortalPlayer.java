@@ -13,7 +13,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class PortalPlayer {
 	
 	/** The bukkit player object. */
-	private Player m_player = null;
+	private final Player m_player;
 	
 	/** The portals being linked. */
 	private Portal[] m_portals = new Portal[2];
@@ -174,5 +174,4 @@ public class PortalPlayer {
 		// something went very wrong
 		return null;
 	}
-
 }

@@ -81,8 +81,11 @@ public class PlayerListener implements Listener {
 		if (contextSign == null)
 			return;
 		
-		
 		final Sign bsign = contextSign;
+		
+		bSignModule.MODULE.debugConsole("Running sign at (" + bsign.getLocation().getBlockX() + ", " 
+															+ bsign.getLocation().getBlockY() + ", "
+															+ bsign.getLocation().getBlockZ() + ") with delay of " + delay);
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(bSignModule.PLUGIN, new Runnable() {
 			@Override
@@ -340,7 +343,7 @@ public class PlayerListener implements Listener {
 		if (block.getType() == Material.LEVER) {
 			Lever data = (Lever) block.getState().getData();
 			
-			if (data.isPowered()) {
+			if (!data.isPowered()) {
 				return;
 			}
 
@@ -395,7 +398,6 @@ public class PlayerListener implements Listener {
 				
 				Diode data = (Diode)repeater.getState().getData();
 				delay += data.getDelay() * 2;
-				System.out.println(delay);
 				
 				block = nextRedstone;
 			
@@ -405,7 +407,6 @@ public class PlayerListener implements Listener {
 				}			
 				
 			}
-			
 		} while (powerLevel != 0);
 		
 	}

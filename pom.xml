@@ -7,6 +7,7 @@
     <version>1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>bFundamentalsBuild</name>
+    <inceptionYear>2013</inceptionYear>
     <url>http://www.mcbadgercraft.com</url>
 
     <properties>
@@ -28,6 +29,19 @@
 		<module>bEnchanted</module>
     </modules>
     
+    <organization>
+        <name>TheCodingBadgers</name>
+        <url>http://mcbadgercraft.com</url>
+    </organization>
+    
+    <licenses>
+		<license>
+			<name>GNU General Public License Version 3</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
     <repositories>
         <repository>
             <id>bukkit-repo</id>
@@ -47,6 +61,20 @@
         </repository>
     </repositories>
     
+    <pluginRepositories>
+	    <pluginRepository>
+		    <id>mc-release</id>
+		    <name>Local Maven repository of releases</name>
+		    <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+		    <snapshots>
+		        <enabled>false</enabled>
+		    </snapshots>
+		    <releases>
+		        <enabled>true</enabled>
+		    </releases>
+		</pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
@@ -80,16 +108,23 @@
                 <directory>${basedir}</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>config.yml</include>
-                    <include>plugin.yml</include>
-                    <include>path.yml</include>
+                    <include>*.yml</include>
                 </includes>
             </resource>
             <resource>
                 <directory>${project.basedir}/src</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>*.*</include>
+                    <include>*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/config</directory>
+                <filtering>true</filtering>
+                <targetPath>config</targetPath>
+                <includes>
+                    <include>*.cfg</include>
+                    <include>*.yml</include>
                 </includes>
             </resource>
         </resources>
@@ -122,9 +157,59 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <links>
+                                <link>http://jd.bukkit.org/dev/apidocs/</link>
+                            </links>
+                            <javadocVersion>1.7</javadocVersion>
+                            <tags>
+                                <tag>
+                                    <name>todo</name>
+                                    <placement>a</placement>
+                                    <head>Todo:</head>
+                                </tag>
+                            </tags>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.10.b1</version>
+				<executions>
+					<execution>
+						<phase>clean</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<quiet>false</quiet>
+					<encoding>UTF-8</encoding>
+					<strictCheck>true</strictCheck>
+					<header>${basedir}/../HEADER.txt</header>
+					<keywords>
+						<keyword>${project.name}</keyword>
+						<keyword>license</keyword>
+					</keywords>
+					<mapping>
+						<java>SLASHSTAR_STYLE</java>
+					</mapping>
+					<properties>
+						<name>${project.name}</name>
+						<version>${project.version}</version>
+						<author>${project.organization.name}</author>
+						<author-url>${project.organization.url}</author-url>
+						<year>${project.inceptionYear}</year>
+						<description>${project.description}</description>
+					</properties>
+					<includes>
+						<include>${basedir}\src\**</include>
+					</includes>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 </project>

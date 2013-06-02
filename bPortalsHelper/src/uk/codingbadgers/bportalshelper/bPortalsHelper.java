@@ -1,6 +1,8 @@
 package uk.codingbadgers.bportalshelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -33,7 +35,7 @@ public class bPortalsHelper extends Module {
 	private final PlayerListener m_playerListener = new PlayerListener();
 	
 	/** An array of stored players. */
-	private static ArrayList<PortalPlayer> m_players = new ArrayList<PortalPlayer>();
+	private static List<PortalPlayer> m_players = new ArrayList<PortalPlayer>();
 	
 	/** Access to the world edit api. */
 	private static WorldEditPlugin m_worldEdit = null;
@@ -48,6 +50,14 @@ public class bPortalsHelper extends Module {
 	 * Called when the module is disabled.
 	 */
 	public void onDisable() {
+		m_players.clear();
+		
+		m_worldEdit = null;
+		m_worldGuard = null;
+		m_pluginInstance = null;
+		m_instance = null;
+		m_multiversePortals = null;
+		
 		log(Level.INFO, NAME + " disabled");
 	}
 
@@ -136,6 +146,32 @@ public class bPortalsHelper extends Module {
 		
 	}
 
+	/**
+	 * Creates a portal player
+	 * 
+	 * @param player the player
+	 */
+	public static void createPlayer(Player player) {
+		PortalPlayer pPlayer = new PortalPlayer(player);
+		m_players.add(pPlayer);	
+	}
+	
+	/**
+	 * Removes a portal player
+	 * 
+	 * @param player the player
+	 */
+	public static void removePlayer(Player player) {
+		Iterator<? extends PortalPlayer> itr = m_players.iterator();
+		while(itr.hasNext()) {
+			PortalPlayer current = itr.next();
+			if (current.equals(player)) {
+				m_players.remove(current);
+				return;
+			}
+		}
+	}
+	
 	/**
 	 * Gets the multiverse world manager.
 	 *
