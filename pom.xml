@@ -55,10 +55,6 @@
             <id>codingbadgers-repo</id>
             <url>http://repository-codingbadgers.forge.cloudbees.com/snapshot/</url>
         </repository>
-		<repository>
-            <id>pex-repo</id>
-            <url>http://repo.tehkode.ru/repository/bukkit-plugins/</url>
-        </repository>
     </repositories>
     
     <pluginRepositories>
@@ -92,9 +88,15 @@
             <version>1.5-R0.1-SNAPSHOT</version>
         </dependency>
 		<dependency>
-          <groupId>ru.tehkode</groupId>
-          <artifactId>PermissionsEx</artifactId>
-          <version>1.19.5</version>
+			<groupId>ru.tehkode</groupId>
+			<artifactId>PermissionsEx</artifactId>
+			<version>1.19.5</version>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.2</version>
+			<scope>test</scope>
         </dependency>
     </dependencies>
     
