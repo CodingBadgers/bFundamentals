@@ -1,0 +1,10 @@
+testVal1: test
+testVal2: test
+testVal3: test
+database-settings:
+  host: localhost
+  user: root
+  password: ''
+update-settings:
+  enabled: true
+  apply: false

@@ -25,7 +25,7 @@ import org.bukkit.plugin.Plugin;
  * LoadEvent - Called when a Loadable has been loaded
  * 
  * @author NodinChan
- *
+ * @param <T> the loadable type
  */
 public class LoadEvent<T> extends Event {
 	

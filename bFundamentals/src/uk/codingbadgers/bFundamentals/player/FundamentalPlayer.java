@@ -100,7 +100,8 @@ public class FundamentalPlayer {
 	
 	/**
 	 * Gets any player data of the given data ID.
-	 *
+	 * 
+	 * @param dataID the data type to lookup
 	 * @return the player data if it exists, else null.
 	 * @see PlayerData
 	 */	
@@ -112,6 +113,7 @@ public class FundamentalPlayer {
 	/**
 	 * Adds some player data, removing any old instances of the player data
 	 * 
+	 * @param data the data to add to this player
 	 * @see PlayerData
 	 */	
 	public void addPlayerData(PlayerData data) {
@@ -123,6 +125,7 @@ public class FundamentalPlayer {
 	/**
 	 * Removes any data with the given data id
 	 * 
+	 * @param dataID the data type to remove
 	 * @see PlayerData
 	 */	
 	public void removePlayerData(Class<?> dataID) {

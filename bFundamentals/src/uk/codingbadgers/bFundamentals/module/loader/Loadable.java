@@ -25,30 +25,51 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 
 /**
- * Loadable - Base for loadable classes
- * 
- * @author NodinChan
+ * Loadable - Base for loadable classes.
  *
+ * @author NodinChan
  */
 public class Loadable implements Cloneable {
-	
+
+	/** The name of this loadable. */
 	private String name;
-	
+
+	/** The config file for this loadable. */
 	private File configFile;
+	
+	/** The config for this loadable. */
 	private FileConfiguration config;
-    private LoadableDescriptionFile description;
 	
+	/** The description of this loadable. */
+	private LoadableDescriptionFile description;
+
+	/** The jar file of this loadable. */
 	private JarFile jar;
-	private File dataFolder;
-	private File file;
 	
+	/** The data folder for this loadable. */
+	private File dataFolder;
+	
+	/** The file for this loadable. */
+	private File file;
+
+	/**
+	 * Instantiates a new loadable.
+	 *
+	 * @param name the name
+	 */
 	public Loadable(String name) {
 		this.name = name;
 	}
-        
-    public Loadable() {
-    }
-	
+
+	/**
+	 * Instantiates a new loadable.
+	 */
+	public Loadable() {
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
 	@Override
 	public Loadable clone() {
 		Loadable loadable = new Loadable(name);
@@ -57,149 +78,226 @@ public class Loadable implements Cloneable {
 		loadable.dataFolder = dataFolder;
 		loadable.file = file;
 		loadable.jar = jar;
-        loadable.description = description;
+		loadable.description = description;
 		return loadable;
 	}
-	
-	public File datafolder(File dataFolder) {
+
+	/**
+	 * Set the datafolder.
+	 *
+	 * @param dataFolder the data folder
+	 * @return the file
+	 */
+	public File setDatafolder(File dataFolder) {
 		dataFolder.mkdirs();
 		return this.dataFolder = dataFolder;
 	}
-	
-	public File file(File file) {
+
+	/**
+	 * Set the file for this loadable.
+	 *
+	 * @param file the file
+	 * @return the file
+	 */
+	public File setFile(File file) {
 		return this.file = file;
 	}
-	
-	public JarFile jar(JarFile jar) {
+
+	/**
+	 * Set the jar file.
+	 *
+	 * @param jar the jar
+	 * @return the jar file
+	 */
+	public JarFile setJarFile(JarFile jar) {
 		return this.jar = jar;
 	}
-	
-	public LoadableDescriptionFile description(LoadableDescriptionFile ldf) {
+
+	/**
+	 * Set the {@link LoadableDescriptionFile} for this module.
+	 *
+	 * @param ldf the loadable description file
+	 * @return the loadable description file
+	 */
+	public LoadableDescriptionFile setDesciption(LoadableDescriptionFile ldf) {
 		this.description = ldf;
-        this.name = description.getName();
+		this.name = description.getName();
 		return description;
 	}
-	
+
+	/**
+	 * Initialises the loadable, called on loading the module.
+	 */
 	public void init() {}
 
 	/**
-	 * Gets the config
-	 * 
+	 * Gets the config.
+	 *
 	 * @return The config
 	 */
 	public FileConfiguration getConfig() {
 		if (config == null)
 			reloadConfig();
-		
+
 		return config;
 	}
-	
+
 	/**
-	 * Gets the data folder of this
-	 * 
+	 * Gets the data folder of this.
+	 *
 	 * @return The directory of this
 	 */
 	public File getDataFolder() {
 		return dataFolder;
 	}
-	
+
 	/**
-	 * Gets the file of the loadable
-	 * 
-	 * @return
+	 * Gets the file of the loadable.
+	 *
+	 * @return the jar file as a {@link File}
 	 */
 	public File getFile() {
 		return file;
 	}
-	
+
 	/**
-	 * Gets the name of the Loadable
-	 * 
+	 * Gets the name of the Loadable.
+	 *
 	 * @return The name
 	 */
 	public final String getName() {
-		return name;
+		return getDesciption().getName();
 	}
-	
+
 	/**
-	 * Gets an embedded resource in this plugin
-	 * 
+	 * Gets an embedded resource in this plugin.
+	 *
 	 * @param name File name of the resource
-	 * 
 	 * @return InputStream of the file if found, otherwise null
 	 */
 	public InputStream getResource(String name) {
 		ZipEntry entry = jar.getEntry(name);
-		
+
 		if (entry == null)
 			return null;
-		
-		try { return jar.getInputStream(entry); } catch (IOException e) { return null; }
+
+		try {
+			return jar.getInputStream(entry);
+		} catch (IOException e) {
+			return null;
+		}
 	}
-	
+
 	/**
-	 * Reloads the config
+	 * Reloads the config.
 	 */
 	public void reloadConfig() {
 		if (configFile == null)
 			configFile = new File(getDataFolder(), "config.yml");
-		
+
 		config = YamlConfiguration.loadConfiguration(configFile);
-		
+
 		InputStream defConfigStream = getResource("config.yml");
-		
+
 		if (defConfigStream != null) {
 			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 			config.setDefaults(defConfig);
 		}
 	}
-	
+
 	/**
-	 * Saves the config
+	 * Saves the config.
 	 */
 	public void saveConfig() {
 		if (config == null || configFile == null)
 			return;
-		
-		try { config.save(configFile); } catch (IOException e) {}
+
+		try {
+			config.save(configFile);
+		} catch (IOException e) {
+		}
 	}
-	
+
 	/**
-	 * Called when the Loadable is unloaded
+	 * Called when the Loadable is unloaded.
 	 */
-	public void unload() {}
-	
-        public LoadableDescriptionFile getDesciption() {
-            return this.description;
-        }
-        
+	public void unload() {
+	}
+
+	/**
+	 * Gets the desciption.
+	 *
+	 * @return the desciption
+	 */
+	public LoadableDescriptionFile getDesciption() {
+		return this.description;
+	}
+
+	/**
+	 * The Class LoadResult.
+	 */
 	public static final class LoadResult {
-		
+
+		/** The result. */
 		private final Result result;
-		
+
+		/** The reason. */
 		private final String reason;
-		
+
+		/**
+		 * Instantiates a new load result.
+		 */
 		public LoadResult() {
 			this(Result.SUCCESS, "");
 		}
-		
+
+		/**
+		 * Instantiates a new load result.
+		 *
+		 * @param failReason the fail reason
+		 */
 		public LoadResult(String failReason) {
 			this(Result.FAILURE, failReason);
 		}
-		
+
+		/**
+		 * Instantiates a new load result.
+		 *
+		 * @param result the result
+		 * @param reason the reason
+		 */
 		public LoadResult(Result result, String reason) {
 			this.result = result;
 			this.reason = reason;
 		}
-		
+
+		/**
+		 * Gets the reason.
+		 *
+		 * @return the reason
+		 */
 		public String getReason() {
 			return reason;
 		}
-		
+
+		/**
+		 * Gets the result.
+		 *
+		 * @return the result
+		 */
 		public Result getResult() {
 			return result;
 		}
-		
-		public enum Result { FAILURE, SUCCESS }
+
+		/**
+		 * The Result for loading.
+		 */
+		public enum Result {
+			
+			/** If the loadable didn't load successfully. */
+			FAILURE,
+			/** If the loadable loaded successfully. */
+			SUCCESS
+		}
 	}
 }

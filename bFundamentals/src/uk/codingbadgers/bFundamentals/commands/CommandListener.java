@@ -16,9 +16,9 @@ import org.bukkit.event.server.ServerCommandEvent;
 public class CommandListener implements Listener {
 
 	/**
-	 * On player command pre process.
+	 * Event listener for Player command.
 	 *
-	 * @param event the event
+	 * @param event the player command preprocess event
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerCommandPreProcess(PlayerCommandPreprocessEvent event) {
@@ -40,12 +40,12 @@ public class CommandListener implements Listener {
 	}
 	
 	/**
-	 * On player command pre process.
+	 * Event listener for Server commands.
 	 *
-	 * @param event the event
+	 * @param event the server command event
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerCommandPreProcess(ServerCommandEvent event) {
+	public void onServerCommand(ServerCommandEvent event) {
 		if (event.getCommand() == null || event.getCommand().length() <= 0)
 			return;
 		

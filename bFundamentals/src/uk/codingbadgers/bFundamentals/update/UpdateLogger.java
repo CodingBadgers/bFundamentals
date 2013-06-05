@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 
 /**
- * The Module Logger.
+ * The Update Logger.
  */
 public class UpdateLogger extends Logger {
 
@@ -16,8 +16,8 @@ public class UpdateLogger extends Logger {
 	
 	/**
 	 * Instantiates a new module logger.
-	 *
-	 * @param module the module
+	 * 
+	 * @param update the {@link Updater} for this logger
 	 */
 	public UpdateLogger(Updater update) {
 		super(update.getModule().getName(), null);

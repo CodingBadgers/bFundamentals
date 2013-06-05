@@ -92,6 +92,8 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		// Register this as a listener
 		this.getServer().getPluginManager().registerEvents(this, this);
 		
+		getCommand("bFundamentals").setExecutor(new CommandHandler());
+		
 		bFundamentals.log(Level.INFO, "bFundamentals Loaded.");
 	}
 
@@ -112,11 +114,6 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
-		if (label.equalsIgnoreCase("bfundamentals")) {
-			handleCommand(sender, cmd, label, args);
-			return true;
-		}
-		
 		if (label.equalsIgnoreCase("modules")) {
 			handleModulesCommand(sender);
 			return true;
@@ -128,6 +125,8 @@ public class bFundamentals extends JavaPlugin implements Listener {
 
 	/**
 	 * Disable a specific module
+	 * 
+	 * @param module the module to disable
 	 */
 	public void disableModule(Module module) {
 		Validate.notNull(module, "Moudule cannot be null");
@@ -137,6 +136,8 @@ public class bFundamentals extends JavaPlugin implements Listener {
 
 	/**
 	 * Reloads a specific module
+	 * 
+	 * @param module the module to reload
 	 */
 	public void reloadModule(Module module) {
 		Validate.notNull(module, "Moudule cannot be null");
@@ -155,7 +156,10 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * Access to the logging methods
+	 * Static access to log as bFundamentals
+	 * 
+	 * @param level the log level
+	 * @param msg the message to log
 	 */
 	public static void log(Level level, String msg) {
 		Validate.notNull(level, "Log level cannot be null");
@@ -166,6 +170,8 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	
 	/**
 	 * Get the configuration manager
+	 * 
+	 * @return the configuration manager for bFundamentals
 	 */
 	public static ConfigurationManager getConfigurationManager() {
 		return m_configuration;
@@ -173,6 +179,8 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	
 	/**
 	 * Access to the bukkit database
+	 * 
+	 * @return the bukkit database for bFundamentals
 	 */
 	public static BukkitDatabase getBukkitDatabase() {
 		if (m_database == null) {
@@ -186,7 +194,10 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * Access to vaults permission mananger
+	 * Static access to vaults permission manager
+	 * 
+	 * @return the vault permission manager
+	 * @see Permission
 	 */
 	public static Permission getPermissions() {
 		if (m_permissions == null) {
@@ -199,7 +210,10 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * Access to vaults chat mananger
+	 * Static access to vaults chat manager
+	 * 
+	 * @return the vault chat manager
+	 * @see Chat
 	 */
 	public static Chat getChat() {
 		if (m_chat == null) {
@@ -212,7 +226,10 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	}
 	
 	/**
-	 * Access to vaults economy mananger
+	 * Static access to vaults economy manager
+	 * 
+	 * @return the vault economy manager
+	 * @see Economy
 	 */
 	public static Economy getEconomy() {
 		if (m_economy == null) {
@@ -226,14 +243,13 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	
 	/**
 	 * Gets the module loader
+	 * 
+	 * @return the module loader for all bFundamentals modules
 	 */
 	public static ModuleLoader getModuleLoader(){	
 		return m_moduleLoader;
 	}
 
-	/**
-	 * Handle a module command
-	 */
 	private void handleModulesCommand(CommandSender sender) {
 		List<Module> modules = m_moduleLoader.getModules();
 		String moduleString = ChatColor.GREEN + "Modules(" + modules.size() + "): ";
@@ -247,146 +263,6 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		sender.sendMessage(moduleString);
 	}
 
-	/**
-	 * Handle the plugin commands
-	 */
-	private void handleCommand(CommandSender sender, Command cmd, String label,	String[] args) {
-		
-		if (args.length < 1) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals commands");
-			sender.sendMessage(ChatColor.DARK_AQUA + "module " + ChatColor.WHITE + "- access module load/unload/reload commands");
-			sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a given module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
-			return;
-			
-		}
-		
-		if (!m_permissions.has(sender, "bfundamentals.admin")) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry you do not have permission to do that");
-			return;
-		}
-		
-		if (args[0].equalsIgnoreCase("reload")) {
-			this.getPluginLoader().disablePlugin(this);
-			this.getPluginLoader().enablePlugin(this);
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloading plugin");
-			return;
-		}
-		
-		if (args[0].equalsIgnoreCase("module")) {
-			if (args.length < 1) {
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals module commands");
-				sender.sendMessage(ChatColor.DARK_AQUA + "unload " + ChatColor.WHITE + "- unload a module");
-				sender.sendMessage(ChatColor.DARK_AQUA + "load " + ChatColor.WHITE + "- load a module");
-				sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload a module");
-				sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a module");
-				return;
-			}
-			
-			if (args[1].equalsIgnoreCase("unload")) {
-				if (args.length == 3) {
-					Module module = m_moduleLoader.getModule(args[2]);
-					
-					if (module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on this server, do /modules for a list that are");
-						return;
-					}
-					m_moduleLoader.unload(module);
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Unloaded " + args[2]);
-					return;
-				}
-				
-				m_moduleLoader.unload();
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "UnLoaded all modules");			
-				return;
-			}
-			
-			if (args[1].equalsIgnoreCase("load")) {
-				
-				if (args.length == 3) {
-					m_moduleLoader.load(args[2]);
-					Module module = m_moduleLoader.getModule(args[2]);
-					
-					if(module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
-						return;
-					}
-					
-					module.onEnable();
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded " + args[2]);
-					return;
-				}
-				
-				m_moduleLoader.load();
-				m_moduleLoader.enable();
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded all modules");			
-				return;
-			}
-			
-			if (args[1].equalsIgnoreCase("reload")) {
-				
-				if (args.length == 3) {
-					Module module = m_moduleLoader.getModule(args[2]);
-					
-					if (module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on this server, do /modules for a list that are");
-						return;
-					}
-					m_moduleLoader.unload(module);
-					m_moduleLoader.load(args[2]);
-					module = m_moduleLoader.getModule(args[2]);
-					
-					if(module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
-						return;
-					}
-					
-					module.onEnable();
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "ReLoaded " + args[2]);
-					return;
-				}
-				
-				m_moduleLoader.unload();
-				m_moduleLoader.load();
-				m_moduleLoader.enable();
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");			
-				return;
-			}
-			
-			if (args[1].equalsIgnoreCase("debug")) {
-				
-				if (args.length != 3) {
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals module debug <module>");
-					return;
-				}
-				
-				Module module = m_moduleLoader.getModule(args[2]);
-				
-				if (module == null) {
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Module " + args[2] + " isn't loaded");
-					return;
-				}
-				
-				module.setDebug(!module.isDebug());
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + module.getName() + ": debug " + (module.isDebug() ? "enabled" : "disabled"));
-				return;
-			}
-			
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals module commands");
-			sender.sendMessage(ChatColor.DARK_AQUA + "unload " + ChatColor.WHITE + "- unload a module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "load " + ChatColor.WHITE + "- load a module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload a module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a module");
-			return;
-		}
-
-		sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals commands");
-		sender.sendMessage(ChatColor.DARK_AQUA + "module " + ChatColor.WHITE + "- access module load/unload/reload commands");
-		sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a given module");
-		sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
-		return;
-	}
-		
 	/**
 	 * Handle a player join event
 	 *
@@ -416,7 +292,15 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	 */
 	public ArrayList<Player> getPlayersOfRank(String rank) {
 		
-		PermissionManager pexmanager = PermissionsEx.getPermissionManager();
+		PermissionManager pexmanager = null;
+		
+		try {
+			pexmanager = PermissionsEx.getPermissionManager();
+		} catch (Exception ex) {
+			// If pex does not exist on the server, just return now, we don't want errors
+			return null;
+		}
+		
 		PermissionGroup group = pexmanager.getGroup(rank);
 		
 		// If the group doesn't exist just leave.

@@ -32,23 +32,33 @@ import uk.codingbadgers.bFundamentals.module.Module;
  */
 
 /**
- * Loader - Loader base for loading Loadables
- * 
- * @author NodinChan
+ * Loader - Loader base for loading Loadables.
  *
- * @param <T> A loadable class
+ * @author NodinChan
  */
 public class Loader implements Listener {
 	
+	/** The plugin. */
 	private final Plugin plugin;
 	
+	/** The dir. */
 	private final File dir;
 	
+	/** The loader. */
 	private ClassLoader loader;
 	
+	/** The files. */
 	private final List<File> files;
+	
+	/** The loadables. */
 	private final List<Module> loadables;
 	
+	/**
+	 * Instantiates a new loader.
+	 *
+	 * @param plugin the plugin
+	 * @param dir the directory to load modules from
+	 */
 	public Loader(Plugin plugin, File dir) {
 		this.plugin = plugin;
 		this.dir = dir;
@@ -57,15 +67,20 @@ public class Loader implements Listener {
 		
 		List<URL> urls = new ArrayList<URL>();
 		
-		for (File file : files)
-			try { urls.add(file.toURI().toURL()); } catch (MalformedURLException e) { e.printStackTrace(); }
+		for (File file : files) {
+			try { 
+				urls.add(file.toURI().toURL()); 
+			} catch (MalformedURLException e) {
+				e.printStackTrace(); 
+			}
+		}
 		
 		this.loader = URLClassLoader.newInstance(urls.toArray(new URL[0]), plugin.getClass().getClassLoader());
 	}
 	
 	/**
-	 * Gets the Logger
-	 * 
+	 * Gets the Logger.
+	 *
 	 * @return The Logger
 	 */
 	public Logger getLogger() {
@@ -73,8 +88,8 @@ public class Loader implements Listener {
 	}
 	
 	/**
-	 * Loads the Loadables
-	 * 
+	 * Loads the all loadables in the directory specified.
+	 *
 	 * @return List of loaded loadables
 	 */
 	public final List<Module> load() {
@@ -84,6 +99,12 @@ public class Loader implements Listener {
 		return loadables;
 	}
         
+    /**
+     * Load file into the loader.
+     *
+     * @param file the file
+     * @return the list
+     */
     public List<Module> load(File file) {
             try {
             	JarFile jarFile = new JarFile(file);
@@ -112,10 +133,10 @@ public class Loader implements Listener {
                             return loadables;
                         }
                         
-                        loadable.file(file);
-                        loadable.description(ldf);
-                        loadable.jar(jarFile);
-                        loadable.datafolder(new File(file.getParentFile(), loadable.getName()));
+                        loadable.setFile(file);
+                        loadable.setDesciption(ldf);
+                        loadable.setJarFile(jarFile);
+                        loadable.setDatafolder(new File(file.getParentFile(), loadable.getName()));
                         
                         loadable.init();
                         
@@ -135,8 +156,7 @@ public class Loader implements Listener {
                 } catch (ClassCastException e) {
                     e.printStackTrace();
                     getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " is in the wrong directory");
-                    getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
-				
+                    getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");			
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                     getLogger().log(Level.WARNING, "Invalid path.yml");
@@ -151,7 +171,9 @@ public class Loader implements Listener {
         }
 	
 	/**
-	 * Reloads the Loader
+	 * Reloads the Loader.
+	 *
+	 * @return the list of modules loaded
 	 */
 	public List<Module> reload() {
 		unload();
@@ -173,10 +195,9 @@ public class Loader implements Listener {
 	}
 	
 	/**
-	 * Sorts a list of Loadables by name in alphabetical order
-	 * 
+	 * Sorts a list of Loadables by name in alphabetical order.
+	 *
 	 * @param loadables The list of Loadables to sort
-	 * 
 	 * @return The sorted list of Loadables
 	 */
 	public List<Module> sort(List<Module> loadables) {
@@ -199,10 +220,9 @@ public class Loader implements Listener {
 	}
 	
 	/**
-	 * Sorts a map of Loadables by name in alphabetical order
-	 * 
+	 * Sorts a map of Loadables by name in alphabetical order.
+	 *
 	 * @param loadables The map of Loadables to sort
-	 * 
 	 * @return The sorted map of Loadables
 	 */
 	public Map<String, Module> sort(Map<String, Module> loadables) {
@@ -218,7 +238,7 @@ public class Loader implements Listener {
 	}
 	
 	/**
-	 * Unloads the Loader
+	 * Unloads the Loader.
 	 */
 	public void unload() {
 		loadables.clear();

@@ -65,9 +65,9 @@ public class ModuleLoader {
 	}
 	
 	/**
-	 * Loads a module with a given name
-	 * 
-	 * @param fileName the files name
+	 * Loads a module with a jar file
+	 *  
+	 * @param file the jar file for this module
 	 */
 	public void load(File file) {
 		if (m_loader == null) 
@@ -111,7 +111,7 @@ public class ModuleLoader {
 	public void enable() {
 		for (Module module : m_modules) {
 			try {
-				module.onEnable();
+				module.setEnabled(true);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -125,7 +125,8 @@ public class ModuleLoader {
 	public void disable() {
 		for (Module module : m_modules) {
 			try {
-				module.onDisable();
+				module.setEnabled(false);
+				
 				for (Listener listener : module.getListeners()) {
 					HandlerList.unregisterAll(listener);
 				}

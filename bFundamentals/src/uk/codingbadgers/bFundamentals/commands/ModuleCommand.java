@@ -8,7 +8,8 @@ import org.bukkit.command.CommandSender;
 import uk.codingbadgers.bFundamentals.module.Module;
 
 /**
- * The command object.
+ * A minecraft command that is associated with a specific bFundamentals 
+ * {@link Module}.
  *
  * @author James.
  */
