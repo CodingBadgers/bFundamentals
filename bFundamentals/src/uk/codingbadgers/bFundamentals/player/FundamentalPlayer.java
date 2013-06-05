@@ -111,6 +111,21 @@ public class FundamentalPlayer {
 	}
 	
 	/**
+	 * Gets the player data for a given data id
+	 *
+	 * @param clazz the string representation of the datatype class
+	 * @return the player data if it exists, else null.
+	 * @see PlayerData
+	 */
+	public PlayerData getPlayerdata(String clazz) {
+		try {
+			return m_playerData.get(Class.forName(clazz));
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * Adds some player data, removing any old instances of the player data
 	 * 
 	 * @param data the data to add to this player

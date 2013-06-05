@@ -458,7 +458,7 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Registers a config class as a config and loads it, class must extend
 	 * {@link ConfigFile} and each element that is going to be included in the
-	 * file should be {@code static} {@code final} and have a {@link Element}
+	 * file should be {@code static} and have a {@link Element}
 	 * annotation associated with it.
 	 * 
 	 * @param clazz

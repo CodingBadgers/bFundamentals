@@ -108,8 +108,6 @@ public class ConfigFactory {
 	
 	private static void removeModifier(Field field, int mod) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		field.setAccessible(true);
-		
-	    // remove final modifier from field
 	    Field modifiersField = Field.class.getDeclaredField("modifiers");
 	    modifiersField.setAccessible(true);
 	    modifiersField.setInt(field, field.getModifiers() & ~mod);
