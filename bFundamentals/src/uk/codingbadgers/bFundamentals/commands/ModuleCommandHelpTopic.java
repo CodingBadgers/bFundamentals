@@ -53,7 +53,7 @@ public class ModuleCommandHelpTopic extends HelpTopic {
         sb.append(ChatColor.GOLD);
         sb.append("Description: ");
         sb.append(ChatColor.WHITE);
-        sb.append(m_command.getHelp());
+        sb.append(m_command.getDescription());
 
         sb.append("\n");
 

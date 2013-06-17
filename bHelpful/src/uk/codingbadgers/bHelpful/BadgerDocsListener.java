@@ -7,10 +7,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import uk.codingbadgers.bHelpful.commands.Maintenance;
-import uk.codingbadgers.bHelpful.commands.Motd;
-import uk.codingbadgers.bHelpful.commands.News;
-import uk.codingbadgers.bHelpful.commands.PlayerList;
+import uk.codingbadgers.bHelpful.commands.MaintenanceCommand;
+import uk.codingbadgers.bHelpful.commands.MotdCommand;
+import uk.codingbadgers.bHelpful.commands.NewsCommand;
+import uk.codingbadgers.bHelpful.commands.PlayerListCommand;
 
 /**
  *
@@ -40,23 +40,23 @@ public class BadgerDocsListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		
-		Motd.displayMotd(player);
-		
-		News.displayNews(player, 4);
+		MotdCommand.displayMotd(player);		
+		NewsCommand.displayNews(player, 4);
 		
 		// if maintenance is on, then display the message
-		if (Maintenance.isMaintenance()) {
+		if (MaintenanceCommand.Maintenance.NORMAL_MAINTENANCE) {
 			Output.player(player, "[bHelpful] ", "Maintenance Mode has Been Enabled. The server may lag. Please bare with us");
 		}
 		
-		if (Maintenance.isStaffMaintenance()) {
-				Output.player(player, "[bHelpful]", "Staff maintenance mode enabled");
+		if (MaintenanceCommand.Maintenance.STAFF_MAINTENANCE) {
+			Output.player(player, "[bHelpful]", "Staff maintenance mode enabled");
 		}
 
-		if (!hasPlayedBefore(player))
+		if (!hasPlayedBefore(player)) {
 			Output.server("[bHelpful]", "Please welcome " + player.getName() + " to the server");
+		}
 	
-		PlayerList.displayList(player);
+		PlayerListCommand.displayList(player);
 	}
 	
 	/**
@@ -78,7 +78,7 @@ public class BadgerDocsListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		
 		Player player = event.getPlayer();		
-		if (Maintenance.isStaffMaintenance()) {
+		if (MaintenanceCommand.Maintenance.STAFF_MAINTENANCE) {
 			if (!bHelpful.hasPermission(player, "bhelpful.staff")) {
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Maintance Mode Enabled");
 			}

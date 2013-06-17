@@ -34,11 +34,11 @@ public class bEnchant extends Module {
 
 	@Override
 	public void onEnable() {
-		registerCommand(new ModuleCommand("Enchant", "/enchant <add/set> <enchantment> <level>").setHelp("The base command for bEnchant, allowing you to add or set enchantments for any item"));
-		registerCommand(new ModuleCommand("Itemedit", "/editItem <name/desc/owner> <value>").setHelp("Allows you to set values for items name or description").addAliase("editItem"));
-		registerCommand(new ModuleCommand("Firework", "/firework [-ft] <color> <type> [fade]").setHelp("Allows you to edit fireworks properties and effects"));
-		registerCommand(new ModuleCommand("fillDispenser", "/fillDispenser").setHelp("Allows you to fill a dispenser"));
-		registerCommand(new ModuleCommand("spawner", "/fillDispenser").setHelp("Allows you to edit the properties of a mobspawner"));
+		registerCommand(new ModuleCommand("Enchant", "/enchant <add/set> <enchantment> <level>").setDescription("The base command for bEnchant, allowing you to add or set enchantments for any item"));
+		registerCommand(new ModuleCommand("Itemedit", "/editItem <name/desc/owner> <value>").setDescription("Allows you to set values for items name or description").addAliase("editItem"));
+		registerCommand(new ModuleCommand("Firework", "/firework [-ft] <color> <type> [fade]").setDescription("Allows you to edit fireworks properties and effects"));
+		registerCommand(new ModuleCommand("fillDispenser", "/fillDispenser").setDescription("Allows you to fill a dispenser"));
+		registerCommand(new ModuleCommand("spawner", "/fillDispenser").setDescription("Allows you to edit the properties of a mobspawner"));
 		
 		this.log(Level.INFO, getName() + " v: " + getDesciption().getVersion() + " has been enabled successfuly");
 	}

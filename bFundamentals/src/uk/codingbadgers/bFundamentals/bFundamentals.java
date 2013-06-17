@@ -28,7 +28,6 @@ import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import uk.codingbadgers.bFundamentals.commands.CommandListener;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleLoader;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
@@ -46,8 +45,6 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	private static Permission m_permissions = null;
 	private static Chat m_chat = null;
 	private static Economy m_economy = null;
-	
-	private final CommandListener m_commandListener = new CommandListener();
 	
 	private static ModuleLoader m_moduleLoader = null;
 	private static ConfigurationManager m_configuration = null;
@@ -85,9 +82,6 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		if (m_configuration.getAutoUpdate()) {
 			m_moduleLoader.update();
 		}
-				
-		// register the command listener
-		this.getServer().getPluginManager().registerEvents(m_commandListener, this);
 		
 		// Register this as a listener
 		this.getServer().getPluginManager().registerEvents(this, this);
@@ -105,7 +99,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	public void onDisable() {
 		bFundamentals.log(Level.INFO, "bFundamentals Disabled.");
 		m_moduleLoader.disable();
-		m_database.End();
+		m_database.freeDatabase();
 	}
 	
 	/**
@@ -185,7 +179,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	public static BukkitDatabase getBukkitDatabase() {
 		if (m_database == null) {
 			DatabaseSettings settings = m_configuration.getDatabaseSettings();
-			m_database = bDatabaseManager.CreateDatabase("bFundamentals", m_instance, settings.type);
+			m_database = bDatabaseManager.createDatabase("bFundamentals", m_instance, settings.type);
 			if (settings.type == DatabaseType.SQL) {
 				m_database.login(settings.host, settings.user, settings.password, settings.port);
 			}

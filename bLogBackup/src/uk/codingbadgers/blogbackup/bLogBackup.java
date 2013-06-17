@@ -28,7 +28,7 @@ public class bLogBackup extends Module {
 	 * Called when the module is loaded.
 	 */
 	public void onEnable() {
-		registerCommand(new ModuleCommand("logbackup", "/logbackup").setHelp("Backup the log file."));
+		registerCommand(new ModuleCommand("logbackup", "/logbackup").setDescription("Backup the log file."));
 	}
 	
 	/**

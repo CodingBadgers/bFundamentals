@@ -61,7 +61,7 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
-            <version>1.2.19-SNAPSHOT</version>
+            <version>1.2.26</version>
         </dependency>
         <dependency>
             <groupId>uk.thecodingbadgers</groupId>
@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>ru.tehkode</groupId>
 			<artifactId>PermissionsEx</artifactId>
-			<version>1.19.5</version>
+			<version>1.19.6</version>
         </dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -97,13 +97,8 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>*.yml</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>${project.basedir}/src</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>*</include>
+                    <include>*.lang</include>
+                    <include>*.cfg</include>
                 </includes>
             </resource>
             <resource>
@@ -113,6 +108,14 @@
                 <includes>
                     <include>*.cfg</include>
                     <include>*.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/lang</directory>
+                <filtering>true</filtering>
+                <targetPath>lang</targetPath>
+                <includes>
+                    <include>*.lang</include>
                 </includes>
             </resource>
         </resources>

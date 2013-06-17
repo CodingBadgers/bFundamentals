@@ -37,7 +37,7 @@ public class bConomyModule extends Module {
 		Global.outputToConsole("Initialising bConomy");
 		register(m_playerListener);
 		
-		registerCommand(new ModuleCommand("money", "/money <args>").setHelp("Access all money commands"));
+		registerCommand(new ModuleCommand("money", "/money <args>").setDescription("Access all money commands"));
 
 		if (Global.setupPermissions()) {
 			Global.outputToConsole(getLanguageValue("VAULT-FOUND"));
