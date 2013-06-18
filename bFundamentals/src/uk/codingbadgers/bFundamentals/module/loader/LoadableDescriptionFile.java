@@ -1,9 +1,14 @@
 package uk.codingbadgers.bFundamentals.module.loader;
 
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * The Class LoadableDescriptionFile, represents the data stored in the
@@ -13,30 +18,28 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class LoadableDescriptionFile {
     
-    /** The loadable's name. */
     private final String name;
-    
-    /** The loadable's version. */
     private final String version;
-    
-    /** The loadable's main class. */
+    private final String description;
     private final String mainClass;
-	
-	/** The loadable's authors. */
 	private final List<String> authors;
+	private final Collection<String> dependencies;
     
     /**
      * Instantiates a new loadable description file.
      *
      * @param istream the input stream that this file is loaded from
      */
-    public LoadableDescriptionFile(InputStream istream) {        
+    @SuppressWarnings("deprecation")
+	public LoadableDescriptionFile(InputStream istream) {        
         YamlConfiguration ldf = YamlConfiguration.loadConfiguration(istream);
         
         name = ldf.getString("name", "Unknown Module");
         version = ldf.getString("version", "0.0");
+        description = ldf.getString("description", "");
         mainClass = ldf.getString("main-class");
-        authors = ldf.getStringList("authors");
+        authors = ImmutableList.of(ldf.getStringList("authors").toArray(new String[0]));
+        dependencies = Collections.unmodifiableCollection(ldf.getStringList("dependencies"));
     }
     
     /**
@@ -58,10 +61,19 @@ public class LoadableDescriptionFile {
     }
     
     /**
-     * Gets the main class of this loadable.
-     *
-     * @return the main class of this loadable
+     * Gets the description for this loadable.
+     * 
+     * @return the description of this loadable
      */
+    public String getDescription() {
+    	return description;
+    }
+    
+    /**
+	 * Gets the main class of this loadable.
+	 * 
+	 * @return the fully qualified name of the main class of this loadable
+	 */
     public String getMainClass() {
         return mainClass;
     }
@@ -69,9 +81,19 @@ public class LoadableDescriptionFile {
 	/**
 	 * Gets the authors of this loadable.
 	 *
-	 * @return the authors of this loadable
+	 * @return a immutable list of the authors of this loadable
 	 */
 	public List<String> getAuthors() {
 		return authors;
+	}
+	
+	/**
+	 * Gets the module dependencies of this loadable, this module will load after
+	 * all of the dependencies have loaded.
+	 * 
+	 * @return a unmodifiable collection of the dependencies
+	 */
+	public Collection<String> getDependencies() {
+		return dependencies;
 	}
 }

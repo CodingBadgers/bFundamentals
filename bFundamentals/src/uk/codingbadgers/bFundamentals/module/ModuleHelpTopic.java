@@ -35,7 +35,7 @@ public class ModuleHelpTopic extends HelpTopic {
 		StringBuilder sb = new StringBuilder();
 		
 		for (ModuleCommand command : m_commands) {
-               String lineStr = buildIndexLine(command).replace("\n", ". ");
+               String lineStr = buildLine(command).replace("\n", ". ");
                if (lineStr.length() > ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH) {
                    sb.append(lineStr.substring(0, ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 3));
                    sb.append("...");
@@ -54,7 +54,7 @@ public class ModuleHelpTopic extends HelpTopic {
 	 * @param command the command
 	 * @return the string
 	 */
-	protected String buildIndexLine(ModuleCommand command) {
+	protected String buildLine(ModuleCommand command) {
         StringBuilder line = new StringBuilder();
         line.append(ChatColor.GOLD);
         line.append("/" + command.getLabel());

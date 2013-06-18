@@ -1,12 +1,20 @@
 package uk.codingbadgers.bFundamentals.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
 /**
@@ -43,6 +51,7 @@ public class ModuleCommand extends Command implements TabExecutor {
 		m_description = usage;
 		m_helpTopic = new ModuleCommandHelpTopic(this);
 		m_permission = "bfundamentals.command." + m_label;
+		
 	}
 
 	/**
@@ -199,20 +208,68 @@ public class ModuleCommand extends Command implements TabExecutor {
 	 */
 	@Override
 	public final boolean execute(CommandSender sender, String label, String[] args) {
-		for (ModuleChildCommand child : m_children) {
-			if (child.getLabel().equalsIgnoreCase(label)) {
-				return child.execute(sender, label, args);
+		if (args.length >= 1) {
+			for (ModuleChildCommand child : m_children) {
+				if (child.getLabel().equalsIgnoreCase(args[0])) {
+					m_module.log(Level.INFO, child.getLabel());
+					// cut first argument (sub command) out of command then handle as child command
+					args = Arrays.copyOfRange(args, 1, args.length);
+					return child.execute(sender, label, args);
+				}
 			}
 		}
 
-		// for backwards compatibility call old method
+		// for backwards compatibility call old method first, will pass to new if left as default
 		if (onCommand(sender, label, args)) {
 			return true;
 		}
 
-		return m_module.onCommand(sender, label, args);
+		// call command method in module if still not handled
+		if (m_module.onCommand(sender, label, args)) {
+			return true;
+		}
+		
+		// if not handled for any reason, send usage
+		Module.sendMessage(m_module.getName(), sender, getUsage());
+		return false;
 	}
 
+	/**
+	 * Internal tab completion handling.
+	 * 
+	 * @param sender
+	 *            the command sender
+	 * @param label
+	 *            the command label
+	 * @param args
+	 *            the command arguments
+	 * @return the tab completed list
+	 */
+	@Override
+    public final List<String> tabComplete(CommandSender sender, String alias, String[] args) throws CommandException, IllegalArgumentException {
+        Validate.notNull(sender, "Sender cannot be null");
+        Validate.notNull(args, "Arguments cannot be null");
+        Validate.notNull(alias, "Alias cannot be null");
+
+        List<String> completions = null;
+        try {
+        	completions = onTabComplete(sender, this, alias, args);
+        } catch (Throwable ex) {
+            StringBuilder message = new StringBuilder();
+            message.append("Unhandled exception during tab completion for command '/").append(alias).append(' ');
+            for (String arg : args) {
+                message.append(arg).append(' ');
+            }
+            message.deleteCharAt(message.length() - 1).append("' in plugin ").append(m_module.getName());
+            throw new CommandException(message.toString(), ex);
+        }
+
+        if (completions == null) {
+            return super.tabComplete(sender, alias, args);
+        }
+        return completions;
+    }
+	
 	/**
 	 * Handle tab completion on the command.
 	 * 
@@ -229,8 +286,18 @@ public class ModuleCommand extends Command implements TabExecutor {
 	 * @see Module#onCommand(CommandSender, String, String[])
 	 */
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		return null;
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {		
+		if (m_children.size() >= 1 && args.length == 1) {
+			Builder<String> builder = ImmutableList.builder();
+			for (ModuleChildCommand child : m_children) {
+				if (child.getLabel().startsWith(args[0])) {
+					builder.add(child.getLabel());
+				}
+			}
+			return builder.build();
+		}
+		
+		return ImmutableList.of();
 	}
 
 	/**
@@ -268,6 +335,10 @@ public class ModuleCommand extends Command implements TabExecutor {
 	 */
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 		return onCommand(sender, this, label, args);
+	}
+	
+	protected void sendMessage(CommandSender sender, String message) {
+		Module.sendMessage(m_module == null ? bFundamentals.getInstance().getName() : m_module.getName(), sender, message);
 	}
 
 }

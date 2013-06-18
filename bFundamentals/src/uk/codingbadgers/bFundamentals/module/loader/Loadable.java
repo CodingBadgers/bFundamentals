@@ -31,31 +31,19 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class Loadable implements Cloneable {
 
-	/** The name of this loadable. */
 	private String name;
-
-	/** The config file for this loadable. */
 	private File configFile;
-	
-	/** The config for this loadable. */
 	private FileConfiguration config;
-	
-	/** The description of this loadable. */
 	private LoadableDescriptionFile description;
-
-	/** The jar file of this loadable. */
 	private JarFile jar;
-	
-	/** The data folder for this loadable. */
 	private File dataFolder;
-	
-	/** The file for this loadable. */
 	private File file;
 
 	/**
 	 * Instantiates a new loadable.
 	 *
 	 * @param name the name
+	 * @deprecated use a {@link LoadableDescriptionFile} instead
 	 */
 	public Loadable(String name) {
 		this.name = name;

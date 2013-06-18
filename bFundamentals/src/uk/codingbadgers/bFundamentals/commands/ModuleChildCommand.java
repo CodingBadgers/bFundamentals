@@ -4,8 +4,8 @@ public class ModuleChildCommand extends ModuleCommand {
 
 	protected ModuleCommand m_parent;
 
-	public ModuleChildCommand(ModuleCommand parent, String label, String usage) {
-		super(label, usage);
+	public ModuleChildCommand(ModuleCommand parent, String label) {
+		super(label, parent.getUsage());
 		m_parent = parent;
 	}
 	

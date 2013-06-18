@@ -365,7 +365,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * @param message
 	 *            the message
 	 */
-	public static void sendMessage(String name, Player player, String message) {
+	public static void sendMessage(String name, CommandSender player, String message) {
 		player.sendMessage(ChatColor.DARK_PURPLE + "[" + name + "] " + ChatColor.RESET + message);
 	}
 

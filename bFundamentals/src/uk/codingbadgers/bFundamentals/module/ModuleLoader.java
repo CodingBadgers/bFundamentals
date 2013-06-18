@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
@@ -40,7 +41,7 @@ public class ModuleLoader {
 	}
 	
 	/**
-	 * Loads the modules.
+	 * Loads all the modules in the base modules directory.
 	 */
 	public void load() {
 		m_loader = new Loader(bFundamentals.getInstance(), getModuleDir());
@@ -48,6 +49,7 @@ public class ModuleLoader {
 		
 		for (Module module : m_modules) {
 			module.onLoad();
+			Bukkit.getHelpMap().addTopic(new ModuleHelpTopic(module));
 			module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
 		}
 		
@@ -115,7 +117,6 @@ public class ModuleLoader {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			bFundamentals.getInstance().getServer().getHelpMap().addTopic(new ModuleHelpTopic(module));
 		}
 	}
 	

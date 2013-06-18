@@ -17,10 +17,5 @@
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <artifactId>craftbukkit</artifactId>
-            <groupId>org.bukkit</groupId>
-            <version>1.4.6-R0.2-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 </project>

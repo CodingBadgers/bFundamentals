@@ -1,3 +1,3 @@
 name: ${project.artifactId}
 version: ${project.version}
-main-class: uk.thecodingbadgers.benchant.bEnchant
+main-class: uk.thecodingbadgers.benchant.bItemEdit
