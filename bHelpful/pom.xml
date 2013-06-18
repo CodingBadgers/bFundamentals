@@ -17,10 +17,5 @@
 			<groupId>uk.thecodingbadgers</groupId>
 			<version>1.2-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>ru.tehkode</groupId>
-			<artifactId>PermissionsEx</artifactId>
-			<version>1.19.5</version>
-		</dependency>
 	</dependencies>
 </project>

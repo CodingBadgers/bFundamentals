@@ -69,7 +69,7 @@ public class bSignModule extends Module {
 		DATABASE = m_database;
 		loadLanguageFile();
 
-		if (!DATABASE.TableExists("bSign")) {
+		if (!DATABASE.tableExists("bSign")) {
 			// the bSign table doesn't exist, create one
 			String createTable = "CREATE TABLE bSign " +
 				"(" +
@@ -78,7 +78,7 @@ public class bSignModule extends Module {
 				"Creator varchar(32)," +
 				"Location varchar(1024)" +
 				")";
-			DATABASE.Query(createTable, true);
+			DATABASE.query(createTable, true);
 		}
 		else
 		{
@@ -98,7 +98,7 @@ public class bSignModule extends Module {
 		
 		// load the signs from the table
 		String selectAllSigns = "Select * FROM bSign";
-		ResultSet result = bSignModule.DATABASE.QueryResult(selectAllSigns);
+		ResultSet result = bSignModule.DATABASE.queryResult(selectAllSigns);
 		
 		try {
 			while (result.next()) {

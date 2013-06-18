@@ -536,7 +536,7 @@ public class PlayerListener implements Listener {
 					contextSign.getCreator().getName() + "', '" +
 					location +
 					"')";
-			bSignModule.DATABASE.Query(addSign);
+			bSignModule.DATABASE.query(addSign);
 			return;
 		}
 		

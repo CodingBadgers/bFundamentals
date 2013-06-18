@@ -110,7 +110,7 @@ public class BlockListener implements Listener {
 				"WHERE Location = '" +
 				location + 
 				"'";
-		bSignModule.DATABASE.Query(addSign);
+		bSignModule.DATABASE.query(addSign);
 		
 		bSignModule.SIGNS.remove(contextSign);
 		bSignModule.sendMessage("bSign", event.getPlayer(), bSignModule.MODULE.getLanguageValue("SIGN-REMOVED"));
