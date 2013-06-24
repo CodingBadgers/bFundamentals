@@ -23,6 +23,8 @@
         <module>bQuiet</module>
         <module>bShortLinks</module>
         <module>bSign</module>
+		<module>bPluginControl</module>
+		<module>bPvpStats</module>
     </modules>
     
     <organization>
