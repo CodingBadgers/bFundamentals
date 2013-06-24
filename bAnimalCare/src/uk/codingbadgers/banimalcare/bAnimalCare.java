@@ -398,7 +398,7 @@ public class bAnimalCare extends Module implements Listener {
 	 */	
 	private void setupDatabase() {
 		
-		if (m_database.TableExists("bAnimalCare"))
+		if (m_database.tableExists("bAnimalCare"))
 			return;
 		
 		final String createQuery = 
@@ -408,7 +408,7 @@ public class bAnimalCare extends Module implements Listener {
 			"EntityID int" +
 		")";
 
-		m_database.Query(createQuery, true);
+		m_database.query(createQuery, true);
 		
 	}
 	
@@ -419,7 +419,7 @@ public class bAnimalCare extends Module implements Listener {
 		
 		final String selectAll = "Select * FROM bAnimalCare";
 		
-		ResultSet result = m_database.QueryResult(selectAll);
+		ResultSet result = m_database.queryResult(selectAll);
 		if (result != null) {
 			
 			try {
@@ -433,11 +433,11 @@ public class bAnimalCare extends Module implements Listener {
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				m_database.FreeResult(result);
+				m_database.freeResult(result);
 				return;
 			}
 			
-			m_database.FreeResult(result);
+			m_database.freeResult(result);
 			
 		}
 		
@@ -455,7 +455,7 @@ public class bAnimalCare extends Module implements Listener {
 				entityID +
 			"')";
 		
-		m_database.Query(addPet);
+		m_database.query(addPet);
 		
 	}
 
