@@ -22,6 +22,11 @@
 			<url>http://maven.sk89q.com/repo</url>
 		</repository>
 		
+		<repository>
+        	<id>remoteentities-repo</id>
+        	<url>http://repo.infinityblade.de/remoteentities/releases</url>
+    	</repository>
+		
 	</repositories>
 	
     <dependencies>
@@ -46,5 +51,11 @@
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
         </dependency>
+        
+        <dependency>
+        	<groupId>de.kumpelblase2</groupId>
+        	<artifactId>remoteentities</artifactId>
+        	<version>1.6</version>
+    	</dependency>
     </dependencies>
 </project>

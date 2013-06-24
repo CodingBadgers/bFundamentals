@@ -17,16 +17,12 @@
     
     <modules>
         <module>bFundamentals</module>
-		<module>bTabOrganisation</module>
 		<module>bAnimalCare</module>
-        <module>bConomy</module>
 		<module>bLogBackup</module>
         <module>bPortalsHelper</module>
         <module>bQuiet</module>
         <module>bShortLinks</module>
         <module>bSign</module>
-        <module>bSocial</module>
-		<module>bEnchanted</module>
     </modules>
     
     <organization>
