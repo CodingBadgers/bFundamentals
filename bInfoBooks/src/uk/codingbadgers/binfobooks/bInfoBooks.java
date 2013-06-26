@@ -103,7 +103,7 @@ public class bInfoBooks extends Module implements Listener {
 				
 				JSONObject bookJSON = (JSONObject)JSONValue.parse(jsonContents);
 				InfoBook newBook = new InfoBook(bookJSON);
-				m_books.put(newBook.getName(), newBook);
+				m_books.put(newBook.getName().toLowerCase(), newBook);
 			}
 		}
 		
@@ -139,7 +139,7 @@ public class bInfoBooks extends Module implements Listener {
 	}
 
 	public static boolean bookExists(String bookName) {
-		return m_books.containsKey(bookName);
+		return m_books.containsKey(bookName.toLowerCase());
 	}
 	
 	public static void listBooks(Player player) {
@@ -151,7 +151,7 @@ public class bInfoBooks extends Module implements Listener {
 	
 	public static boolean playerHasBook(Player player, String bookName) {
 		
-		final InfoBook infobook = m_books.get(bookName);
+		final InfoBook infobook = m_books.get(bookName.toLowerCase());
 		if (infobook == null) {
 			Module.sendMessage("bInfoBooks", player, "No book by the name '" + bookName + "' exists.");
 			return false;
@@ -187,7 +187,7 @@ public class bInfoBooks extends Module implements Listener {
 
 	public static boolean givePlayerBook(Player player, String bookName) {
 		
-		final InfoBook infobook = m_books.get(bookName);
+		final InfoBook infobook = m_books.get(bookName.toLowerCase());
 		if (infobook == null) {
 			Module.sendMessage("bInfoBooks", player, "No book by the name '" + bookName + "' exists.");
 			return false;
@@ -202,7 +202,6 @@ public class bInfoBooks extends Module implements Listener {
 		bookmeta.setLore(infobook.getTagLines());
 		bookmeta.setPages(infobook.getPages());		
 		bookmeta.setDisplayName("InfoBook");
-		
 		
 		book.setItemMeta(bookmeta);
 		player.getInventory().addItem(book);
