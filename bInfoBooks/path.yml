@@ -1,0 +1,3 @@
+name: ${project.artifactId}
+version: ${project.version}
+main-class: uk.codingbadgers.binfobooks.bInfoBooks

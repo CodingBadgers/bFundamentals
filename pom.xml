@@ -25,6 +25,7 @@
         <module>bSign</module>
 		<module>bPluginControl</module>
 		<module>bPvpStats</module>
+		<module>bInfoBooks</module>
     </modules>
     
     <organization>
