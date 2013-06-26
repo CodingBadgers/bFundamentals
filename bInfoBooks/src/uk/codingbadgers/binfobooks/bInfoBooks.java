@@ -13,7 +13,10 @@ import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
@@ -42,6 +45,26 @@ public class bInfoBooks extends Module implements Listener {
 		register(this);
 		registerCommand(new CommandBook());
 		loadBooks();
+	}
+	
+	@EventHandler (priority=EventPriority.NORMAL)
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+		
+		ItemStack item = event.getItemDrop().getItemStack();
+		if (item == null) {
+			return;
+		}
+		
+		if (item.getType() != Material.WRITTEN_BOOK) {
+			return;
+		}
+		
+		final BookMeta bookmeta = (BookMeta)item.getItemMeta();
+		if (bookmeta.getDisplayName() != "InfoBook") {
+			return;
+		}
+		
+		event.getItemDrop().remove();
 	}
 	
 	private void loadBooks() {
@@ -86,6 +109,7 @@ public class bInfoBooks extends Module implements Listener {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	private void makeExampleBook(File booksfolder) {
 		
 		JSONObject book = new JSONObject();

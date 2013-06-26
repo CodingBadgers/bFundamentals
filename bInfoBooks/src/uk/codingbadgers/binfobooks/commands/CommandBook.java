@@ -59,11 +59,13 @@ public class CommandBook extends ModuleCommand {
 			return true;
 		}
 		
+		// See if player already has the same book
 		if (bInfoBooks.playerHasBook(player, bookName)) {
 			Module.sendMessage("bInfoBooks", player, "You already have a copy of the book '" + bookName + "' in your inventory.");			
 			return true;
 		}
 		
+		// Try and give the player the book
 		if (bInfoBooks.givePlayerBook(player, bookName)) {
 			Module.sendMessage("bInfoBooks", player, "You have been given the book '" + bookName + "'.");
 		}
