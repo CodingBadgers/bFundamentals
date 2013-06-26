@@ -2,6 +2,9 @@ package uk.codingbadgers.binfobooks;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -19,13 +22,24 @@ public class InfoBook {
 		
 		JSONArray jPages = (JSONArray)bookJSON.get("pages");
 		for (Object page : jPages) {
-			m_pages.add((String)page);
+			m_pages.add(ChatColor.translateAlternateColorCodes('&', (String)page));
 		}
 		
 		JSONArray jTagLines = (JSONArray)bookJSON.get("taglines");
 		for (Object tag : jTagLines) {
 			m_tagLines.add((String)tag);
 		}
+		
+	}
+	
+	private String formatPage(Player player, String page) {
+		
+		page = page.replaceAll("<<playername>>", player.getName());		
+		page = page.replaceAll("<<servername>>", Bukkit.getServerName());	
+		page = page.replaceAll("<<bukkitversion>>", Bukkit.getBukkitVersion());		
+		page = page.replaceAll("<<minecraftversion>>", Bukkit.getVersion());	
+		
+		return page;
 		
 	}
 
@@ -41,8 +55,12 @@ public class InfoBook {
 		return m_tagLines;
 	}
 
-	public ArrayList<String> getPages() {
-		return m_pages;
+	public ArrayList<String> getPages(Player player) {
+		ArrayList<String> pages = new ArrayList<String>();
+		for (String page : m_pages) {
+			pages.add(formatPage(player, page));
+		}
+		return pages;
 	}
 
 }
