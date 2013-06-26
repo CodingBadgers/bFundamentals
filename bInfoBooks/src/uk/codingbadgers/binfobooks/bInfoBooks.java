@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -48,23 +49,50 @@ public class bInfoBooks extends Module implements Listener {
 	}
 	
 	@EventHandler (priority=EventPriority.NORMAL)
+	public void onInventoryClick(InventoryClickEvent event) {
+		
+		ItemStack item = event.getCurrentItem();
+		if (!isItemInfoBook(item)) {
+			return;
+		}
+		
+		if (event.getView().getTitle().contains("inventory")) {
+			return;
+		}
+		
+		Module.sendMessage("bInfoBooks", (Player)event.getWhoClicked(), "You can't store InfoBooks. Please drop the InfoBook to remove it from your inventory.");
+		Module.sendMessage("bInfoBooks", (Player)event.getWhoClicked(), "You can get another copy of the book via the '/book' command.");
+		event.setCancelled(true);
+	}
+	
+	@EventHandler (priority=EventPriority.NORMAL)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 		
 		ItemStack item = event.getItemDrop().getItemStack();
-		if (item == null) {
+		if (!isItemInfoBook(item)) {
 			return;
+		}
+
+		event.getItemDrop().remove();
+	}
+	
+	private boolean isItemInfoBook(ItemStack item) {
+		
+		if (item == null) {
+			return false;
 		}
 		
 		if (item.getType() != Material.WRITTEN_BOOK) {
-			return;
+			return false;
 		}
 		
 		final BookMeta bookmeta = (BookMeta)item.getItemMeta();
-		if (bookmeta.getDisplayName() != "InfoBook") {
-			return;
+		if (!bookmeta.getDisplayName().equalsIgnoreCase("InfoBook")) {
+			return false;
 		}
 		
-		event.getItemDrop().remove();
+		return true;
+		
 	}
 	
 	private void loadBooks() {
@@ -143,7 +171,6 @@ public class bInfoBooks extends Module implements Listener {
 	}
 	
 	public static void listBooks(Player player) {
-		
 		for (InfoBook book : m_books.values()) {
 			Module.sendMessage("bInfoBooks", player, " - " + book.getName());
 		}
@@ -164,7 +191,7 @@ public class bInfoBooks extends Module implements Listener {
 				if (item.getType() == Material.WRITTEN_BOOK) {
 					final BookMeta bookmeta = (BookMeta)item.getItemMeta();
 					
-					if (bookmeta.getDisplayName() != "InfoBook") {
+					if (!bookmeta.getDisplayName().equalsIgnoreCase("InfoBook")) {
 						continue;
 					}
 					
