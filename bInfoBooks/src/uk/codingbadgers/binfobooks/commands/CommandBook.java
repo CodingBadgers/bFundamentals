@@ -45,7 +45,7 @@ public class CommandBook extends ModuleCommand {
 			Module.sendMessage("bInfoBooks", player, "You do not have permission to get books. [binfobooks.get]");
 			return true;
 		}
-		
+				
 		// Get the name of the requested book
 		String bookName = "";
 		for (String arg : args) {
@@ -53,21 +53,33 @@ public class CommandBook extends ModuleCommand {
 		}
 		bookName = bookName.substring(0, bookName.length() - 1);
 		
+		boolean silent = false;
+		if (bookName.substring(bookName.length() - 2).equalsIgnoreCase("-s")) {
+			silent = true;
+			bookName = bookName.substring(0, bookName.length() - 3);
+		}
+		
 		// See if the book exists
 		if (!bInfoBooks.bookExists(bookName)) {
-			Module.sendMessage("bInfoBooks", player, "No book by the name '" + bookName + "' exists.");			
+			if (!silent) {
+				Module.sendMessage("bInfoBooks", player, "No book by the name '" + bookName + "' exists.");			
+			}
 			return true;
 		}
 		
 		// See if player already has the same book
 		if (bInfoBooks.playerHasBook(player, bookName)) {
-			Module.sendMessage("bInfoBooks", player, "You already have a copy of the book '" + bookName + "' in your inventory.");			
+			if (!silent) {
+				Module.sendMessage("bInfoBooks", player, "You already have a copy of the book '" + bookName + "' in your inventory.");			
+			}
 			return true;
 		}
 		
 		// Try and give the player the book
 		if (bInfoBooks.givePlayerBook(player, bookName)) {
-			Module.sendMessage("bInfoBooks", player, "You have been given the book '" + bookName + "'.");
+			if (!silent) {
+				Module.sendMessage("bInfoBooks", player, "You have been given the book '" + bookName + "'.");
+			}
 		}
 		
 		return true;

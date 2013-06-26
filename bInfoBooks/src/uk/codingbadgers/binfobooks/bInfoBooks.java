@@ -188,6 +188,10 @@ public class bInfoBooks extends Module implements Listener {
 		
 		if (invent.contains(Material.WRITTEN_BOOK)) {
 			for (ItemStack item : invent.getContents()) {
+				if (item == null) {
+					continue;
+				}
+				
 				if (item.getType() == Material.WRITTEN_BOOK) {
 					final BookMeta bookmeta = (BookMeta)item.getItemMeta();
 					
