@@ -51,11 +51,5 @@
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
         </dependency>
-        
-        <dependency>
-        	<groupId>de.kumpelblase2</groupId>
-        	<artifactId>remoteentities</artifactId>
-        	<version>1.6</version>
-    	</dependency>
     </dependencies>
 </project>
