@@ -199,11 +199,11 @@ public class bInfoBooks extends Module implements Listener {
 						continue;
 					}
 					
-					if (infobook.getAuthor() != bookmeta.getAuthor()) {
+					if (!infobook.getAuthor().equalsIgnoreCase(bookmeta.getAuthor())) {
 						continue;
 					}
 					
-					if (infobook.getName() != bookmeta.getTitle()) {
+					if (!infobook.getName().equalsIgnoreCase(bookmeta.getTitle())) {
 						continue;
 					}
 					

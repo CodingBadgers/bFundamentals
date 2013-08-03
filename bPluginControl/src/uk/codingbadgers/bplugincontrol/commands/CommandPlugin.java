@@ -8,7 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
@@ -56,6 +58,10 @@ public class CommandPlugin extends ModuleCommand {
 
 		if (command.equalsIgnoreCase("load")) {
 			return loadPlugin(player, pluginName);
+		}
+		
+		if (command.equalsIgnoreCase("unload")) {
+			return unloadPlugin(player, pluginName);
 		}
 				
 		if (command.equalsIgnoreCase("reload")) {
@@ -119,8 +125,26 @@ public class CommandPlugin extends ModuleCommand {
 			Module.sendMessage("bPluginControl", player, "A plugin with the name '" + pluginName + "' could not be found.");
 			return true;
 		}
-		
+
 		pluginManager.disablePlugin(plugin);	
+		
+		Module.sendMessage("bPluginControl", player, "The plugin '" + pluginName + "' was successfully disabled.");
+		return true;
+	}
+	
+	@SuppressWarnings("deprecation")
+	private boolean unloadPlugin(Player player, String pluginName) {
+		PluginManager pluginManager = Bukkit.getServer().getPluginManager();
+		Plugin plugin = pluginManager.getPlugin(pluginName);
+		if (plugin == null) {
+			Module.sendMessage("bPluginControl", player, "A plugin with the name '" + pluginName + "' could not be found.");
+			return true;
+		}
+
+		if (plugin.getPluginLoader() instanceof JavaPluginLoader) {
+			JavaPluginLoader loader = (JavaPluginLoader)plugin.getPluginLoader();
+			loader.disablePlugin(plugin);
+		}
 		
 		Module.sendMessage("bPluginControl", player, "The plugin '" + pluginName + "' was successfully disabled.");
 		return true;
