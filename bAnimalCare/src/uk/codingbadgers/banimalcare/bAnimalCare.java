@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -31,6 +32,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 //import de.kumpelblase2.remoteentities.api.RemoteEntity;
 //import de.kumpelblase2.remoteentities.api.features.RemoteTamingFeature;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
 public class bAnimalCare extends Module implements Listener {
@@ -55,7 +57,6 @@ public class bAnimalCare extends Module implements Listener {
 	 */
 	public void onEnable() {
 		WORLDGUARD = (WorldGuardPlugin)m_plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-		//m_entityManager = RemoteEntities.createManager(bFundamentals.getInstance());
 		register(this);
 		
 		setupDatabase();
@@ -167,15 +168,36 @@ public class bAnimalCare extends Module implements Listener {
 			return;
 		}
 		
-		Player player = (Player)event.getEntity();
-		Entity vehicle = player.getVehicle();
+		final Player player = (Player)event.getEntity();
+		final Entity vehicle = player.getVehicle();
+		
+		Module.sendMessage("bAnimalCare", player, "Teleport Event");
+		
+		
 		if (vehicle == null) {
 			return;
 		}
-				
-		//if (vehicle.getType() == EntityType.UNKNOWN || vehicle.getType() == EntityType.PIG) {
-		//	vehicle.teleport(event.getTo());
-		//}
+		
+		Module.sendMessage("bAnimalCare", player, "On vehicle");
+		
+		if (vehicle.getType() == EntityType.HORSE) {
+			
+			Module.sendMessage("bAnimalCare", player, "On Horse");
+			
+			vehicle.eject();
+			new BukkitRunnable() {
+				public void run() {
+					Module.sendMessage("bAnimalCare", player, "Bringing your horse to you!");
+					vehicle.teleport(player);
+					new BukkitRunnable() {
+						public void run() {
+							Module.sendMessage("bAnimalCare", player, "Putting you back on your horse");
+							vehicle.setPassenger(player);
+						}
+					}.runTaskLater(bFundamentals.getInstance(), 20L);
+				}
+			}.runTaskLater(bFundamentals.getInstance(), 20L);
+		}
 		
 	}
 	
@@ -282,10 +304,7 @@ public class bAnimalCare extends Module implements Listener {
 		//taming.tame(player);		
 		//rEntity.getFeatures().addFeature(taming);
 		
-		String mobType = entity.getType().getName();
-		if (entity.getType() == EntityType.UNKNOWN) {
-			mobType = "Horse";
-		}
+		String mobType = entity.getType().getName().replace("Entity", "");
 		Module.sendMessage("bAnimalCare", player, "You have tamed a new " + mobType + " pet.");
 		
 	}
@@ -361,9 +380,8 @@ public class bAnimalCare extends Module implements Listener {
 		if (entity.getType() == EntityType.THROWN_EXP_BOTTLE)
 			return true;
 		
-		// horses are currently unknown
-		//if (entity.getType() == EntityType.UNKNOWN)
-		//	return true;
+		if (entity.getType() == EntityType.UNKNOWN)
+			return true;
 		
 		if (entity.getType() == EntityType.WEATHER)
 			return true;
