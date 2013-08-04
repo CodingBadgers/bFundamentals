@@ -36,16 +36,16 @@ public class bInfoBooks extends Module implements Listener {
 	 * Called when the module is disabled.
 	 */
 	public void onDisable() {
-		m_books.clear();
 	}
 
 	/**
 	 * Called when the module is loaded.
 	 */
 	public void onEnable() {
+		loadBooks();
+		
 		register(this);
 		registerCommand(new CommandBook(this));
-		loadBooks();
 	}
 	
 	@EventHandler (priority=EventPriority.NORMAL)
@@ -96,6 +96,8 @@ public class bInfoBooks extends Module implements Listener {
 	}
 	
 	private void loadBooks() {
+		
+		m_books.clear();
 		
 		File bookFolder = new File(this.getDataFolder() + File.separator + "books");
 		if (!bookFolder.exists()) {
