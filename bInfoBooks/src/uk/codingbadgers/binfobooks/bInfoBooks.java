@@ -30,13 +30,13 @@ import uk.codingbadgers.binfobooks.commands.CommandBook;
 
 public class bInfoBooks extends Module implements Listener {
 	
-	private static HashMap<String, InfoBook> m_books = new HashMap<String, InfoBook>();
+	private HashMap<String, InfoBook> m_books = new HashMap<String, InfoBook>();
 
 	/**
 	 * Called when the module is disabled.
 	 */
 	public void onDisable() {
-
+		m_books.clear();
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class bInfoBooks extends Module implements Listener {
 	 */
 	public void onEnable() {
 		register(this);
-		registerCommand(new CommandBook());
+		registerCommand(new CommandBook(this));
 		loadBooks();
 	}
 	
@@ -166,7 +166,7 @@ public class bInfoBooks extends Module implements Listener {
 		}
 	}
 
-	public static InfoBook bookExists(String bookName) {
+	public InfoBook bookExists(String bookName) {
 		if (m_books.containsKey(bookName.toLowerCase()))
 			return m_books.get(bookName);
 		
@@ -180,13 +180,13 @@ public class bInfoBooks extends Module implements Listener {
 		return null;
 	}
 	
-	public static void listBooks(Player player) {
+	public void listBooks(Player player) {
 		for (InfoBook book : m_books.values()) {
-			Module.sendMessage("bInfoBooks", player, " - " + book.getName());
+			Module.sendMessage("bInfoBooks", player, " - " + book.getName() + " by " + book.getAuthor());
 		}
 	}
 	
-	public static boolean playerHasBook(Player player, InfoBook infobook) {
+	public boolean playerHasBook(Player player, InfoBook infobook) {
 		
 		final PlayerInventory invent = player.getInventory();
 		
@@ -220,7 +220,7 @@ public class bInfoBooks extends Module implements Listener {
 		return false;
 	}
 
-	public static boolean givePlayerBook(Player player, InfoBook infobook) {
+	public boolean givePlayerBook(Player player, InfoBook infobook) {
 		
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
 		BookMeta bookmeta = (BookMeta)book.getItemMeta();
