@@ -4,14 +4,13 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.PluginClassLoader;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleLoadEvent;
@@ -40,7 +39,6 @@ import uk.codingbadgers.bFundamentals.module.ModuleLoadEvent;
 public class Loader {
 
 	private final Plugin plugin;
-	private final File dir;
 	private final List<File> files;
 	private final List<Module> loadables;
 	private ClassLoader loader;
@@ -55,7 +53,6 @@ public class Loader {
 	 */
 	public Loader(Plugin plugin, File dir) {
 		this.plugin = plugin;
-		this.dir = dir;
 		this.files = Arrays.asList(dir.listFiles(new FileExtensionFilter(".jar")));
 		this.loadables = new ArrayList<Module>();
 
@@ -74,8 +71,8 @@ public class Loader {
 				e.printStackTrace();
 			}
 		}
-
-		this.loader = URLClassLoader.newInstance(urls.toArray(new URL[0]), plugin.getClass().getClassLoader());
+	
+		this.loader = PluginClassLoader.newInstance(urls.toArray(new URL[0]), plugin.getClass().getClassLoader());
 	}
 
 	/**

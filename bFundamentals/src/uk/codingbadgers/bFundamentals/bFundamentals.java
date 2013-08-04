@@ -38,7 +38,7 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 public class bFundamentals extends JavaPlugin implements Listener {
 	
-	private static final Logger m_log = Logger.getLogger("bFundamentals");
+	private static Logger m_log = null;
 	private static bFundamentals m_instance = null;
 	private static BukkitDatabase m_database = null;
 	
@@ -58,6 +58,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	@Override
 	public void onLoad() {
 		m_instance = this;
+		m_log = getLogger();
 		log(Level.INFO, "bFundamentals Loading");
 	}
 	
@@ -79,7 +80,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		m_moduleLoader.enable();
 		
 		// check if any of the modules need updating
-		if (m_configuration.getAutoUpdate()) {
+		if (m_configuration.isAutoUpdateEnabled()) {
 			m_moduleLoader.update();
 		}
 		
@@ -159,7 +160,22 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		Validate.notNull(level, "Log level cannot be null");
 		Validate.notNull(msg, "Message cannot be null");
 		
-		m_log.log(level, "[" + m_instance.getDescription().getName() +"] " + msg);
+		m_log.log(level, msg);
+	}
+
+	/**
+	 * Static access to log as bFundamentals
+	 * 
+	 * @param level the log level
+	 * @param msg the message to log
+	 * @param e the exception to log
+	 */
+	public static void log(Level level, String msg, Throwable e) {
+		Validate.notNull(level, "Log level cannot be null");
+		Validate.notNull(msg, "Message cannot be null");
+		Validate.notNull(e, "The exception to log cannot be null");
+		
+		m_log.log(level, msg, e);
 	}
 	
 	/**
