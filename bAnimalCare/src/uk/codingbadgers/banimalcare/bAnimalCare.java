@@ -20,7 +20,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -40,6 +43,8 @@ public class bAnimalCare extends Module implements Listener {
 	public static WorldGuardPlugin WORLDGUARD = null;
 	
 	private HashMap<UUID, String> m_pets = new HashMap<UUID, String>();
+	
+	private HashMap<String, Entity> m_tpVehicle = new HashMap<String, Entity>();
 	
 	//private EntityManager m_entityManager = null;
 	
@@ -158,43 +163,58 @@ public class bAnimalCare extends Module implements Listener {
 		event.setCancelled(true);
 	}
 	
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
+		
+		ArrayList<String> commands = new ArrayList<String>();
+		commands.add("spawn");
+		commands.add("tp");
+		commands.add("home");
+		commands.add("build");
+		commands.add("tpa");
+		commands.add("warp");
+		
+		final Entity vehicle = event.getPlayer().getVehicle();
+		if (vehicle == null || vehicle.getType() != EntityType.HORSE) {
+			return;
+		}
+		
+		for (String command : commands) {
+			if (event.getMessage().startsWith("/" + command)) {
+				vehicle.eject();
+				m_tpVehicle.put(event.getPlayer().getName(), vehicle);
+			}
+		}
+		
+	}
+	
 	/**
 	 * Called when an entity teleports
 	 */	
 	@EventHandler(priority = EventPriority.LOW)
-	public void onEntityTeleport(EntityTeleportEvent event) {
-		
-		if (event.getEntityType() != EntityType.PLAYER) {
+	public void onEntityTeleport(PlayerTeleportEvent event) {
+
+		if (event.getCause() != TeleportCause.PLUGIN && event.getCause() != TeleportCause.COMMAND) {
 			return;
 		}
 		
-		final Player player = (Player)event.getEntity();
-		final Entity vehicle = player.getVehicle();
-		
-		Module.sendMessage("bAnimalCare", player, "Teleport Event");
-		
-		
+		final Player player = event.getPlayer();
+		final Entity vehicle = m_tpVehicle.get(event.getPlayer().getName());
+
 		if (vehicle == null) {
 			return;
 		}
 		
-		Module.sendMessage("bAnimalCare", player, "On vehicle");
-		
 		if (vehicle.getType() == EntityType.HORSE) {
-			
-			Module.sendMessage("bAnimalCare", player, "On Horse");
-			
-			vehicle.eject();
+			Module.sendMessage("bAnimalCare", player, "Please wait whilst we teleport your horse to you...");
 			new BukkitRunnable() {
 				public void run() {
-					Module.sendMessage("bAnimalCare", player, "Bringing your horse to you!");
 					vehicle.teleport(player);
 					new BukkitRunnable() {
 						public void run() {
-							Module.sendMessage("bAnimalCare", player, "Putting you back on your horse");
 							vehicle.setPassenger(player);
 						}
-					}.runTaskLater(bFundamentals.getInstance(), 20L);
+					}.runTaskLater(bFundamentals.getInstance(), 40L);
 				}
 			}.runTaskLater(bFundamentals.getInstance(), 20L);
 		}
@@ -502,9 +522,6 @@ public class bAnimalCare extends Module implements Listener {
 					
 					String playername = result.getString("Player");
 					UUID entityID = UUID.fromString(result.getString("EntityID"));
-					
-					System.out.println("bAnimalCare - " + playername + ": " + entityID);
-					
 					m_pets.put(entityID, playername);
 					
 				}
