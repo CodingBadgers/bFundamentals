@@ -5,15 +5,19 @@ import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.binfobooks.InfoBook;
 import uk.codingbadgers.binfobooks.bInfoBooks;
 
 public class CommandBook extends ModuleCommand {
+	
+	private final bInfoBooks m_module;
 
 	/**
 	 * Command constructor.
 	 */
-	public CommandBook() {
+	public CommandBook(bInfoBooks intance) {
 		super("book", "book | book <name>");
+		m_module = intance;
 	}
 	
 	/**
@@ -33,7 +37,7 @@ public class CommandBook extends ModuleCommand {
 			
 			if (Module.hasPermission(player, "binfobooks.list")) {
 				Module.sendMessage("bInfoBooks", player, "The following books are avaliable...");
-				bInfoBooks.listBooks(player);				
+				m_module.listBooks(player);				
 			} else {
 				Module.sendMessage("bInfoBooks", player, "You do not have permission to list books. [binfobooks.list]");
 			}
@@ -60,7 +64,8 @@ public class CommandBook extends ModuleCommand {
 		}
 		
 		// See if the book exists
-		if (!bInfoBooks.bookExists(bookName)) {
+		InfoBook book = m_module.bookExists(bookName);
+		if (book == null) {
 			if (!silent) {
 				Module.sendMessage("bInfoBooks", player, "No book by the name '" + bookName + "' exists.");			
 			}
@@ -68,17 +73,17 @@ public class CommandBook extends ModuleCommand {
 		}
 		
 		// See if player already has the same book
-		if (bInfoBooks.playerHasBook(player, bookName)) {
+		if (m_module.playerHasBook(player, book)) {
 			if (!silent) {
-				Module.sendMessage("bInfoBooks", player, "You already have a copy of the book '" + bookName + "' in your inventory.");			
+				Module.sendMessage("bInfoBooks", player, "You already have a copy of the book '" + book.getName() + "' in your inventory.");			
 			}
 			return true;
 		}
 		
 		// Try and give the player the book
-		if (bInfoBooks.givePlayerBook(player, bookName)) {
+		if (m_module.givePlayerBook(player, book)) {
 			if (!silent) {
-				Module.sendMessage("bInfoBooks", player, "You have been given the book '" + bookName + "'.");
+				Module.sendMessage("bInfoBooks", player, "You have been given the book '" + book.getName() + "'.");
 			}
 		}
 		
