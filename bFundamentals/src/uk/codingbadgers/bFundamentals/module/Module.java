@@ -273,7 +273,7 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * The load method for this module, called on loading the module via the
 	 * {@link ModuleLoader} this is called before any module in that load batch
-	 * is loaded
+	 * is loaded. 
 	 */
 	public void onLoad() {}
 	
