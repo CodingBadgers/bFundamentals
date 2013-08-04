@@ -18,7 +18,7 @@
     <modules>
         <module>bFundamentals</module>
 		<module>bInfoBooks</module>
-		<module>bSign</module>
+		<module>bPotioned</module>
 		<module>bAnimalCare</module>
     </modules>
     
