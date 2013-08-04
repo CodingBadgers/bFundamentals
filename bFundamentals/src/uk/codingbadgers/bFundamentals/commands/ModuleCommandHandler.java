@@ -52,31 +52,31 @@ public class ModuleCommandHandler {
 	@SuppressWarnings("unchecked")
 	public static void deregisterCommand(Module module, ModuleCommand command) {
 		
-		List<ModuleCommand> commands = new ArrayList<ModuleCommand>(ModuleCommandHandler.commands.get(module));
-		for (int i = 0; i < commands.size(); i++) {
-			ModuleCommand current = commands.get(i);
-			if (current.equals(command)) {
-				ModuleCommandHandler.commands.get(module).remove(i);
-			}
-		}
-		
-		Field commandsField = null;
-		
+		List<ModuleCommand> commands = ModuleCommandHandler.commands.get(module);
+		commands.remove(command);
+
+		Field knownCommandsField = null;
 		if (commandMap instanceof SimpleCommandMap) {
 			try {
-				commandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
-				commandsField.setAccessible(true);
+				knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+				knownCommandsField.setAccessible(true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
 			return;
 		}
-		
+
 		try {
-			((Map<String, Command>)commandsField.get(commandMap)).remove(command.getLabel().toLowerCase());
-		} catch (Exception e) {
+			Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
+			Command theCommand = commandMap.getCommand(command.getLabel());
+			theCommand.unregister(commandMap);
+			knownCommands.remove(theCommand.getLabel().toLowerCase());
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
+	
 	}	
 }

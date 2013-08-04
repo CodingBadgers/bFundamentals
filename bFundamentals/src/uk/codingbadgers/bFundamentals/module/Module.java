@@ -299,10 +299,10 @@ public abstract class Module extends Loadable implements Listener {
 			}
 			
 			onDisable();
-			
 			for (ModuleCommand command : m_commands) {
-				ModuleCommandHandler.deregisterCommand(command);
+				ModuleCommandHandler.deregisterCommand(this, command);
 			}
+
 			m_enabled = false;
 		}
 	}
@@ -380,6 +380,7 @@ public abstract class Module extends Loadable implements Listener {
 	 *            the command
 	 */
 	protected void registerCommand(ModuleCommand command) {
+		m_commands.add(command);
 		ModuleCommandHandler.registerCommand(this, command);
 	}
 
