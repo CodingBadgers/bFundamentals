@@ -82,6 +82,11 @@ public class ConfigurationManager {
 		
 	}
 	
+	/**
+	 * Get the database settings for bFundamentals and all modules
+	 * 
+	 * @return the database settings
+	 */
 	public DatabaseSettings getDatabaseSettings() {
 		return m_databaseSettings;
 	}
@@ -99,8 +104,18 @@ public class ConfigurationManager {
 	 * Gets whether modules should start in debug mode.
 	 *
 	 * @return true if modules should start in debug, false if not
+	 * @deprecated  {@link #isDebugEnabled()}
 	 */
 	public boolean getDebug() {
+		return m_debug;
+	}
+	
+	/**
+	 * Gets whether modules should start in debug mode.
+	 *
+	 * @return true if modules should start in debug, false if not
+	 */
+	public boolean isDebugEnabled() {
 		return m_debug;
 	}
 	
@@ -108,8 +123,18 @@ public class ConfigurationManager {
 	 * Gets whether auto update is enabled.
 	 *
 	 * @return true if auto update is enabled, false if not
+	 * @deprecated {@link #isAutoUpdateEnabled()}
 	 */
 	public boolean getAutoUpdate() {
+		return m_autoUpdate;
+	}
+	
+	/**
+	 * Gets whether auto update is enabled.
+	 *
+	 * @return true if auto update is enabled, false if not
+	 */
+	public boolean isAutoUpdateEnabled() {
 		return m_autoUpdate;
 	}
 	
@@ -117,8 +142,18 @@ public class ConfigurationManager {
 	 * Gets whether auto download for the updater is enabled.
 	 *
 	 * @return true if auto download is enabled, false if not
+	 * @deprecated {@link #isAutoDownloadEnabled()}
 	 */
 	public boolean getAutoDownload() {
+		return m_autoDownload;
+	}
+	
+	/**
+	 * Gets whether auto download for the updater is enabled.
+	 *
+	 * @return true if auto download is enabled, false if not
+	 */
+	public boolean isAutoDownloadEnabled() {
 		return m_autoDownload;
 	}
 	
@@ -126,13 +161,23 @@ public class ConfigurationManager {
 	 * Gets whether auto applying of updates is enabled.
 	 *
 	 * @return true if auto apply is enabled, false if not
+	 * @deprecated {@link #isAutoInstallEnabled()}
 	 */
 	public boolean getAutoApply() {
 		return m_autoApply;
 	}
 	
 	/**
-	 * Gets the log prefix.
+	 * Gets whether auto installing of updates is enabled.
+	 *
+	 * @return true if auto install is enabled, false if not
+	 */
+	public boolean isAutoInstallEnabled() {
+		return m_autoApply;
+	}
+	
+	/**
+	 * Gets the module log prefix.
 	 *
 	 * @return the log prefix
 	 */

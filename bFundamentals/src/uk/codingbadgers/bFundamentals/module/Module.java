@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -38,53 +39,23 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
  * The base Module class any module should extend this, it also provides helper
- * methods for the module .
+ * methods for the module.
  */
 public abstract class Module extends Loadable implements Listener {
 
-	/** The base {@link bFundamentals} plugin instance. */
-	protected final bFundamentals m_plugin;
-
-	/** The logger for this module */
-	private ModuleLogger m_log;
-
-	/** The Update thread for this module */
-	private UpdateThread m_updater;
-
-	/** The base config file for this module. */
-	protected FileConfiguration m_config;
-
-	/** The base config file for this module, unparsed. */
-	protected File m_configFile = null;
-
-	/**
-	 * The map of all language keys associated with this module for the current
-	 * loaded language.
-	 */
-	private HashMap<String, String> m_languageMap = new HashMap<String, String>();
-
-	/** The commands registered to this module. */
-	protected List<ModuleCommand> m_commands = new ArrayList<ModuleCommand>();
-
-	/** All the listeners registered to this module */
-	private List<Listener> m_listeners = new ArrayList<Listener>();
-
-	/** The database registered to the modules. */
 	protected static BukkitDatabase m_database = null;
-
-	/** The Vault Permissions instance. */
+	protected final bFundamentals m_plugin;
+	protected File m_configFile = null;
+	protected FileConfiguration m_config;
 	private static Permission m_permissions = null;
-
-	/** Whether this module is in debug mode */
 	private boolean m_debug = false;
-
-	/** Whether the language file is loaded. */
 	private boolean loadedLanguageFile;
-
-	/** A list of all the config classes registered to this module */
-	private ArrayList<Class<? extends ConfigFile>> m_configFiles;
-
 	private boolean m_enabled;
+	private List<Class<? extends ConfigFile>> m_configFiles;
+	private List<Listener> m_listeners = new ArrayList<Listener>();
+	private ModuleLogger m_log;
+	private Map<String, String> m_languageMap = new HashMap<String, String>();
+	private UpdateThread m_updater;
 
 	/**
 	 * Instantiates a new module with default settings.
@@ -299,10 +270,7 @@ public abstract class Module extends Loadable implements Listener {
 			}
 			
 			onDisable();
-			for (ModuleCommand command : m_commands) {
-				ModuleCommandHandler.deregisterCommand(this, command);
-			}
-
+			ModuleCommandHandler.deregisterCommand(this);
 			m_enabled = false;
 		}
 	}
@@ -380,7 +348,6 @@ public abstract class Module extends Loadable implements Listener {
 	 *            the command
 	 */
 	protected void registerCommand(ModuleCommand command) {
-		m_commands.add(command);
 		ModuleCommandHandler.registerCommand(this, command);
 	}
 
@@ -388,9 +355,10 @@ public abstract class Module extends Loadable implements Listener {
 	 * Get all commands registered to this module
 	 * 
 	 * @return the commands
+	 * @Deprecated {@link ModuleCommandHandler#getCommands(Module)}
 	 */
 	public List<ModuleCommand> getCommands() {
-		return m_commands;
+		return ModuleCommandHandler.getCommands(this);
 	}
 
 	/**
