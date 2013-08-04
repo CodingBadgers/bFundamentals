@@ -166,8 +166,18 @@ public class bInfoBooks extends Module implements Listener {
 		}
 	}
 
-	public static boolean bookExists(String bookName) {
-		return m_books.containsKey(bookName.toLowerCase());
+	public static InfoBook bookExists(String bookName) {
+		if (m_books.containsKey(bookName.toLowerCase()))
+			return m_books.get(bookName);
+		
+		for (InfoBook book : m_books.values())
+		{
+			if (book.getName().toLowerCase().startsWith(bookName.toLowerCase())) {
+				return book;
+			}
+		}
+		
+		return null;
 	}
 	
 	public static void listBooks(Player player) {
@@ -176,13 +186,7 @@ public class bInfoBooks extends Module implements Listener {
 		}
 	}
 	
-	public static boolean playerHasBook(Player player, String bookName) {
-		
-		final InfoBook infobook = m_books.get(bookName.toLowerCase());
-		if (infobook == null) {
-			Module.sendMessage("bInfoBooks", player, "No book by the name '" + bookName + "' exists.");
-			return false;
-		}
+	public static boolean playerHasBook(Player player, InfoBook infobook) {
 		
 		final PlayerInventory invent = player.getInventory();
 		
@@ -216,14 +220,8 @@ public class bInfoBooks extends Module implements Listener {
 		return false;
 	}
 
-	public static boolean givePlayerBook(Player player, String bookName) {
+	public static boolean givePlayerBook(Player player, InfoBook infobook) {
 		
-		final InfoBook infobook = m_books.get(bookName.toLowerCase());
-		if (infobook == null) {
-			Module.sendMessage("bInfoBooks", player, "No book by the name '" + bookName + "' exists.");
-			return false;
-		}
-
 		ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
 		BookMeta bookmeta = (BookMeta)book.getItemMeta();
 		
