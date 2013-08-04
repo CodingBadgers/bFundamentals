@@ -301,7 +301,7 @@ public abstract class Module extends Loadable implements Listener {
 			onDisable();
 			
 			for (ModuleCommand command : m_commands) {
-				ModuleCommandHandler.deregisterCommand(command);
+				ModuleCommandHandler.deregisterCommand(this, command);
 			}
 			m_enabled = false;
 		}
