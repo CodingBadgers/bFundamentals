@@ -2,6 +2,7 @@ package uk.codingbadgers.bplugincontrol.commands;
 
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -31,7 +32,7 @@ public class CommandPlugin extends ModuleCommand {
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 		
 		if (!(sender instanceof Player)) {
-			System.out.println("Plugin commands must be used in game");
+			bFundamentals.log(Level.INFO, "Plugin commands must be used in game");
 			return true;
 		}
 		

@@ -1,8 +1,11 @@
 package uk.codingbadgers.binfobooks.commands;
 
+import java.util.logging.Level;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.binfobooks.InfoBook;
@@ -26,7 +29,7 @@ public class CommandBook extends ModuleCommand {
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 		
 		if (!(sender instanceof Player)) {
-			System.out.println("Book commands must be used in game");
+			bFundamentals.log(Level.INFO, "Book commands must be used in game");
 			return true;
 		}
 		
