@@ -12,14 +12,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<bukkit.version>1.6.2-R0.2-SNAPSHOT</bukkit.version>
         <buildNumber>Unknown</buildNumber>
     </properties>
     
     <modules>
         <module>bFundamentals</module>
 		<module>bInfoBooks</module>
-		<module>bPotioned</module>
+		<!--<module>bPotioned</module> And you complain about my code not building -->
 		<module>bAnimalCare</module>
+		<module>bHelpful</module>
     </modules>
     
     <organization>
@@ -64,7 +66,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.6.2-R0.1-SNAPSHOT</version>
+            <version>${bukkit.version}</version>
         </dependency>
 		<dependency>
 			<groupId>ru.tehkode</groupId>
