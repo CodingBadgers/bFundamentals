@@ -58,7 +58,7 @@ public class CommandBook extends ModuleCommand {
 		bookName = bookName.substring(0, bookName.length() - 1);
 		
 		boolean silent = false;
-		if (bookName.substring(bookName.length() - 2).equalsIgnoreCase("-s")) {
+		if (bookName.length() > 1 && bookName.substring(bookName.length() - 2).equalsIgnoreCase("-s")) {
 			silent = true;
 			bookName = bookName.substring(0, bookName.length() - 3);
 		}
