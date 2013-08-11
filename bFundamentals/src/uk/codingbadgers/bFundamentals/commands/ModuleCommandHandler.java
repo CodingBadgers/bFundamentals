@@ -86,8 +86,9 @@ public class ModuleCommandHandler {
 	@SuppressWarnings("unchecked")
 	public static void deregisterCommand(Module module) {
 
-		for (ModuleCommand command : getCommands(module)) {
-			commands.get(module).remove(command);
+		List<ModuleCommand> commands = new ArrayList<ModuleCommand>(getCommands(module));
+		for (ModuleCommand command : commands) {
+			ModuleCommandHandler.commands.get(module).remove(command);
 
 			try {
 				Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);

@@ -31,10 +31,12 @@ public class ModuleHelpTopic extends HelpTopic {
 		
 		name = m_module.getName();
 		shortText = "All commands for " + m_module.getName();
-		
+	}
+	
+	@Override
+	public String getFullText(CommandSender forWho) {
 		StringBuilder sb = new StringBuilder();
-		
-		for (ModuleCommand command : m_commands) {
+		for (ModuleCommand command : m_module.getCommands()) {
                String lineStr = buildLine(command).replace("\n", ". ");
                if (lineStr.length() > ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH) {
                    sb.append(lineStr.substring(0, ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 3));
@@ -44,10 +46,9 @@ public class ModuleHelpTopic extends HelpTopic {
                }
                sb.append("\n");         
 		}
-		
-		fullText = sb.toString();
+		return sb.toString();
 	}
-	
+
 	/**
 	 * Builds the index line.
 	 *
