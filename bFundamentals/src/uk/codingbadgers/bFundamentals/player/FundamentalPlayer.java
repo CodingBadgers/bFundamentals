@@ -7,20 +7,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.Messenger;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.backup.BackupList;
+import uk.codingbadgers.bFundamentals.backup.PlayerBackup;
 
 /**
  * The Basic Player class for all modules.
  */
 public class FundamentalPlayer {
 
-	/** The Bukkit player. */
-	protected Player m_player = null;
-	
-	/** A map of player data */
+	protected Player m_player;
+	protected BackupList m_backups;
 	protected HashMap<Class<? extends PlayerData>, PlayerData> m_playerData = new HashMap<Class<? extends PlayerData>, PlayerData>();
-	
+
 	/**
 	 * Instantiates a new base player.
 	 *
@@ -28,6 +29,7 @@ public class FundamentalPlayer {
 	 */
 	public FundamentalPlayer(Player player) {
 		m_player = player;
+		m_backups = new BackupList(getPlayer());
 	}
 	
 	/**
@@ -68,16 +70,16 @@ public class FundamentalPlayer {
 			return false;
 		}
 		
-		if (bytes.length > 1024) {
-			String header = "Client Message; length:" + Math.ceil((double) bytes.length / 1024D);
+		if (bytes.length > Messenger.MAX_MESSAGE_SIZE) {
+			String header = "Client Message; length:" + Math.ceil((double) bytes.length / (double) Messenger.MAX_MESSAGE_SIZE);
 			m_player.sendPluginMessage(bFundamentals.getInstance(), channel, header.getBytes());
 			
 			while(true) {
-				byte[] toSend = Arrays.copyOf(bytes, 1024);
+				byte[] toSend = Arrays.copyOf(bytes, Messenger.MAX_MESSAGE_SIZE);
 				m_player.sendPluginMessage(bFundamentals.getInstance(), channel, toSend);
 				
 				try {
-					bytes = Arrays.copyOfRange(bytes, 1024, bytes.length);
+					bytes = Arrays.copyOfRange(bytes, Messenger.MAX_MESSAGE_SIZE, bytes.length);
 				} catch (Exception ex) {
 					break;
 				}
@@ -116,13 +118,10 @@ public class FundamentalPlayer {
 	 * @param clazz the string representation of the datatype class
 	 * @return the player data if it exists, else null.
 	 * @see PlayerData
+	 * @throws ClassNotFoundException if the class cannot be located
 	 */
-	public PlayerData getPlayerdata(String clazz) {
-		try {
-			return m_playerData.get(Class.forName(clazz));
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
+	public PlayerData getPlayerdata(String clazz) throws ClassNotFoundException {
+		return m_playerData.get(Class.forName(clazz));
 	}
 	
 	/**
@@ -155,6 +154,19 @@ public class FundamentalPlayer {
 	public void destroy() {
 		m_playerData.clear();
 		m_player = null;
+		m_backups = null;
 	}
 	
+	public PlayerBackup backupInventory() {
+		return backupInventory(false);
+		
+	}
+
+	public PlayerBackup backupInventory(boolean clearInv) {
+		return m_backups.backupPlayer();
+	}
+	
+	public boolean restoryInventory() {
+		return m_backups.restorePlayer();
+	}	
 }

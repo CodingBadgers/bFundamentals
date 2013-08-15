@@ -115,10 +115,12 @@ public abstract class Updater {
 	 */
 	public void update() throws Exception {
 		if (checkUpdate()) {
-			if (bFundamentals.getConfigurationManager().getAutoDownload())
+			if (bFundamentals.getConfigurationManager().isAutoDownloadEnabled()) {
 				downloadUpdate();
-			if (bFundamentals.getConfigurationManager().getAutoApply())
+			}
+			if (bFundamentals.getConfigurationManager().isAutoInstallEnabled()) {
 				applyUpdate();
+			}
 		}
 	}
 	
