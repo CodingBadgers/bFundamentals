@@ -1,5 +1,7 @@
 package uk.codingbadgers.bFundamentals;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -47,7 +49,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	private static Economy m_economy = null;
 	
 	private static ModuleLoader m_moduleLoader = null;
-	private static ConfigurationManager m_configuration = null;
+	private static ConfigManager m_configuration = null;
 	
 	public static FundamentalPlayerArray Players = new FundamentalPlayerArray(); 
 	
@@ -57,7 +59,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	 */
 	@Override
 	public void onLoad() {
-		m_instance = this;
+		setInstance(this);
 		m_log = getLogger();
 		log(Level.INFO, "bFundamentals Loading");
 	}
@@ -71,8 +73,12 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	public void onEnable() {
 		
 		// load the configuration into the configuration manager
-		m_configuration = new ConfigurationManager();
-		m_configuration.loadConfiguration(m_instance);
+		try {
+			setConfigManager(new BukkitConfigurationManager());
+			m_configuration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		// load the modules in
 		m_moduleLoader = new ModuleLoader();
@@ -90,6 +96,20 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		getCommand("bFundamentals").setExecutor(new CommandHandler());
 		
 		bFundamentals.log(Level.INFO, "bFundamentals Loaded.");
+	}
+
+	public static void setInstance(bFundamentals plugin) {
+		if (m_configuration != null) {
+			throw new RuntimeException("Plugin instance already set, cannot redeclare");
+		}
+		m_instance = plugin;
+	}
+	
+	public void setConfigManager(ConfigManager manager) {
+		if (m_configuration != null) {
+			throw new RuntimeException("Configuration manager already set, cannot redeclare");
+		}
+		m_configuration = manager;
 	}
 
 	/**
@@ -183,7 +203,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	 * 
 	 * @return the configuration manager for bFundamentals
 	 */
-	public static ConfigurationManager getConfigurationManager() {
+	public static ConfigManager getConfigurationManager() {
 		return m_configuration;
 	}
 	

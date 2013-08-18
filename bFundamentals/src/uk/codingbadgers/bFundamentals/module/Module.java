@@ -64,7 +64,7 @@ public abstract class Module extends Loadable implements Listener {
 		super();
 		m_plugin = bFundamentals.getInstance();
 		m_database = bFundamentals.getBukkitDatabase();
-		m_debug = bFundamentals.getConfigurationManager().getDebug();
+		m_debug = bFundamentals.getConfigurationManager().isDebugEnabled();
 		m_permissions = bFundamentals.getPermissions();
 	}
 

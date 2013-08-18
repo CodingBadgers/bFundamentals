@@ -11,6 +11,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.error.ExceptionHandler;
 import uk.codingbadgers.bFundamentals.module.loader.Loader;
 
 /**
@@ -48,9 +49,13 @@ public class ModuleLoader {
 		m_modules.addAll(m_loader.sort(m_loader.load()));
 		
 		for (Module module : m_modules) {
-			module.onLoad();
-			Bukkit.getHelpMap().addTopic(new ModuleHelpTopic(module));
-			module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
+			try {
+				module.onLoad();
+				Bukkit.getHelpMap().addTopic(new ModuleHelpTopic(module));
+				module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
+			} catch (Exception ex) {
+				ExceptionHandler.handleException(ex);
+			}
 		}
 		
 		bFundamentals.log(Level.INFO, "Loaded " + m_modules.size() + " modules.");
@@ -115,7 +120,7 @@ public class ModuleLoader {
 			try {
 				module.setEnabled(true);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				ExceptionHandler.handleException(ex);
 			}
 		}
 	}
@@ -132,7 +137,7 @@ public class ModuleLoader {
 					HandlerList.unregisterAll(listener);
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				ExceptionHandler.handleException(ex);
 			}
 		}
 	}
@@ -166,8 +171,9 @@ public class ModuleLoader {
 		Iterator<Module> itr = m_modules.iterator();
 		while(itr.hasNext()) {
 			Module module = itr.next();
-			if (module.getName().equalsIgnoreCase(string))
+			if (module.getName().equalsIgnoreCase(string)) {
 				return module;
+			}
 		}
 		return null;		
 	}
@@ -182,8 +188,9 @@ public class ModuleLoader {
 		Iterator<Module> itr = m_modules.iterator();
 		while(itr.hasNext()) {
 			Module module = itr.next();
-			if (module.getFile().getPath().equalsIgnoreCase(file.getPath()))
+			if (module.getFile().getPath().equalsIgnoreCase(file.getPath())) {
 				return module;
+			}
 		}
 		return null;
 	}
