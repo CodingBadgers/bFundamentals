@@ -35,7 +35,7 @@ public class ReportExceptionRunnable implements Runnable {
 			data.add(new BasicNameValuePair("cause", getException(throwable)));
 			data.add(new BasicNameValuePair("message", getMessage(throwable)));
 			data.add(new BasicNameValuePair("st", buildStackTrace(throwable)));
-			HttpPost post = new HttpPost("http://server.mcbadgercraft.com/crashtracker/report.php");
+			HttpPost post = new HttpPost("http://server.mcbadgercraft.com/crash/report.php");
 			post.setEntity(new UrlEncodedFormEntity(data));
 			
 			DefaultHttpClient client = new DefaultHttpClient();
