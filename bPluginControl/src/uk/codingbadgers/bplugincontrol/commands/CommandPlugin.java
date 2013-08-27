@@ -1,16 +1,23 @@
 package uk.codingbadgers.bplugincontrol.commands;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
@@ -49,7 +56,8 @@ public class CommandPlugin extends ModuleCommand {
 			Module.sendMessage("bPluginControl", player, " - plugin reload <plugin>");
 			Module.sendMessage("bPluginControl", player, " - plugin disable <plugin>");
 			Module.sendMessage("bPluginControl", player, " - plugin enable <plugin>");
-			Module.sendMessage("bPluginControl", player, " - plugin load <plugin>");
+			Module.sendMessage("bPluginControl", player, " - plugin load <plugin path>");
+			Module.sendMessage("bPluginControl", player, " - plugin unload <plugin>");
 			Module.sendMessage("bPluginControl", player, " - plugin info <plugin>");
 			return true;
 		}
@@ -133,8 +141,11 @@ public class CommandPlugin extends ModuleCommand {
 		return true;
 	}
 	
-	@SuppressWarnings("deprecation")
+	/**
+	 * Unload a given plugin.
+	 */
 	private boolean unloadPlugin(Player player, String pluginName) {
+		
 		PluginManager pluginManager = Bukkit.getServer().getPluginManager();
 		Plugin plugin = pluginManager.getPlugin(pluginName);
 		if (plugin == null) {
@@ -142,12 +153,60 @@ public class CommandPlugin extends ModuleCommand {
 			return true;
 		}
 
-		if (plugin.getPluginLoader() instanceof JavaPluginLoader) {
-			JavaPluginLoader loader = (JavaPluginLoader)plugin.getPluginLoader();
-			loader.disablePlugin(plugin);
+		SimplePluginManager simplePluginManager = (SimplePluginManager) pluginManager;
+		try {
+			Field pluginsField = simplePluginManager.getClass().getDeclaredField("plugins");
+	        pluginsField.setAccessible(true);
+	        List<Plugin> plugins = (List<Plugin>) pluginsField.get(simplePluginManager);
+	        
+	        Field lookupNamesField = simplePluginManager.getClass().getDeclaredField("lookupNames");
+            lookupNamesField.setAccessible(true);
+            Map<String, Plugin> lookupNames = (Map<String, Plugin>) lookupNamesField.get(simplePluginManager);
+            
+	        Field commandMapField = simplePluginManager.getClass().getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            SimpleCommandMap commandMap = (SimpleCommandMap) commandMapField.get(simplePluginManager);
+
+            Field knownCommandsField = null;
+            Map<String, Command> knownCommands = null;
+
+            if (commandMap != null) {
+                knownCommandsField = commandMap.getClass().getDeclaredField("knownCommands");
+                knownCommandsField.setAccessible(true);
+                knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
+            }
+
+            pluginManager.disablePlugin(plugin);
+
+            if (plugins != null && plugins.contains(plugin)) {
+                plugins.remove(plugin);
+            }
+
+            if (lookupNames != null && lookupNames.containsKey(pluginName)) {
+                lookupNames.remove(pluginName);
+            }
+
+            if (commandMap != null) {
+                for (Iterator<Map.Entry<String, Command>> it = knownCommands.entrySet().iterator(); it.hasNext();) {
+                    Map.Entry<String, Command> entry = it.next();
+
+                    if (entry.getValue() instanceof PluginCommand) {
+                        PluginCommand command = (PluginCommand) entry.getValue();
+
+                        if (command.getPlugin() == plugin) {
+                            command.unregister(commandMap);
+                            it.remove();
+                        }
+                    }
+                }
+            }
+		} catch (Exception ex) {
+			Module.sendMessage("bPluginControl", player, "Failed to query plugin manager, could not unload plugin.");
+			return true;
 		}
+        
+		Module.sendMessage("bPluginControl", player, "The plugin '" + pluginName + "' was successfully unloaded.");
 		
-		Module.sendMessage("bPluginControl", player, "The plugin '" + pluginName + "' was successfully disabled.");
 		return true;
 	}
 	
