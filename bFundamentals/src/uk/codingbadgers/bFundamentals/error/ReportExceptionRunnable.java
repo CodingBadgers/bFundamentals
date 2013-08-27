@@ -15,10 +15,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 
-public class ReportExceptionRunnable implements Runnable {
+public class ReportExceptionRunnable {
 
 	private Throwable throwable;
 
@@ -26,8 +29,7 @@ public class ReportExceptionRunnable implements Runnable {
 		this.throwable = ex;
 	}
 	
-	@Override
-	public void run() {
+	public boolean run() {
 		try {
 			List<NameValuePair> data = new ArrayList<NameValuePair>();
 			data.add(new BasicNameValuePair("password", DigestUtils.md5Hex(bFundamentals.getConfigurationManager().getCrashPassword())));
@@ -41,12 +43,22 @@ public class ReportExceptionRunnable implements Runnable {
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpResponse responce = client.execute(post);
             String result = EntityUtils.toString(responce.getEntity());
+            
             if (bFundamentals.getConfigurationManager().isDebugEnabled()) System.out.println(result);
+            
+            JSONObject object = (JSONObject) new JSONParser().parse(result);
+            boolean success = (Boolean) object.get("success");
+            if (!success) System.err.println(object.get("error"));
+            return success;
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
+		
+		return false;
 	}
 
 	private String getException(Throwable cause) {

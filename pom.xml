@@ -22,6 +22,8 @@
 		<!--<module>bPotioned</module> And you complain about my code not building -->
 		<module>bAnimalCare</module>
 		<module>bHelpful</module>
+        <module>bCreative</module>
+        <module>bItems</module>
     </modules>
     
     <organization>
@@ -82,7 +84,7 @@
     </dependencies>
     
     <build>
-        <finalName>${project.name}</finalName>
+        <finalName>${project.name}-${project.version}</finalName>
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
         <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
 		

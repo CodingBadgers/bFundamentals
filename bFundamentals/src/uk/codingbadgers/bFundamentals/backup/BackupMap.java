@@ -1,31 +1,23 @@
 package uk.codingbadgers.bFundamentals.backup;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
  * A simple list to backup and restore players to their backed up state.
  */
-public class BackupList {
+public class BackupMap {
 
-	private List<PlayerBackup> backups = new ArrayList<PlayerBackup>();
+	private Map<World, PlayerBackup> backups = new HashMap<World, PlayerBackup>();
 	private final Player player;
 	
-	public BackupList(Player player) {
+	public BackupMap(Player player) {
 		this.player = player;
-	}
-
-	/**
-	 * Backup a player.
-	 *
-	 * @param player the player to backup
-	 * @return 
-	 */
-	public PlayerBackup backupPlayer() {
-		return backupPlayer(false);
 	}
 	
     /**
@@ -46,9 +38,9 @@ public class BackupList {
 	 * @param player the player to backup
 	 * @param clearInv clear the players inventory after backing up
 	 */
-	public PlayerBackup backupPlayer(boolean clearInv) {
+	public PlayerBackup backupPlayer(World world, boolean clearInv) {
 		PlayerBackup backup = BackupFactory.createBackup(player);
-		backups.add(backup);
+		backups.put(world, backup);
 		
 		if (clearInv) {
 			player.getInventory().clear();
@@ -64,23 +56,20 @@ public class BackupList {
 	 * @param player the player to restore
 	 * @return true if successful and false otherwise
 	 */
-	public boolean restorePlayer() {
+	public boolean restorePlayer(World world) {
 		player.getInventory().clear();
 		clearArmor();
 				
-		List<PlayerBackup> backups = new ArrayList<PlayerBackup>(this.backups);
-		Iterator<PlayerBackup> itr = backups.iterator();
-		while(itr.hasNext()) {
-			PlayerBackup current = itr.next();
-			if (current.getName().equalsIgnoreCase(player.getName())) {
-				current.restore(player);
-				current.deleteFile();
-				this.backups.remove(current);
-				return true;
-			}
+		PlayerBackup backup = backups.get(world);
+		
+		if (backup != null) {
+			backup.restore(player);
+			backup.deleteFile();
+			this.backups.remove(backup);
+			return true;
 		}
 		
-		PlayerBackup backup = BackupFactory.readBackup(player.getWorld().getName(), player.getName());
+		backup = BackupFactory.readBackup(player.getWorld().getName(), player.getName());
 		
 		if (backup != null) {
 			backup.restore(player);

@@ -6,11 +6,12 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
-import uk.codingbadgers.bFundamentals.backup.BackupList;
+import uk.codingbadgers.bFundamentals.backup.BackupMap;
 import uk.codingbadgers.bFundamentals.backup.PlayerBackup;
 
 /**
@@ -19,7 +20,7 @@ import uk.codingbadgers.bFundamentals.backup.PlayerBackup;
 public class FundamentalPlayer {
 
 	protected Player m_player;
-	protected BackupList m_backups;
+	protected BackupMap m_backups;
 	protected HashMap<Class<? extends PlayerData>, PlayerData> m_playerData = new HashMap<Class<? extends PlayerData>, PlayerData>();
 
 	/**
@@ -29,7 +30,7 @@ public class FundamentalPlayer {
 	 */
 	public FundamentalPlayer(Player player) {
 		m_player = player;
-		m_backups = new BackupList(getPlayer());
+		m_backups = new BackupMap(getPlayer());
 	}
 	
 	/**
@@ -158,15 +159,26 @@ public class FundamentalPlayer {
 	}
 	
 	public PlayerBackup backupInventory() {
-		return backupInventory(false);
-		
+		return m_backups.backupPlayer(m_player.getWorld(), false);
 	}
 
 	public PlayerBackup backupInventory(boolean clearInv) {
-		return m_backups.backupPlayer();
+		return m_backups.backupPlayer(m_player.getWorld(), clearInv);
+	}
+	
+	public PlayerBackup backupInventory(World world) {
+		return m_backups.backupPlayer(world, false);
+	}
+
+	public PlayerBackup backupInventory(World world, boolean clearInv) {
+		return m_backups.backupPlayer(world, clearInv);
 	}
 	
 	public boolean restoryInventory() {
-		return m_backups.restorePlayer();
-	}	
+		return m_backups.restorePlayer(m_player.getWorld());
+	}
+	
+	public boolean restoryInventory(World world) {
+		return m_backups.restorePlayer(world);
+	}
 }
