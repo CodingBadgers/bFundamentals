@@ -24,13 +24,12 @@ import uk.codingbadgers.bHelpful.bHelpful;
 
 public class AnnouncementCommand extends ConfigCommand {
 
-	private List<List<String>> announcements = null;
+	private List<List<String>> announcements = new ArrayList<List<String>>();
 	private int lastAnnouncement = -1;
 	private BukkitTask task = null;
 
 	public AnnouncementCommand() {
 		super(Config.ANNOUNCE_LABEL, "/" + Config.ANNOUNCE_LABEL + " <list/broadcast/add/remove>", true);
-		announcements = new ArrayList<List<String>>();
 	}
 
 	@Override
@@ -142,7 +141,9 @@ public class AnnouncementCommand extends ConfigCommand {
 		if (task != null) {
 			task.cancel();
 		}
-		announcements.clear();
+		System.out.println(announcements);
+		
+		this.announcements.clear();
 
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(m_file.getPath()));

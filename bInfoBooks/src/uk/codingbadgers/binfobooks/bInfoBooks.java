@@ -13,11 +13,15 @@ import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
@@ -51,20 +55,44 @@ public class bInfoBooks extends Module implements Listener {
 	@EventHandler (priority=EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
 		
-		ItemStack item = event.getCurrentItem();
-		if (!isItemInfoBook(item)) {
+		if (!isItemInfoBook(event.getCursor())) {
+			return;
+		}
+			
+		if (!isPlace(event.getAction())) {
 			return;
 		}
 		
-		if (event.getView().getTitle().contains("inventory")) {
+		if (isInventory(event.getInventory())) {
+			return;
+		}
+		
+		if ((event.getRawSlot() - event.getView().getTopInventory().getSize()) >= 0) {
 			return;
 		}
 		
 		Module.sendMessage("bInfoBooks", (Player)event.getWhoClicked(), "You can't store InfoBooks. Please drop the InfoBook to remove it from your inventory.");
 		Module.sendMessage("bInfoBooks", (Player)event.getWhoClicked(), "You can get another copy of the book via the '/book' command.");
-		event.setCancelled(true);
+		event.setResult(Result.DENY);
 	}
 	
+	private boolean isInventory(Inventory topInventory) {
+		return topInventory instanceof PlayerInventory || 
+				topInventory.getType() == InventoryType.PLAYER || 
+				topInventory.getType() == InventoryType.CREATIVE;
+	}
+
+	private boolean isPlace(InventoryAction action) {
+		return action == InventoryAction.DROP_ALL_CURSOR || 
+				action == InventoryAction.DROP_ALL_SLOT ||
+				action == InventoryAction.DROP_ONE_CURSOR ||
+				action == InventoryAction.DROP_ONE_SLOT ||
+				action == InventoryAction.PLACE_ALL ||
+				action == InventoryAction.PLACE_ONE ||
+				action == InventoryAction.PLACE_SOME ||
+				action == InventoryAction.SWAP_WITH_CURSOR;
+	}
+
 	@EventHandler (priority=EventPriority.NORMAL)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 		

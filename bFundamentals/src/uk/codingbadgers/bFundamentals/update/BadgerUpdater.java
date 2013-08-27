@@ -43,8 +43,11 @@ public class BadgerUpdater extends Updater {
 	 * @see uk.codingbadgers.bFundamentals.update.Updater#checkUpdate()
 	 */
 	@Override
+	@SuppressWarnings("unused")
 	public boolean checkUpdate() {
 		boolean upToDate = true;
+		boolean localSnapshot = false;
+		boolean remoteSnapshot = false;
 		String current = m_module.getVersion();
 		String website = "";
 		
@@ -71,10 +74,12 @@ public class BadgerUpdater extends Updater {
 		
 		if (website.endsWith("-SNAPSHOT")) {
 			website = website.substring(0, website.indexOf("-SNAPSHOT"));
+			remoteSnapshot = true;
 		}
 		
 		if (current.endsWith("-SNAPSHOT")) {
 			current = current.substring(0, current.indexOf("-SNAPSHOT"));
+			localSnapshot = true;
 		}
 		
 		String[] currentArray = current.split("\\.");
@@ -89,7 +94,7 @@ public class BadgerUpdater extends Updater {
 					upToDate = false;
 					break;
 				} else if (curPart == webPart) {
-					if (i == currentArray.length-1 && website.endsWith("-SNAPSHOT")) {
+					if (i == currentArray.length-1 && localSnapshot) {
 						upToDate = true;
 						break;
 					}

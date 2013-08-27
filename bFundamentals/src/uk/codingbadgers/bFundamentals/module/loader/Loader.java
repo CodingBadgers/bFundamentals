@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.PluginClassLoader;
 
+import uk.codingbadgers.bFundamentals.error.ExceptionHandler;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleLoadEvent;
 
@@ -161,7 +162,7 @@ public class Loader {
 			getLogger().log(Level.WARNING, e.getMessage());
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			ExceptionHandler.handleException(e);
 			getLogger().log(Level.WARNING, "Unknown cause.");
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 		}
