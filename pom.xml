@@ -19,9 +19,10 @@
     <modules>
         <module>bFundamentals</module>
 		<module>bInfoBooks</module>
-		<!--<module>bPotioned</module> And you complain about my code not building -->
 		<module>bAnimalCare</module>
 		<module>bHelpful</module>
+		<module>bQuiet</module>
+		<module>bRanks</module>
     </modules>
     
     <organization>
