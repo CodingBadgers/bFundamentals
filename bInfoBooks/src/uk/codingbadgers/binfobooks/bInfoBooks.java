@@ -170,11 +170,15 @@ public class bInfoBooks extends Module implements Listener {
 
 	public InfoBook bookExists(String bookName) {
 		if (m_books.containsKey(bookName.toLowerCase()))
-			return m_books.get(bookName);
+			return m_books.get(bookName.toLowerCase());
 		
 		for (InfoBook book : m_books.values())
 		{
-			if (book.getName().toLowerCase().startsWith(bookName.toLowerCase())) {
+			final String currentBook = book.getName().toLowerCase();
+			if (currentBook.startsWith(bookName.toLowerCase())) {
+				return book;
+			}
+			if (currentBook.equalsIgnoreCase(bookName.toLowerCase())) {
 				return book;
 			}
 		}
