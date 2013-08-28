@@ -86,6 +86,10 @@ public class ModuleCommandHandler {
 	@SuppressWarnings("unchecked")
 	public static void deregisterCommand(Module module) {
 
+		if (!commands.containsKey(module) || getCommands(module) == null) {
+			return;
+		}
+		
 		List<ModuleCommand> commands = new ArrayList<ModuleCommand>(getCommands(module));
 		for (ModuleCommand command : commands) {
 			ModuleCommandHandler.commands.get(module).remove(command);

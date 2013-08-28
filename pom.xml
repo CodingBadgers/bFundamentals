@@ -23,7 +23,8 @@
 		<module>bAnimalCare</module>
 		<module>bHelpful</module>
         <module>bCreative</module>
-        <module>bItems</module>
+        <module>bQuiet</module>
+        <module>bRanks</module> 
     </modules>
     
     <organization>

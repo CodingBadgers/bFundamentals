@@ -1,6 +1,7 @@
 package uk.codingbadgers.bFundamentals.module;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -105,11 +106,15 @@ public class ModuleLoader {
 	 * @param module the module
 	 */
 	public void unload(Module module) {
-		module.onDisable();
-		for (Listener listener : module.getListeners()) {
-			HandlerList.unregisterAll(listener);
+		try {
+			module.setEnabled(false);
+			for (Listener listener : module.getListeners()) {
+				HandlerList.unregisterAll(listener);
+			}
+			m_modules.remove(module);
+		} catch (Exception ex) {
+			ExceptionHandler.handleException(ex);
 		}
-		m_modules.remove(module);
 	}
 	
 	/**
@@ -129,13 +134,10 @@ public class ModuleLoader {
 	 * run on disable in all modules.
 	 */
 	public void disable() {
-		for (Module module : m_modules) {
+		List<Module> modules = new ArrayList<Module>(m_modules);
+		for (Module module : modules) {
 			try {
-				module.setEnabled(false);
-				
-				for (Listener listener : module.getListeners()) {
-					HandlerList.unregisterAll(listener);
-				}
+				unload(module);
 			} catch (Exception ex) {
 				ExceptionHandler.handleException(ex);
 			}
