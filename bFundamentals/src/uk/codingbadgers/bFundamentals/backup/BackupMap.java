@@ -11,11 +11,19 @@ import org.bukkit.entity.Player;
  */
 public class BackupMap {
 
-	private Map<World, PlayerBackup> backups = new HashMap<World, PlayerBackup>();
+	private Map<String, PlayerBackup> backups = new HashMap<String, PlayerBackup>();
 	private final Player player;
 	
 	public BackupMap(Player player) {
 		this.player = player;
+	}
+
+	
+	public void loadBackups() {
+		String[] worlds = BackupFactory.BACKUP_DIR.list();
+		for (String world : worlds) {
+			backups.put(world, BackupFactory.readBackup(world, player.getName()));
+		}
 	}
 	
     /**
@@ -38,7 +46,7 @@ public class BackupMap {
 	 */
 	public PlayerBackup backupPlayer(World world, boolean clearInv) {
 		PlayerBackup backup = BackupFactory.createBackup(player);
-		backups.put(world, backup);
+		backups.put(world.getName(), backup);
 		
 		if (clearInv) {
 			player.getInventory().clear();
@@ -58,16 +66,11 @@ public class BackupMap {
 		player.getInventory().clear();
 		clearArmor();
 				
-		PlayerBackup backup = backups.get(world);
+		PlayerBackup backup = backups.get(world.getName());
 		
-		if (backup != null) {
-			backup.restore(player);
-			backup.deleteFile();
-			this.backups.remove(backup);
-			return true;
+		if (backup == null) {
+			backup = BackupFactory.readBackup(player.getWorld().getName(), player.getName());
 		}
-		
-		backup = BackupFactory.readBackup(player.getWorld().getName(), player.getName());
 		
 		if (backup != null) {
 			backup.restore(player);

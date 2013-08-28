@@ -17,11 +17,11 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 public class BackupFactory {
 	
 	/** The base backup directory. */
-	private static final File backupDir = new File(bFundamentals.getInstance().getDataFolder() + File.separator + "backups" + File.separator);
+	public static final File BACKUP_DIR = new File(bFundamentals.getInstance().getDataFolder() + File.separator + "players" + File.separator);
 
 	static {
-		if (!backupDir.exists()) {
-			backupDir.mkdir();
+		if (!BACKUP_DIR.exists()) {
+			BACKUP_DIR.mkdir();
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class BackupFactory {
 		Validate.notNull(Bukkit.getWorld(world), world + " is not a valid world");
 		
 		try {
-			File file = new File(backupDir, world + File.separatorChar + playerName + ".json");
+			File file = new File(BACKUP_DIR, world + File.separatorChar + playerName + ".json");
 			
 			if (!file.exists()) {
 				// no backup for this player for that world on disk PANIC

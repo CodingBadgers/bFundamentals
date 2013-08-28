@@ -19,13 +19,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import uk.codingbadgers.bFundamentals.bFundamentals;
-
 @SuppressWarnings("unchecked")
 public class PlayerBackup {
 
-	private static final File backupDir = new File(bFundamentals.getInstance().getDataFolder() + File.separator + "players" + File.separator);
-	
 	private String name;
 	private File backup;
 	
@@ -36,8 +32,8 @@ public class PlayerBackup {
 	
 	public PlayerBackup(Player player) throws IOException {
 		
-		if (!backupDir.exists()) {
-			backupDir.mkdirs();
+		if (!BackupFactory.BACKUP_DIR.exists()) {
+			BackupFactory.BACKUP_DIR.mkdirs();
 		}
 		
 		this.name = player.getName();
@@ -45,7 +41,7 @@ public class PlayerBackup {
 		this.armourContents = player.getInventory().getArmorContents();
 		this.xp = player.getTotalExperience();
 		this.gamemode = player.getGameMode().getValue();
-		this.backup = new File(backupDir, player.getWorld().getName().replace(File.separatorChar, '_') + File.separatorChar + name.replace(File.separatorChar, '_') + ".json");
+		this.backup = new File(BackupFactory.BACKUP_DIR, player.getWorld().getName().replace(File.separatorChar, '_') + File.separatorChar + name.replace(File.separatorChar, '_') + ".json");
 		
 		if (!this.backup.getParentFile().exists()) {
 			this.backup.getParentFile().mkdir();

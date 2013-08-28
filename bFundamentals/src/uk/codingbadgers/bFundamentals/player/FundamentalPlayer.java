@@ -174,11 +174,11 @@ public class FundamentalPlayer {
 		return m_backups.backupPlayer(world, clearInv);
 	}
 	
-	public boolean restoryInventory() {
+	public boolean restoreInventory() {
 		return m_backups.restorePlayer(m_player.getWorld());
 	}
 	
-	public boolean restoryInventory(World world) {
+	public boolean restoreInventory(World world) {
 		return m_backups.restorePlayer(world);
 	}
 }
