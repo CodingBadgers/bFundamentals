@@ -22,7 +22,7 @@ import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
 public class bCreative extends Module implements Listener {
 
 	private List<String> activeWorlds;
-	private List<String> interactBlacklist;;
+	private List<Material> interactBlacklist;
 
 	@Override
 	public void onEnable() {
@@ -35,14 +35,22 @@ public class bCreative extends Module implements Listener {
 		saveConfig();
 		
 		activeWorlds = config.getStringList("worlds");
-		interactBlacklist = config.getStringList("interact-blacklist");
+		interactBlacklist = new ArrayList<Material>();
+		for (String mat : config.getStringList("interact-blacklist")) {
+			try {
+				int id = Integer.parseInt(mat);
+				interactBlacklist.add(Material.getMaterial(id));
+			} catch (Exception ex) {
+				interactBlacklist.add(Material.getMaterial(mat));
+			}
+		}
 		log(Level.INFO, activeWorlds.toString());
 	}
 
 	@Override
 	public void onDisable() {
 		activeWorlds.clear();
-		activeWorlds = null;
+		interactBlacklist.clear();
 	}
 	
 	@EventHandler
@@ -59,7 +67,7 @@ public class bCreative extends Module implements Listener {
 			return;
 		}
 		
-		if (interactBlacklist.contains(event.getClickedBlock().getType().name().toUpperCase())) {
+		if (!interactBlacklist.contains(event.getClickedBlock().getType())) {
 			return;
 		}
 		

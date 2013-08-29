@@ -16,6 +16,7 @@ public class BackupMap {
 	
 	public BackupMap(Player player) {
 		this.player = player;
+		loadBackups();
 	}
 
 	
