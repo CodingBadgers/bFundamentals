@@ -12,8 +12,10 @@ import java.util.Map;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 
 import net.milkbowl.vault.permission.Permission;
 
@@ -23,6 +25,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -32,7 +35,7 @@ import uk.codingbadgers.bFundamentals.commands.ModuleCommandHandler;
 import uk.codingbadgers.bFundamentals.config.ConfigFactory;
 import uk.codingbadgers.bFundamentals.config.ConfigFile;
 import uk.codingbadgers.bFundamentals.config.annotation.Element;
-import uk.codingbadgers.bFundamentals.module.loader.Loadable;
+import uk.codingbadgers.bFundamentals.module.loader.ModuleLoader;
 import uk.codingbadgers.bFundamentals.update.UpdateThread;
 import uk.codingbadgers.bFundamentals.update.Updater;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
@@ -41,21 +44,25 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
  * The base Module class any module should extend this, it also provides helper
  * methods for the module.
  */
-public abstract class Module extends Loadable implements Listener {
+public abstract class Module implements Listener {
 
-	protected static BukkitDatabase m_database = null;
+	protected final BukkitDatabase m_database;
 	protected final bFundamentals m_plugin;
-	protected File m_configFile = null;
+	protected File m_configFile;
 	protected FileConfiguration m_config;
-	private static Permission m_permissions = null;
+	
 	private boolean m_debug = false;
 	private boolean loadedLanguageFile;
 	private boolean m_enabled;
+	private File m_file;
+	private JarFile m_jar;
+	private File m_dataFolder;
+	private ModuleLogger m_log;
+	private UpdateThread m_updater;
+	private ModuleDescription m_description;
 	private List<Class<? extends ConfigFile>> m_configFiles;
 	private List<Listener> m_listeners = new ArrayList<Listener>();
-	private ModuleLogger m_log;
 	private Map<String, String> m_languageMap = new HashMap<String, String>();
-	private UpdateThread m_updater;
 
 	/**
 	 * Instantiates a new module with default settings.
@@ -65,7 +72,6 @@ public abstract class Module extends Loadable implements Listener {
 		m_plugin = bFundamentals.getInstance();
 		m_database = bFundamentals.getBukkitDatabase();
 		m_debug = bFundamentals.getConfigurationManager().isDebugEnabled();
-		m_permissions = bFundamentals.getPermissions();
 	}
 
 	public void init() {
@@ -224,7 +230,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * @return the vault permissions instance
 	 */
 	public Permission getPermissions() {
-		return m_permissions;
+		return bFundamentals.getPermissions();
 	}
 
 	/**
@@ -321,12 +327,28 @@ public abstract class Module extends Loadable implements Listener {
 	 * @return true, if the player has the permission
 	 */
 	public static boolean hasPermission(final Player player, final String node) {
-		if (m_permissions.has(player, node)) {
+		if (bFundamentals.getPermissions().has(player, node)) {
 			return true;
 		}
 		return false;
 	}
 
+	/**
+	 * Checks if a player has a specific permission.
+	 * 
+	 * @param player
+	 *            the player to check
+	 * @param node
+	 *            the permission node
+	 * @return true, if the player has the permission
+	 */
+	public static boolean hasPermission(final CommandSender player, final String node) {
+		if (bFundamentals.getPermissions().has(player, node)) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Send message to a player formated in the default style.
 	 * 
@@ -450,5 +472,146 @@ public abstract class Module extends Loadable implements Listener {
 			e.printStackTrace();
 		}
 		m_configFiles.add(clazz);
+	}
+	
+	/**
+	 * Set the datafolder.
+	 *
+	 * @param dataFolder the data folder
+	 * @return the file
+	 */
+	public void setDatafolder(File dataFolder) {
+		dataFolder.mkdirs();
+		this.m_dataFolder = dataFolder;
+	}
+
+	/**
+	 * Set the file for this loadable.
+	 *
+	 * @param file the file
+	 * @return the file
+	 */
+	public void setFile(File file) {
+		this.m_file = file;
+	}
+
+	/**
+	 * Set the jar file.
+	 *
+	 * @param jar the jar
+	 * @return the jar file
+	 */
+	public void setJarFile(JarFile jar) {
+		this.m_jar = jar;
+	}
+
+	/**
+	 * Set the {@link ModuleDescription} for this module.
+	 *
+	 * @param ldf the loadable description file
+	 * @return the loadable description file
+	 */
+	public void setDesciption(ModuleDescription ldf) {
+		this.m_description = ldf;
+	}
+
+	/**
+	 * Gets the config.
+	 *
+	 * @return The config
+	 */
+	public FileConfiguration getConfig() {
+		if (m_config == null) {
+			reloadConfig();
+		}
+
+		return m_config;
+	}
+
+	/**
+	 * Gets the data folder of this.
+	 *
+	 * @return The directory of this
+	 */
+	public File getDataFolder() {
+		return m_dataFolder;
+	}
+
+	/**
+	 * Gets the file of the loadable.
+	 *
+	 * @return the jar file as a {@link File}
+	 */
+	public File getFile() {
+		return m_file;
+	}
+
+	/**
+	 * Gets the name of the Loadable.
+	 *
+	 * @return The name
+	 */
+	public final String getName() {
+		return getDesciption().getName();
+	}
+
+	/**
+	 * Gets an embedded resource in this plugin.
+	 *
+	 * @param name File name of the resource
+	 * @return InputStream of the file if found, otherwise null
+	 */
+	public InputStream getResource(String name) {
+		ZipEntry entry = m_jar.getEntry(name);
+
+		if (entry == null)
+			return null;
+
+		try {
+			return m_jar.getInputStream(entry);
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Reloads the config.
+	 */
+	public void reloadConfig() {
+		if (m_configFile == null) {
+			m_configFile = new File(getDataFolder(), "config.yml");
+		}
+
+		m_config = YamlConfiguration.loadConfiguration(m_configFile);
+
+		InputStream defConfigStream = getResource("config.yml");
+
+		if (defConfigStream != null) {
+			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+			m_config.setDefaults(defConfig);
+		}
+	}
+
+	/**
+	 * Saves the config.
+	 */
+	public void saveConfig() {
+		if (m_config == null || m_configFile == null) {
+			return;
+		}
+
+		try {
+			m_config.save(m_configFile);
+		} catch (IOException e) {
+		}
+	}
+
+	/**
+	 * Gets the desciption.
+	 *
+	 * @return the desciption
+	 */
+	public ModuleDescription getDesciption() {
+		return this.m_description;
 	}
 }

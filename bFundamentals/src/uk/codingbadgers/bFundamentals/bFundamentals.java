@@ -31,7 +31,7 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.bFundamentals.module.ModuleLoader;
+import uk.codingbadgers.bFundamentals.module.loader.ModuleLoader;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayerArray;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
