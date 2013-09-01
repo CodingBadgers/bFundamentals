@@ -7,3 +7,5 @@ target/
 *.class
 *.jar
 /bFundamentals/dependency-reduced-pom.xml
+/bItems
+/bEntityEdit

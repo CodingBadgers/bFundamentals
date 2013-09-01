@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -15,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.error.ExceptionHandler;
 import uk.codingbadgers.bFundamentals.module.Module;
 
 /**
@@ -208,30 +210,36 @@ public class ModuleCommand extends Command implements TabExecutor {
 	 */
 	@Override
 	public final boolean execute(CommandSender sender, String label, String[] args) {
-		if (args.length >= 1) {
-			for (ModuleChildCommand child : m_children) {
-				if (child.getLabel().equalsIgnoreCase(args[0])) {
-					m_module.log(Level.INFO, child.getLabel());
-					// cut first argument (sub command) out of command then handle as child command
-					args = Arrays.copyOfRange(args, 1, args.length);
-					return child.execute(sender, label, args);
+		try {
+			if (args.length >= 1) {
+				for (ModuleChildCommand child : m_children) {
+					if (child.getLabel().equalsIgnoreCase(args[0])) {
+						m_module.log(Level.INFO, child.getLabel());
+						// cut first argument (sub command) out of command then handle as child command
+						args = Arrays.copyOfRange(args, 1, args.length);
+						return child.execute(sender, label, args);
+					}
 				}
 			}
+	
+			// for backwards compatibility call old method first, will pass to new if left as default
+			if (onCommand(sender, label, args)) {
+				return true;
+			}
+	
+			// call command method in module if still not handled
+			if (m_module.onCommand(sender, label, args)) {
+				return true;
+			}
+			
+			// if not handled for any reason, send usage
+			Module.sendMessage(m_module.getName(), sender, getUsage());
+			return false;
+		} catch (Exception ex) {
+			ExceptionHandler.handleException(ex);
+			sender.sendMessage(ChatColor.RED + "Sorry there was a error executing your command.");
+			return false;
 		}
-
-		// for backwards compatibility call old method first, will pass to new if left as default
-		if (onCommand(sender, label, args)) {
-			return true;
-		}
-
-		// call command method in module if still not handled
-		if (m_module.onCommand(sender, label, args)) {
-			return true;
-		}
-		
-		// if not handled for any reason, send usage
-		Module.sendMessage(m_module.getName(), sender, getUsage());
-		return false;
 	}
 
 	/**
