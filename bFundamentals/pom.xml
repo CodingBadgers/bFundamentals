@@ -56,6 +56,7 @@
 								<includes>
 									<include>commons-*:*</include>
 									<include>org.jnbt:jnbt</include>
+									<include>org.javassist:javassist</include>
 									<include>org.reflections:reflections</include>
 									<include>org.apache.httpcomponents:*</include>
 								</includes>

@@ -1,6 +1,8 @@
 package uk.codingbadgers.bFundamentals.module;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +42,16 @@ public class ModuleDescription {
         dependencies = Collections.unmodifiableCollection(ldf.getStringList("dependencies"));
     }
     
-    /**
+    public ModuleDescription(String value, String version, String mainClass, String description, String[] authors) {
+    	this.name = value;
+    	this.version = version;
+    	this.mainClass = mainClass;
+    	this.description = description;
+    	this.authors = CollectionUtils.toImmutableList(Arrays.asList(authors));
+    	this.dependencies = Collections.unmodifiableCollection(new ArrayList<String>());
+	}
+
+	/**
      * Gets the name of this loadable.
      *
      * @return the name of this loadable

@@ -1,7 +1,7 @@
 package uk.codingbadgers.bFundamentals.module.loader;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +29,7 @@ import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleClassLoader;
 import uk.codingbadgers.bFundamentals.module.ModuleDescription;
 import uk.codingbadgers.bFundamentals.module.ModuleHelpTopic;
+import uk.codingbadgers.bFundamentals.module.annotation.ModuleInfo;
 
 /**
  * The ModuleLoader.
@@ -48,16 +49,16 @@ public class ModuleLoader {
 			bFundamentals.log(Level.INFO, "Creating Module Directory...");
 		}
 	}
-	
+
 	/**
 	 * Gets the directory of the modules.
-	 *
+	 * 
 	 * @return the module dir
 	 */
 	public File getModuleDir() {
 		return new File(bFundamentals.getInstance().getDataFolder(), "modules");
 	}
-	
+
 	/**
 	 * Loads all the modules in the base modules directory.
 	 */
@@ -65,11 +66,11 @@ public class ModuleLoader {
 
 		List<File> files = Arrays.asList(getModuleDir().listFiles(new FileExtensionFilter(".jar")));
 		for (File file : files) {
-			load0(file);
+			loadModule(file);
 		}
-		
+
 		sort();
-		
+
 		for (Module module : m_modules) {
 			try {
 				module.onLoad();
@@ -78,11 +79,11 @@ public class ModuleLoader {
 				ExceptionHandler.handleException(ex);
 			}
 		}
-		
+
 		bFundamentals.log(Level.INFO, "Loaded " + m_modules.size() + " modules.");
 	}
-	
-	public Module load0(File file) {
+
+	public Module loadModule(File file) {
 		Module result = null;
 
 		try {
@@ -93,56 +94,59 @@ public class ModuleLoader {
 			JarFile jarFile = new JarFile(file);
 			ModuleDescription ldf = null;
 			Set<Class<? extends Module>> modules = new HashSet<Class<? extends Module>>();
+
+			modules.addAll(ClassFinder.findModules(loader, urls));
 			
 			// Old system, left for backwards compatibility
 			if (jarFile.getEntry("path.yml") != null) {
 				JarEntry element = jarFile.getJarEntry("path.yml");
 				ldf = new ModuleDescription(jarFile.getInputStream(element));
-				modules.add(Class.forName(ldf.getMainClass(), true, loader).asSubclass(Module.class));
-			} else {
-				modules.addAll(ModuleClassFinder.findModules(urls));
-				// TODO sort out ModuleInformation
 			}
-			
+
 			if (modules.size() == 0) {
 				jarFile.close();
-				throw new ClassNotFoundException("Could not find main class in the path.yml.");
+				throw new ClassNotFoundException("Could not find a main class in jar " + file.getName() + ".");
 			}
-			
-			if (bFundamentals.getConfigurationManager().isDebugEnabled()) getLogger().log(Level.INFO, "Loading " + modules.size() + " modules for jar " + file.getName());
-			
+
+			if (bFundamentals.getConfigurationManager().isDebugEnabled())
+				getLogger().log(Level.INFO, "Loading " + modules.size() + " modules for jar " + file.getName());
+
 			for (Class<? extends Module> clazz : modules) {
 
-				if (bFundamentals.getConfigurationManager().isDebugEnabled()) getLogger().log(Level.INFO, "Loading module " + clazz.getName());
+				if (bFundamentals.getConfigurationManager().isDebugEnabled())
+					getLogger().log(Level.INFO, "Loading module " + clazz.getName());
 				
-				if (clazz != null) {
-					Class<? extends Module> loadableClass = clazz.asSubclass(Module.class);
-					Constructor<? extends Module> constructor = loadableClass.getConstructor();
-					result = constructor.newInstance();
-
-					if (m_modules.contains(result)) {
-						getLogger().log(Level.WARNING, "The loadable " + file.getName() + " is already loaded, make sure to disable the module first");
-						getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
-						jarFile.close();
-						return null;
-					}
-
-					result.setFile(file);
-					result.setDesciption(ldf);
-					result.setJarFile(jarFile);
-					result.setDatafolder(new File(file.getParentFile(), result.getName()));
-					result.init();
-
-					ModuleLoadEvent event = new ModuleLoadEvent(bFundamentals.getInstance(), result, jarFile);
-					Bukkit.getServer().getPluginManager().callEvent(event);
-
-					m_modules.add(result);
-					loaders.put(result.getName(), loader);
-
-				} else {
-					jarFile.close();
-					throw new ClassNotFoundException("Class " + clazz.getName() + " could not be found.");
+				ModuleDescription description = ldf;
+				
+				if (clazz.isAnnotationPresent(ModuleInfo.class)) {
+					ModuleInfo info = clazz.getAnnotation(ModuleInfo.class);
+					description = new ModuleDescription(info.value(), info.version(), clazz.getName(), info.description(), info.authors());
 				}
+				
+				if (description == null) {
+					throw new IOException("Description not found for module " + file.getName() + ".");
+				}
+				
+				result = clazz.newInstance();
+
+				if (m_modules.contains(result)) {
+					getLogger().log(Level.WARNING, "The loadable " + file.getName() + " is already loaded, make sure to disable the module first");
+					getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
+					jarFile.close();
+					return null;
+				}
+
+				result.setFile(file);
+				result.setDesciption(description);
+				result.setJarFile(jarFile);
+				result.setDatafolder(new File(getModuleDir(), result.getName()));
+				result.init();
+
+				ModuleLoadEvent event = new ModuleLoadEvent(bFundamentals.getInstance(), result, jarFile);
+				Bukkit.getServer().getPluginManager().callEvent(event);
+
+				m_modules.add(result);
+				loaders.put(result.getName(), loader);
 			}
 
 		} catch (ClassCastException e) {
@@ -161,7 +165,7 @@ public class ModuleLoader {
 
 		return result;
 	}
-	
+
 	private Logger getLogger() {
 		return bFundamentals.getInstance().getLogger();
 	}
@@ -169,35 +173,37 @@ public class ModuleLoader {
 	/**
 	 * Loads a module with a given name
 	 * 
-	 * @param fileName the files name
+	 * @param fileName
+	 *            the files name
 	 */
 	public void load(String fileName) {
 		File module = new File(getModuleDir() + File.separator + fileName + ".jar");
 		load(module);
 	}
-	
+
 	/**
 	 * Loads a module with a jar file
-	 *  
-	 * @param file the jar file for this module
+	 * 
+	 * @param file
+	 *            the jar file for this module
 	 */
 	public void load(File file) {
 		if (getModule(file) != null) {
 			throw new IllegalArgumentException("Module " + file.getName() + " is already loaded");
 		}
-		
-		Module result = load0(file);
-		
+
+		Module result = loadModule(file);
+
 		if (result == null) {
 			return;
-		}		
-		
+		}
+
 		m_modules.add(result);
-		
+
 		result.onLoad();
 		result.log(Level.INFO, result.getName() + " v:" + result.getVersion() + " has been loaded successfuly");
 	}
-	
+
 	/**
 	 * Unloads the modules.
 	 */
@@ -205,11 +211,12 @@ public class ModuleLoader {
 		disable();
 		m_modules.clear();
 	}
-	
+
 	/**
 	 * Unload a specific module.
-	 *
-	 * @param module the module
+	 * 
+	 * @param module
+	 *            the module
 	 */
 	public void unload(Module module) {
 		try {
@@ -222,7 +229,7 @@ public class ModuleLoader {
 			ExceptionHandler.handleException(ex);
 		}
 	}
-	
+
 	/**
 	 * Run on enable in all modules.
 	 */
@@ -236,7 +243,7 @@ public class ModuleLoader {
 			}
 		}
 	}
-	
+
 	/**
 	 * run on disable in all modules.
 	 */
@@ -253,14 +260,13 @@ public class ModuleLoader {
 
 	/**
 	 * Gets the modules.
-	 *
+	 * 
 	 * @return the modules
 	 */
 	public List<Module> getModules() {
 		return m_modules;
 	}
-	
-	
+
 	/**
 	 * Update all the loaded modules if an updater is set
 	 */
@@ -268,7 +274,7 @@ public class ModuleLoader {
 		if (!bFundamentals.getConfigurationManager().isAutoUpdateEnabled()) {
 			return;
 		}
-		
+
 		for (Module module : m_modules) {
 			module.update();
 		}
@@ -276,30 +282,32 @@ public class ModuleLoader {
 
 	/**
 	 * Gets the module from its name.
-	 *
-	 * @param string the string
+	 * 
+	 * @param string
+	 *            the string
 	 * @return the module
 	 */
 	public Module getModule(String string) {
 		Iterator<Module> itr = m_modules.iterator();
-		while(itr.hasNext()) {
+		while (itr.hasNext()) {
 			Module module = itr.next();
 			if (module.getName().equalsIgnoreCase(string)) {
 				return module;
 			}
 		}
-		return null;		
+		return null;
 	}
-	
+
 	/**
 	 * Gets the module from its file.
-	 *
-	 * @param file the file
+	 * 
+	 * @param file
+	 *            the file
 	 * @return the module
 	 */
 	public Module getModule(File file) {
 		Iterator<Module> itr = m_modules.iterator();
-		while(itr.hasNext()) {
+		while (itr.hasNext()) {
 			Module module = itr.next();
 			if (module.getFile().getPath().equalsIgnoreCase(file.getPath())) {
 				return module;
@@ -307,7 +315,7 @@ public class ModuleLoader {
 		}
 		return null;
 	}
-	
+
 	public Class<?> getClassByName(String name) {
 		Class<?> cachedClass = classes.get(name);
 
@@ -339,7 +347,7 @@ public class ModuleLoader {
 			}
 		}
 	}
-	
+
 	public void sort() {
 		List<Module> sortedLoadables = new ArrayList<Module>();
 		List<String> names = new ArrayList<String>();
