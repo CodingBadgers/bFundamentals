@@ -19,12 +19,13 @@
     <modules>
         <module>bFundamentals</module>
 		<module>bInfoBooks</module>
-		<!--<module>bPotioned</module> And you complain about my code not building -->
+		<module>bPotioned</module>
 		<module>bAnimalCare</module>
 		<module>bHelpful</module>
         <module>bCreative</module>
         <module>bQuiet</module>
         <module>bRanks</module> 
+        <module>bPortals</module> 
     </modules>
     
     <organization>
