@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -132,7 +133,7 @@ public class bCreative extends Module implements Listener {
 		// Teleporting to creative world
 		if (activeWorlds.contains(event.getTo().getWorld().getName())) {
 			// Order is everything
-			player.backupInventory(event.getFrom().getWorld(), true);
+			player.backupInventory(activeWorlds.contains(event.getFrom().getWorld()) ? event.getFrom().getWorld() : Bukkit.getWorlds().get(0), true);
 			player.restoreInventory(event.getTo().getWorld());
 			sendMessage(getName(), event.getPlayer(), "You're inventory has been backed up whilst you are in the creative world");
 		}
@@ -141,7 +142,7 @@ public class bCreative extends Module implements Listener {
 		if (activeWorlds.contains(event.getFrom().getWorld().getName())) {	
 			// Order is everything		
 			player.backupInventory(event.getFrom().getWorld(), true);			
-			player.restoreInventory(event.getTo().getWorld());
+			player.restoreInventory(activeWorlds.contains(event.getTo().getWorld()) ? event.getTo().getWorld() : Bukkit.getWorlds().get(0));
 			sendMessage(getName(), event.getPlayer(), "You're inventory has been restored now you have left the creative world");
 		}
 	}
