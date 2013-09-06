@@ -6,4 +6,6 @@ target/
 
 *.class
 *.jar
-/bFundamentals/dependency-reduced-pom.xml
+
+dependency-reduced-pom.xml
+bin/

@@ -5,10 +5,13 @@
     <groupId>uk.thecodingbadgers</groupId>
     <artifactId>bFundamentalsBuild</artifactId>
     <version>1.2-SNAPSHOT</version>
+
     <packaging>pom</packaging>
     <name>bFundamentalsBuild</name>
+
     <inceptionYear>2013</inceptionYear>
     <url>http://www.mcbadgercraft.com</url>
+    <description>Base module api for McBadgerCraft</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,12 +22,13 @@
     <modules>
         <module>bFundamentals</module>
 		<module>bInfoBooks</module>
-		<!--<module>bPotioned</module> And you complain about my code not building -->
+		<module>bPotioned</module>
 		<module>bAnimalCare</module>
 		<module>bHelpful</module>
         <module>bCreative</module>
         <module>bQuiet</module>
         <module>bRanks</module> 
+        <module>bPortals</module> 
     </modules>
     
     <organization>
@@ -161,6 +165,30 @@
                                 </tag>
                             </tags>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <header>header.txt</header>
+                    <properties>
+                        <author>CodingBadgers</author>
+                        <year>${project.inceptionYear}</year>
+                        <email>plugins@mcbadgercraft.com</email>
+                    </properties>
+                    <includes>
+                        <include>**/**.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
