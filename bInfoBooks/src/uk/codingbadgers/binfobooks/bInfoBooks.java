@@ -281,7 +281,7 @@ public class bInfoBooks extends Module implements Listener {
 		bookmeta.setTitle(infobook.getName());
 		bookmeta.setLore(infobook.getTagLines());
 		bookmeta.setPages(infobook.getPages(player));		
-		bookmeta.setDisplayName("InfoBook");
+		bookmeta.setDisplayName(infobook.getName());
 		
 		book.setItemMeta(bookmeta);
 		player.getInventory().addItem(book);
