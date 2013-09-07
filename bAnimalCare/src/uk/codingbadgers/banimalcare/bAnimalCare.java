@@ -19,13 +19,17 @@ package uk.codingbadgers.banimalcare;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -34,9 +38,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -46,11 +47,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-//import de.kumpelblase2.remoteentities.EntityManager;
-//import de.kumpelblase2.remoteentities.RemoteEntities;
-//import de.kumpelblase2.remoteentities.api.RemoteEntity;
-//import de.kumpelblase2.remoteentities.api.features.RemoteTamingFeature;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -62,8 +58,6 @@ public class bAnimalCare extends Module implements Listener {
 	private HashMap<UUID, String> m_pets = new HashMap<UUID, String>();
 	
 	private HashMap<String, Entity> m_tpVehicle = new HashMap<String, Entity>();
-	
-	//private EntityManager m_entityManager = null;
 	
 	private static int MAX_NOOF_PETS = 10;
 	
@@ -80,6 +74,7 @@ public class bAnimalCare extends Module implements Listener {
 	public void onEnable() {
 		WORLDGUARD = (WorldGuardPlugin)m_plugin.getServer().getPluginManager().getPlugin("WorldGuard");
 		register(this);
+		registerCommand(new AnimalCommand(this));
 		
 		setupDatabase();
 		loadPets();
@@ -119,8 +114,18 @@ public class bAnimalCare extends Module implements Listener {
 			}
 			return;
 		}
-		
+				
 		if (item == null || item.getType() != Material.STRING) {
+			return;
+		}
+		
+		if (isBlackListed(entity)) {
+			// Dont output a message, just pretend this never happened
+			return;
+		}
+		
+		if (!Module.hasPermission(player, "bAnimalCare.capture")) {
+			Module.sendMessage("bAnimalCare", player, "You do not have permission to capture pet animals.");
 			return;
 		}
 		
@@ -164,6 +169,9 @@ public class bAnimalCare extends Module implements Listener {
 		final UUID entityID = entity.getUniqueId();
 		
 		Player attackPlayer = ((event.getDamager() instanceof Player) ? (Player)event.getDamager() : null);
+		if (attackPlayer == null) {
+			return;
+		}		
 		
 		if (!m_pets.containsKey(entityID)) {
 			return;
@@ -200,6 +208,7 @@ public class bAnimalCare extends Module implements Listener {
 			if (event.getMessage().startsWith("/" + command)) {
 				vehicle.eject();
 				m_tpVehicle.put(event.getPlayer().getName(), vehicle);
+				return;
 			}
 		}
 		
@@ -237,53 +246,7 @@ public class bAnimalCare extends Module implements Listener {
 		}
 		
 	}
-	
-	/**
-	 * Called when an entity targets another entity
-	 */	
-	@EventHandler(priority = EventPriority.LOW)
-	public void onEntityTarget(EntityTargetEvent event) {
 		
-		return;
-		
-		/*
-		if (!(event.getEntity() instanceof LivingEntity)) {
-			return;
-		}
-		
-		final LivingEntity entity = (LivingEntity)event.getEntity();
-		final Integer entityID = entity.getUniqueId();
-		
-		if (!m_pets.containsKey(entityID)) {
-			return;
-		}
-		
-		// in a safezone, so dont attack anything
-		if (getChildRegionFromLocation(entity.getLocation()) != null) {
-			event.setCancelled(true);
-			return;
-		}
-		
-		if (!(event.getTarget() instanceof Player)) {
-			return;
-		}
-		
-		Player targetPlayer = (Player)event.getTarget();
-		
-		// in non-safe, so attack everything apart from the owner
-		final String ownerName = m_pets.get(entityID);		
-		if (ownerName.equalsIgnoreCase(targetPlayer.getName())) {
-			event.setCancelled(true);
-			return;
-		}
-		
-		// let the event pass, and target the player!
-		*/
-		
-	}
-	
-	
-	
 	/**
 	 * Get the number of pets a player has
 	 */
@@ -333,103 +296,30 @@ public class bAnimalCare extends Module implements Listener {
 		
 		// Store the pet into our database
 		addNewPet(playerName, entityID);
-	
-		// Setup the new features of the entity
-		//RemoteEntity rEntity = m_entityManager.createRemoteEntityFromExisting(entity, true);
 		
-		//RemoteTamingFeature taming = new RemoteTamingFeature(rEntity);
-		//taming.tame(player);		
-		//rEntity.getFeatures().addFeature(taming);
-		
-		String mobType = entity.getType().getName().replace("Entity", "");
-		Module.sendMessage("bAnimalCare", player, "You have tamed a new " + mobType + " pet.");
+		String mobType = entity.getType().name().replace("Entity", "");
+		Module.sendMessage("bAnimalCare", player, "You have tamed a new " + mobType.toLowerCase() + " pet.");
 		
 	}
 	
 	private boolean isBlackListed(LivingEntity entity) {
 		
-		if (entity.getType() == EntityType.ARROW)
+		if (entity.getType() == EntityType.WOLF)
 			return true;
 		
-		if (entity.getType() == EntityType.COMPLEX_PART)
-			return true;
+		if (entity.getType() == EntityType.HORSE)
+			return false;
 		
-		if (entity.getType() == EntityType.DROPPED_ITEM)
-			return true;
+		if (entity.getType() == EntityType.SQUID)
+			return false;
 		
-		if (entity.getType() == EntityType.EGG)
-			return true;
+		if (entity.getType() == EntityType.VILLAGER)
+			return false;
 		
-		if (entity.getType() == EntityType.ENDER_CRYSTAL)
-			return true;
-		
-		if (entity.getType() == EntityType.ENDER_DRAGON)
-			return true;
-		
-		if (entity.getType() == EntityType.ENDER_PEARL)
-			return true;
-		
-		if (entity.getType() == EntityType.ENDER_SIGNAL)
-			return true;
-		
-		if (entity.getType() == EntityType.EXPERIENCE_ORB)
-			return true;
-		
-		if (entity.getType() == EntityType.FALLING_BLOCK)
-			return true;
-		
-		if (entity.getType() == EntityType.FIREBALL)
-			return true;
-		
-		if (entity.getType() == EntityType.FIREWORK)
-			return true;
-		
-		if (entity.getType() == EntityType.FISHING_HOOK)
-			return true;
-		
-		if (entity.getType() == EntityType.GHAST)
-			return true;
-		
-		if (entity.getType() == EntityType.ITEM_FRAME)
-			return true;
-		
-		if (entity.getType() == EntityType.LIGHTNING)
-			return true;
-		
-		if (entity.getType() == EntityType.PAINTING)
-			return true;
-		
-		if (entity.getType() == EntityType.PLAYER)
-			return true;
-		
-		if (entity.getType() == EntityType.PRIMED_TNT)
-			return true;
-		
-		if (entity.getType() == EntityType.SMALL_FIREBALL)
-			return true;
-		
-		if (entity.getType() == EntityType.SNOWBALL)
-			return true;
-		
-		if (entity.getType() == EntityType.SPLASH_POTION)
-			return true;
-		
-		if (entity.getType() == EntityType.THROWN_EXP_BOTTLE)
-			return true;
-		
-		if (entity.getType() == EntityType.UNKNOWN)
-			return true;
-		
-		if (entity.getType() == EntityType.WEATHER)
-			return true;
-		
-		if (entity.getType() == EntityType.WITHER)
-			return true;
-		
-		if (entity.getType() == EntityType.WITHER_SKULL)
-			return true;
-		
-		return false;
+		if (entity instanceof Animals)
+			return false;
+
+		return true;
 	}
 	
 	private boolean isEntityOwned(LivingEntity entity) {
@@ -583,6 +473,55 @@ public class bAnimalCare extends Module implements Listener {
 				"'";
 			
 		m_database.query(removePet);
+		
+	}
+
+	public void listPets(Player player) {
+		
+		final String playerName = player.getName();
+		ArrayList<String> petIds = new ArrayList<String>();
+		
+		for (Entry<UUID, String> petEntry : m_pets.entrySet()) {
+			if (petEntry.getValue().equalsIgnoreCase(playerName)) {
+				petIds.add(petEntry.getKey().toString());
+			}
+		}
+		
+		Module.sendMessage("bAnimalCare", player, "You have " + petIds.size() + " pets...");
+
+		Collections.sort(petIds);
+		
+		int petIndex = 0;
+		for (String id : petIds) {
+			UUID petId = UUID.fromString(id);
+			Entity pet = entityFromUUID(petId);
+			if (pet == null) {
+				Module.sendMessage("bAnimalCare", player, "Could not find pet " + id);
+				continue;
+			}
+			
+			String petName = pet.getType().name().toLowerCase();
+			Location location = pet.getLocation();
+			String petLocation = "[" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ", " + location.getWorld().getName() + "]";
+			
+			String petInfo = petIndex + " - " + petName + " - " + petLocation;
+			Module.sendMessage("bAnimalCare", player, petInfo);
+			
+			petIndex++;
+		}
+		
+	}
+
+	private Entity entityFromUUID(UUID petId) {
+		
+		for (World world : Bukkit.getWorlds()) {
+			for (Entity entity : world.getEntities()) {
+				if (entity.getUniqueId() == petId)
+					return entity;
+			}
+		}
+		
+		return null;
 		
 	}
 
