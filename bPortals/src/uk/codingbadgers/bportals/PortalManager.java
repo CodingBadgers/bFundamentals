@@ -23,30 +23,15 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.util.NumberConversions;
+
+import uk.codingbadgers.bportals.portal.Portal;
 
 import com.google.common.collect.ImmutableSet;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.Region;
 
+import static uk.codingbadgers.bportals.utils.LocationUtils.*;
+
 public class PortalManager {
-
-	private static PortalManager instance = null;
-
-	public static PortalManager getInstance() {
-		return instance;
-	}
-
-	public static void setInstance(PortalManager instance) {
-		PortalManager.instance = instance;
-	}
-
-	public static void createPortal(Region selection, String id, Player sender) {
-		Portal portal = new Portal(id);
-		portal.setRegion(selection);
-		portal.setExitLocation(sender.getLocation().clone());
-		getInstance().registerPortal(portal);
-	}
 
 	private Set<Portal> portals = null;
 
@@ -58,24 +43,15 @@ public class PortalManager {
 		for (Portal portal : portals) {
 			
 			// Check everything
-			if (portal.getPortalRegion().contains(new Vector(loc.getX(), 
-																loc.getY(),
-																loc.getZ()))) {
-				bPortals.getInstance().debugConsole("Standard location");
+			if (portal.getPortalRegion().contains(convertLocationToVector(loc))) {
 				return portal;
 			}
-			
-			if (portal.getPortalRegion().contains(new Vector(NumberConversions.ceil(loc.getX()), 
-																NumberConversions.ceil(loc.getY()),
-																NumberConversions.ceil(loc.getZ())))) {
-				bPortals.getInstance().debugConsole("Ceil location");
+
+			if (portal.getPortalRegion().contains(convertLocationToFloorVector(loc))) {
 				return portal;
 			}
-			
-			if (portal.getPortalRegion().contains(new Vector(NumberConversions.floor(loc.getX()),
-																NumberConversions.floor(loc.getY()),
-																NumberConversions.floor(loc.getZ())))) {
-				bPortals.getInstance().debugConsole("Floor location");
+
+			if (portal.getPortalRegion().contains(convertLocationToCeilVector(loc))) {
 				return portal;
 			}
 		}
@@ -91,6 +67,13 @@ public class PortalManager {
 		}
 
 		return null;
+	}
+
+	public void createPortal(Region selection, String id, Player sender) {
+		Portal portal = new Portal(id);
+		portal.setRegion(selection);
+		portal.setExitLocation(sender.getLocation().clone());
+		registerPortal(portal);
 	}
 
 	public void registerPortal(Portal portal) {

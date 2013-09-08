@@ -17,26 +17,23 @@
  */
 package uk.codingbadgers.bportals.utils;
 
-import java.util.Iterator;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import static org.bukkit.util.NumberConversions.*;
 
-import com.google.common.base.Splitter;
+import com.sk89q.worldedit.Vector;
 
-public class DatabaseUtils {
+public class LocationUtils {
 
-	public Location getFromString(String location) {
-		Iterable<String> split = Splitter.on(',').trimResults().omitEmptyStrings().split(location);
-		Iterator<String> itr = split.iterator();
-		String world = itr.next();
-		double x = Double.valueOf(itr.next());
-		double y = Double.valueOf(itr.next());
-		double z = Double.valueOf(itr.next());
-		return new Location(Bukkit.getWorld(world), x, y, z);
+	public static Vector convertLocationToVector(Location loc) {
+		return new Vector(loc.getX(), loc.getY(), loc.getZ());
 	}
 	
-	public String putToString(Location loc) {
-		return loc.getWorld() + "," + loc.getX() + "," + loc.getY() + "," + loc.getZ();
+	public static Vector convertLocationToFloorVector(Location loc) {
+		return new Vector(floor(loc.getX()), floor(loc.getY()), floor(loc.getZ()));
+	}
+	
+	public static Vector convertLocationToCeilVector(Location loc) {
+		return new Vector(ceil(loc.getX()), ceil(loc.getY()), ceil(loc.getZ()));
 	}
 }
+  

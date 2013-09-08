@@ -15,14 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.bportals;
+package uk.codingbadgers.bportals.portal;
 
 import org.bukkit.Location;
+
 
 import com.sk89q.worldedit.regions.Region;
 
 /**
- * The Class Portal.
+ * Represents a portal that can teleport a player to another location.
  */
 public class Portal {
 
@@ -119,5 +120,14 @@ public class Portal {
 	 */
 	public boolean hasTeleportLocation() {
 		return teleport != null;
+	}
+
+	/**
+	 * Creates a immutable copy of this portal.
+	 *
+	 * @return a immutable copy of this portal
+	 */
+	public Portal immutableCopy() {
+		return new ImmutablePortal(this);
 	}
 }

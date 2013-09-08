@@ -17,26 +17,30 @@
  */
 package uk.codingbadgers.bportals.utils;
 
-import java.util.Iterator;
+import static org.apache.commons.io.IOUtils.readLines;
+import static org.apache.commons.lang.StringUtils.join;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
-import com.google.common.base.Splitter;
+import uk.codingbadgers.bFundamentals.bFundamentals;
 
-public class DatabaseUtils {
+public class ResourceUtils {
 
-	public Location getFromString(String location) {
-		Iterable<String> split = Splitter.on(',').trimResults().omitEmptyStrings().split(location);
-		Iterator<String> itr = split.iterator();
-		String world = itr.next();
-		double x = Double.valueOf(itr.next());
-		double y = Double.valueOf(itr.next());
-		double z = Double.valueOf(itr.next());
-		return new Location(Bukkit.getWorld(world), x, y, z);
+	public static String loadResourceContents(String type, String id) throws IOException {
+		return join(readLines(loadResource(type, id)), ' ');
 	}
 	
-	public String putToString(Location loc) {
-		return loc.getWorld() + "," + loc.getX() + "," + loc.getY() + "," + loc.getZ();
+	public static InputStream loadResource(String type, String id) throws IOException {
+		String path = type + '/' + id + '.' + type;
+		System.out.println(path);
+		InputStream stream = bFundamentals.getInstance().getResource(path);
+		
+		if (stream == null) {
+			throw new FileNotFoundException(path);
+		}
+		
+		return stream;
 	}
 }
