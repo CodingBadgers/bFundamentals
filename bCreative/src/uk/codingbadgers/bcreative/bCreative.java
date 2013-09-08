@@ -17,13 +17,14 @@
  */
 package uk.codingbadgers.bcreative;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,9 +34,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -57,7 +58,17 @@ public class bCreative extends Module implements Listener {
 	 * A hashmap of the last item a player tried to pickup
 	 */
 	private HashMap<Player, Item> playersLastPickupItem = null;
+	
+	/**
+	 * A list of all players whom are currently processing gamemode events
+	 */
+	private List<String> playerProcessingGameModeEvent = null;
 
+	/**
+	 * The folder that player backups will be saved in
+	 */
+	private File backupFolder = null;
+	
 	/* 
 	 * Called when the module is enabled
 	 */
@@ -66,6 +77,13 @@ public class bCreative extends Module implements Listener {
 	public void onEnable() {
 		register(this);
 		
+		// Create the folder where backups will go
+		backupFolder = new File(this.getDataFolder() + File.separator + "playerBackups");
+		if (!backupFolder.exists()) {
+			backupFolder.mkdirs();
+		}
+		
+		// Load the config
 		FileConfiguration config = getConfig();
 		config.addDefault("worlds", new ArrayList<String>());
 		config.addDefault("interact-blacklist", Arrays.asList("ENDER_CHEST", "CHEST"));
@@ -104,6 +122,7 @@ public class bCreative extends Module implements Listener {
 			log(Level.INFO, " - " + material.name());
 		
 		playersLastPickupItem = new HashMap<Player, Item>();
+		playerProcessingGameModeEvent = new ArrayList<String>();
 	}
 
 	/* 
@@ -114,6 +133,7 @@ public class bCreative extends Module implements Listener {
 		activeWorlds.clear();
 		interactBlacklist.clear();
 		playersLastPickupItem.clear();
+		playerProcessingGameModeEvent.clear();
 	}
 	
 	/* 
@@ -125,9 +145,9 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has the interact permission, let them do what they want
-		if (hasPermission(player, "bcreative.player.interact")) {
-			return;
-		}
+		//if (hasPermission(player, "bcreative.player.interact")) {
+		//	return;
+		//}
 		
 		// We only care about creative players
 		if (player.getGameMode() != GameMode.CREATIVE) {
@@ -164,9 +184,9 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has this permission let them drop items
-		if (hasPermission(player, "bcreative.player.item.drop")) {
-			return;
-		}
+		//if (hasPermission(player, "bcreative.player.item.drop")) {
+		//	return;
+		//}
 		
 		// We only care about creative mode
 		if (player.getGameMode() != GameMode.CREATIVE) {
@@ -192,9 +212,9 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has this permission, let them pick things up
-		if (hasPermission(player, "bcreative.player.item.pickup")) {
-			return;
-		}
+		//if (hasPermission(player, "bcreative.player.item.pickup")) {
+		//	return;
+		//}
 		
 		// We only care about creative mode
 		if (player.getGameMode() != GameMode.CREATIVE) {
@@ -229,39 +249,41 @@ public class bCreative extends Module implements Listener {
 	}
 
 	/* 
-	 * Called when a player teleports
+	 * Called when a players gamemode changes
 	 */
 	@EventHandler
-	public void onPlayerTeleport(PlayerTeleportEvent event) {
+	public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
 		
 		final Player player = event.getPlayer();
 		
-		// If the player has this permission let them teleport how they want
-		if (hasPermission(player, "bcreative.player.teleport")) {
+		// If the player has this permission let them keep their gamemode inventory
+		//if (hasPermission(player, "bcreative.player.keepinventory")) {
+		//	return;
+		//}
+		
+		// We are already processing a player gamemode event for this player
+		if (playerProcessingGameModeEvent.contains(player.getName())) {
 			return;
 		}
 		
-		// If they arn't changing world, let them teleport as normal
-		if (event.getTo().getWorld() == event.getFrom().getWorld()) {
-			return;
-		}
+		playerProcessingGameModeEvent.add(player.getName());
 		
-		FundamentalPlayer fundamentalPlayer = bFundamentals.Players.getPlayer(player);
-
-		// Teleporting to creative world
-		if (activeWorlds.contains(event.getTo().getWorld().getName())) {
-			// Order is everything
-			fundamentalPlayer.backupInventory(activeWorlds.contains(event.getFrom().getWorld()) ? event.getFrom().getWorld() : Bukkit.getWorlds().get(0), true);
-			fundamentalPlayer.restoreInventory(event.getTo().getWorld());
-			sendMessage(getName(), event.getPlayer(), "You're inventory has been backed up whilst you are in the creative world");
-		}
-
-		// Teleporting from creative world
-		if (activeWorlds.contains(event.getFrom().getWorld().getName())) {	
-			// Order is everything		
-			fundamentalPlayer.backupInventory(event.getFrom().getWorld(), true);			
-			fundamentalPlayer.restoreInventory(activeWorlds.contains(event.getTo().getWorld()) ? event.getTo().getWorld() : Bukkit.getWorlds().get(0));
-			sendMessage(getName(), event.getPlayer(), "You're inventory has been restored now you have left the creative world");
-		}
+		final String oldGameMode = player.getGameMode().name();
+		final String newGameMode = event.getNewGameMode().name();
+		
+		final File backupFolder = new File(this.backupFolder + File.separator + oldGameMode);
+		final File restoreFolder = new File(this.backupFolder + File.separator + newGameMode);
+		
+		final FundamentalPlayer fundamentalPlayer = bFundamentals.Players.getPlayer(player);
+		fundamentalPlayer.backupInventory(backupFolder, true);
+		
+		try {
+			fundamentalPlayer.restoreInventory(restoreFolder);
+		} catch (FileNotFoundException ex) {}
+		
+		sendMessage(getName(), player, "Your " + oldGameMode.toLowerCase() + " inventory has been backed up.");
+		sendMessage(getName(), player, "When you go back into " + oldGameMode.toLowerCase() + " mode your inventory will be restored.");
+		
+		playerProcessingGameModeEvent.remove(player.getName());		
 	}
 }
