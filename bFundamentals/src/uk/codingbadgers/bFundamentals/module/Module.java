@@ -22,6 +22,7 @@ import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,6 +36,9 @@ import uk.codingbadgers.bFundamentals.commands.ModuleCommandHandler;
 import uk.codingbadgers.bFundamentals.config.ConfigFactory;
 import uk.codingbadgers.bFundamentals.config.ConfigFile;
 import uk.codingbadgers.bFundamentals.config.annotation.Element;
+import uk.codingbadgers.bFundamentals.module.annotation.ModuleInfo;
+import uk.codingbadgers.bFundamentals.module.events.ModuleDisableEvent;
+import uk.codingbadgers.bFundamentals.module.events.ModuleEnableEvent;
 import uk.codingbadgers.bFundamentals.module.loader.ModuleLoader;
 import uk.codingbadgers.bFundamentals.update.UpdateThread;
 import uk.codingbadgers.bFundamentals.update.Updater;
@@ -42,7 +46,8 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
  * The base Module class any module should extend this, it also provides helper
- * methods for the module.
+ * methods for the module, modules should be annotated with {@link ModuleInfo}
+ * to save the information of the module.
  */
 public abstract class Module implements Listener {
 
@@ -68,22 +73,21 @@ public abstract class Module implements Listener {
 	 * Instantiates a new module with default settings.
 	 */
 	public Module() {
-		super();
 		m_plugin = bFundamentals.getInstance();
 		m_database = bFundamentals.getBukkitDatabase();
 		m_debug = bFundamentals.getConfigurationManager().isDebugEnabled();
 	}
 
-	public void init() {
+	public final void init() {
 		m_log = new ModuleLogger(this);
 	}
 
-	protected void setUpdater(Updater updater) {
+	protected final void setUpdater(Updater updater) {
 		m_updater = new UpdateThread(updater);
 		log(Level.INFO, "Set new updater to " + m_updater.getUpdater().getUpdater());
 	}
 
-	public void update() {
+	public final void update() {
 		if (m_updater == null) {
 			log(Level.INFO, "Updater is null, cannot check for updates");
 			return;
@@ -193,6 +197,31 @@ public abstract class Module implements Listener {
 	}
 
 	/**
+	 * Gets the language value for the current loaded language, case
+	 * insensitive, all keys are forced to be in lower case.
+	 * 
+	 * @param key
+	 *            the language key
+	 * @return the language value, if available, the key with hyphens removed
+	 *         and in lower case otherwise
+	 */
+	public String getLanguageValue(String key) {
+		Validate.notNull(key, "Language key cannot be null");
+
+		if (!loadedLanguageFile) {
+			log(Level.SEVERE, "Cannot get language value before loading language file");
+		}
+
+		String value = m_languageMap.get(key.toLowerCase());
+
+		if (value == null) {
+			value = key.toLowerCase().replace("-", " ");
+		}
+
+		return value;
+	}
+
+	/**
 	 * Log a message console via this modules logger.
 	 * 
 	 * @param level
@@ -220,6 +249,10 @@ public abstract class Module implements Listener {
 	 *            the bukkit event listener
 	 */
 	public final void register(Listener listener) {
+		if (m_listeners.contains(listener)) {
+			return;
+		}
+		
 		m_plugin.getServer().getPluginManager().registerEvents(listener, m_plugin);
 		m_listeners.add(listener);
 	}
@@ -229,7 +262,7 @@ public abstract class Module implements Listener {
 	 * 
 	 * @return the vault permissions instance
 	 */
-	public Permission getPermissions() {
+	public final Permission getPermissions() {
 		return bFundamentals.getPermissions();
 	}
 
@@ -238,14 +271,14 @@ public abstract class Module implements Listener {
 	 * {@link #setEnabled(boolean)} this is used to register commands, events
 	 * and any other things that should be registered on enabling the module.
 	 */
-	public abstract void onEnable();
+	public void onEnable() {}
 
 	/**
 	 * The disable method for this module, called on disabling the module via
 	 * {@link #setEnabled(boolean)} this is used to clean up after the module when
 	 * it is disabled.
 	 */
-	public abstract void onDisable();
+	public void onDisable() {}
 
 	/**
 	 * The load method for this module, called on loading the module via the
@@ -262,19 +295,25 @@ public abstract class Module implements Listener {
 	 * 
 	 * @param enabled if you want to enable or disable the module
 	 */
-	public void setEnabled(boolean enabled) {
+	public final void setEnabled(boolean enabled) {
 		if (enabled) {
 			if (m_enabled) {
 				return;
 			}
-			
+
+			ModuleEnableEvent event = new ModuleEnableEvent(bFundamentals.getInstance(), this);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+
 			onEnable();
 			m_enabled = true;
 		} else {
 			if (!m_enabled) {
 				return;
 			}
-			
+
+			ModuleDisableEvent event = new ModuleDisableEvent(bFundamentals.getInstance(), this);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+
 			onDisable();
 			ModuleCommandHandler.deregisterCommand(this);
 			m_enabled = false;
@@ -286,7 +325,7 @@ public abstract class Module implements Listener {
 	 * 
 	 * @return if the module is enabled
 	 */
-	public boolean isEnabled() {
+	public final boolean isEnabled() {
 		return m_enabled;
 	}
 
@@ -313,10 +352,237 @@ public abstract class Module implements Listener {
 	 * 
 	 * @return the module version
 	 */
-	public String getVersion() {
+	public final String getVersion() {
 		return getDesciption().getVersion();
 	}
 
+	/**
+	 * Register a command to this module.
+	 * 
+	 * @param command
+	 *            the command
+	 */
+	protected void registerCommand(ModuleCommand command) {
+		ModuleCommandHandler.registerCommand(this, command);
+	}
+
+	/**
+	 * Get all commands registered to this module
+	 * 
+	 * @return the commands
+	 * @Deprecated {@link ModuleCommandHandler#getCommands(Module)}
+	 */
+	public List<ModuleCommand> getCommands() {
+		return ModuleCommandHandler.getCommands(this);
+	}
+
+	/**
+	 * Get all the listeners registered to this module, for cleaning up on
+	 * disable
+	 * 
+	 * @return a list of all listeners
+	 */
+	public final List<Listener> getListeners() {
+		return m_listeners;
+	}
+
+	/**
+	 * Is debug mode enabled on this module
+	 * 
+	 * @return if debug is enabled
+	 */
+	public final boolean isDebug() {
+		return m_debug;
+	}
+
+	/**
+	 * Set the debug mode for this module
+	 * 
+	 * @param debug
+	 *            whether debug is on or not
+	 */
+	public final void setDebug(boolean debug) {
+		m_debug = debug;
+	}
+
+	/**
+	 * Output a message to console if debug mode is on
+	 * 
+	 * @param message
+	 *            the message to output
+	 */
+	public final void debugConsole(String message) {
+		if (!m_debug)
+			return;
+
+		log(Level.INFO, "[Debug] " + message);
+	}
+
+	/**
+	 * Registers a config class as a config and loads it, class must extend
+	 * {@link ConfigFile} and each element that is going to be included in the
+	 * file should be {@code static} and have a {@link Element}
+	 * annotation associated with it.
+	 * 
+	 * @param clazz
+	 *            the config class
+	 */
+	public final void registerConfig(Class<? extends ConfigFile> clazz) {
+		if (m_configFiles == null) {
+			m_configFiles = new ArrayList<Class<? extends ConfigFile>>();
+		}
+
+		log(Level.INFO, "Load config file for " + clazz.getName());
+
+		try {
+			ConfigFactory.load(clazz, getDataFolder());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		m_configFiles.add(clazz);
+	}
+	
+	/**
+	 * Set the datafolder.
+	 *
+	 * @param dataFolder the data folder
+	 * @return the file
+	 */
+	public final void setDatafolder(File dataFolder) {
+		dataFolder.mkdirs();
+		this.m_dataFolder = dataFolder;
+	}
+
+	/**
+	 * Set the file for this loadable.
+	 *
+	 * @param file the file
+	 * @return the file
+	 */
+	public final void setFile(File file) {
+		this.m_file = file;
+	}
+
+	/**
+	 * Set the jar file.
+	 *
+	 * @param jar the jar
+	 * @return the jar file
+	 */
+	public final void setJarFile(JarFile jar) {
+		this.m_jar = jar;
+	}
+
+	/**
+	 * Set the {@link ModuleDescription} for this module.
+	 *
+	 * @param ldf the loadable description file
+	 * @return the loadable description file
+	 */
+	public final void setDesciption(ModuleDescription ldf) {
+		this.m_description = ldf;
+	}
+
+	/**
+	 * Gets the config.
+	 *
+	 * @return The config
+	 */
+	public final FileConfiguration getConfig() {
+		if (m_config == null) {
+			reloadConfig();
+		}
+
+		return m_config;
+	}
+
+	/**
+	 * Gets the data folder of this.
+	 *
+	 * @return The directory of this
+	 */
+	public final File getDataFolder() {
+		return m_dataFolder;
+	}
+
+	/**
+	 * Gets the file of the loadable.
+	 *
+	 * @return the jar file as a {@link File}
+	 */
+	public final File getFile() {
+		return m_file;
+	}
+
+	/**
+	 * Gets the name of the Loadable.
+	 *
+	 * @return The name
+	 */
+	public final String getName() {
+		return getDesciption().getName();
+	}
+
+	/**
+	 * Gets an embedded resource in this plugin.
+	 *
+	 * @param name File name of the resource
+	 * @return InputStream of the file if found, otherwise null
+	 */
+	public final InputStream getResource(String name) {
+		ZipEntry entry = m_jar.getEntry(name);
+
+		if (entry == null)
+			return null;
+
+		try {
+			return m_jar.getInputStream(entry);
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Reloads the config.
+	 */
+	public final void reloadConfig() {
+		if (m_configFile == null) {
+			m_configFile = new File(getDataFolder(), "config.yml");
+		}
+
+		m_config = YamlConfiguration.loadConfiguration(m_configFile);
+
+		InputStream defConfigStream = getResource("config.yml");
+
+		if (defConfigStream != null) {
+			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+			m_config.setDefaults(defConfig);
+		}
+	}
+
+	/**
+	 * Saves the config.
+	 */
+	public final void saveConfig() {
+		if (m_config == null || m_configFile == null) {
+			return;
+		}
+
+		try {
+			m_config.save(m_configFile);
+		} catch (IOException e) {
+		}
+	}
+
+	/**
+	 * Gets the desciption.
+	 *
+	 * @return the desciption
+	 */
+	public final ModuleDescription getDesciption() {
+		return this.m_description;
+	}
+	
 	/**
 	 * Checks if a player has a specific permission.
 	 * 
@@ -348,7 +614,7 @@ public abstract class Module implements Listener {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Send message to a player formated in the default style.
 	 * 
@@ -363,255 +629,4 @@ public abstract class Module implements Listener {
 		player.sendMessage(ChatColor.DARK_PURPLE + "[" + name + "] " + ChatColor.RESET + message);
 	}
 
-	/**
-	 * Register a command to this module.
-	 * 
-	 * @param command
-	 *            the command
-	 */
-	protected void registerCommand(ModuleCommand command) {
-		ModuleCommandHandler.registerCommand(this, command);
-	}
-
-	/**
-	 * Get all commands registered to this module
-	 * 
-	 * @return the commands
-	 * @Deprecated {@link ModuleCommandHandler#getCommands(Module)}
-	 */
-	public List<ModuleCommand> getCommands() {
-		return ModuleCommandHandler.getCommands(this);
-	}
-
-	/**
-	 * Gets the language value for the current loaded language, case
-	 * insensitive, all keys are forced to be in lower case.
-	 * 
-	 * @param key
-	 *            the language key
-	 * @return the language value, if available, the key with hyphens removed
-	 *         and in lower case otherwise
-	 */
-	public String getLanguageValue(String key) {
-		Validate.notNull(key, "Language key cannot be null");
-
-		if (!loadedLanguageFile) {
-			log(Level.SEVERE, "Cannot get language value before loading language file");
-		}
-
-		String value = m_languageMap.get(key.toLowerCase());
-
-		if (value == null) {
-			value = key.toLowerCase().replace("-", " ");
-		}
-
-		return value;
-	}
-
-	/**
-	 * Get all the listeners registered to this module, for cleaning up on
-	 * disable
-	 * 
-	 * @return a list of all listeners
-	 */
-	public List<Listener> getListeners() {
-		return m_listeners;
-	}
-
-	/**
-	 * Is debug mode enabled on this module
-	 * 
-	 * @return if debug is enabled
-	 */
-	public boolean isDebug() {
-		return m_debug;
-	}
-
-	/**
-	 * Set the debug mode for this module
-	 * 
-	 * @param debug
-	 *            whether debug is on or not
-	 */
-	public void setDebug(boolean debug) {
-		m_debug = debug;
-	}
-
-	/**
-	 * Output a message to console if debug mode is on
-	 * 
-	 * @param message
-	 *            the message to output
-	 */
-	public void debugConsole(String message) {
-		if (!m_debug)
-			return;
-
-		log(Level.INFO, "[Debug] " + message);
-	}
-
-	/**
-	 * Registers a config class as a config and loads it, class must extend
-	 * {@link ConfigFile} and each element that is going to be included in the
-	 * file should be {@code static} and have a {@link Element}
-	 * annotation associated with it.
-	 * 
-	 * @param clazz
-	 *            the config class
-	 */
-	public void registerConfig(Class<? extends ConfigFile> clazz) {
-		if (m_configFiles == null) {
-			m_configFiles = new ArrayList<Class<? extends ConfigFile>>();
-		}
-
-		log(Level.INFO, "Load config file for " + clazz.getName());
-
-		try {
-			ConfigFactory.load(clazz, getDataFolder());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		m_configFiles.add(clazz);
-	}
-	
-	/**
-	 * Set the datafolder.
-	 *
-	 * @param dataFolder the data folder
-	 * @return the file
-	 */
-	public void setDatafolder(File dataFolder) {
-		dataFolder.mkdirs();
-		this.m_dataFolder = dataFolder;
-	}
-
-	/**
-	 * Set the file for this loadable.
-	 *
-	 * @param file the file
-	 * @return the file
-	 */
-	public void setFile(File file) {
-		this.m_file = file;
-	}
-
-	/**
-	 * Set the jar file.
-	 *
-	 * @param jar the jar
-	 * @return the jar file
-	 */
-	public void setJarFile(JarFile jar) {
-		this.m_jar = jar;
-	}
-
-	/**
-	 * Set the {@link ModuleDescription} for this module.
-	 *
-	 * @param ldf the loadable description file
-	 * @return the loadable description file
-	 */
-	public void setDesciption(ModuleDescription ldf) {
-		this.m_description = ldf;
-	}
-
-	/**
-	 * Gets the config.
-	 *
-	 * @return The config
-	 */
-	public FileConfiguration getConfig() {
-		if (m_config == null) {
-			reloadConfig();
-		}
-
-		return m_config;
-	}
-
-	/**
-	 * Gets the data folder of this.
-	 *
-	 * @return The directory of this
-	 */
-	public File getDataFolder() {
-		return m_dataFolder;
-	}
-
-	/**
-	 * Gets the file of the loadable.
-	 *
-	 * @return the jar file as a {@link File}
-	 */
-	public File getFile() {
-		return m_file;
-	}
-
-	/**
-	 * Gets the name of the Loadable.
-	 *
-	 * @return The name
-	 */
-	public final String getName() {
-		return getDesciption().getName();
-	}
-
-	/**
-	 * Gets an embedded resource in this plugin.
-	 *
-	 * @param name File name of the resource
-	 * @return InputStream of the file if found, otherwise null
-	 */
-	public InputStream getResource(String name) {
-		ZipEntry entry = m_jar.getEntry(name);
-
-		if (entry == null)
-			return null;
-
-		try {
-			return m_jar.getInputStream(entry);
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
-	/**
-	 * Reloads the config.
-	 */
-	public void reloadConfig() {
-		if (m_configFile == null) {
-			m_configFile = new File(getDataFolder(), "config.yml");
-		}
-
-		m_config = YamlConfiguration.loadConfiguration(m_configFile);
-
-		InputStream defConfigStream = getResource("config.yml");
-
-		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-			m_config.setDefaults(defConfig);
-		}
-	}
-
-	/**
-	 * Saves the config.
-	 */
-	public void saveConfig() {
-		if (m_config == null || m_configFile == null) {
-			return;
-		}
-
-		try {
-			m_config.save(m_configFile);
-		} catch (IOException e) {
-		}
-	}
-
-	/**
-	 * Gets the desciption.
-	 *
-	 * @return the desciption
-	 */
-	public ModuleDescription getDesciption() {
-		return this.m_description;
-	}
 }

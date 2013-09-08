@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,14 +31,15 @@ import uk.codingbadgers.bFundamentals.module.ModuleClassLoader;
 import uk.codingbadgers.bFundamentals.module.ModuleDescription;
 import uk.codingbadgers.bFundamentals.module.ModuleHelpTopic;
 import uk.codingbadgers.bFundamentals.module.annotation.ModuleInfo;
+import uk.codingbadgers.bFundamentals.module.events.ModuleLoadEvent;
 
 /**
  * The ModuleLoader.
  */
 public class ModuleLoader {
 
-	private Map<String, ModuleClassLoader> loaders;
-	private Map<String, Class<?>> classes;
+	private Map<String, ModuleClassLoader> loaders = new HashMap<String, ModuleClassLoader>();
+	private Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 	private List<Module> m_modules;
 
 	/**
@@ -92,7 +94,7 @@ public class ModuleLoader {
 			ModuleClassLoader loader = new ModuleClassLoader(this, urls, getClass().getClassLoader());
 
 			JarFile jarFile = new JarFile(file);
-			ModuleDescription ldf = null;
+			ModuleDescription moduledescription = null;
 			Set<Class<? extends Module>> modules = new HashSet<Class<? extends Module>>();
 
 			modules.addAll(ClassFinder.findModules(loader, urls));
@@ -100,7 +102,7 @@ public class ModuleLoader {
 			// Old system, left for backwards compatibility
 			if (jarFile.getEntry("path.yml") != null) {
 				JarEntry element = jarFile.getJarEntry("path.yml");
-				ldf = new ModuleDescription(jarFile.getInputStream(element));
+				moduledescription = new ModuleDescription(jarFile.getInputStream(element));
 			}
 
 			if (modules.size() == 0) {
@@ -108,19 +110,20 @@ public class ModuleLoader {
 				throw new ClassNotFoundException("Could not find a main class in jar " + file.getName() + ".");
 			}
 
-			if (bFundamentals.getConfigurationManager().isDebugEnabled())
+			if (bFundamentals.getConfigurationManager().isDebugEnabled()) {
 				getLogger().log(Level.INFO, "Loading " + modules.size() + " modules for jar " + file.getName());
-
+			}
+			
 			for (Class<? extends Module> clazz : modules) {
 
 				if (bFundamentals.getConfigurationManager().isDebugEnabled())
 					getLogger().log(Level.INFO, "Loading module " + clazz.getName());
 				
-				ModuleDescription description = ldf;
+				ModuleDescription description = moduledescription;
 				
 				if (clazz.isAnnotationPresent(ModuleInfo.class)) {
 					ModuleInfo info = clazz.getAnnotation(ModuleInfo.class);
-					description = new ModuleDescription(info.value(), info.version(), clazz.getName(), info.description(), info.authors());
+					description = new ModuleDescription(info, clazz.getName());
 				}
 				
 				if (description == null) {
@@ -160,6 +163,7 @@ public class ModuleLoader {
 		} catch (Exception e) {
 			ExceptionHandler.handleException(e);
 			getLogger().log(Level.WARNING, "Unknown cause.");
+			getLogger().log(Level.WARNING, e.getMessage());
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 		}
 
