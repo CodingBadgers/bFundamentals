@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Item;
@@ -57,7 +58,7 @@ public class bCreative extends Module implements Listener {
 	/**
 	 * A hashmap of the last item a player tried to pickup
 	 */
-	private HashMap<Player, Item> playersLastPickupItem = null;
+	private HashMap<Player, Location> playersLastPickupItem = null;
 	
 	/**
 	 * A list of all players whom are currently processing gamemode events
@@ -121,7 +122,7 @@ public class bCreative extends Module implements Listener {
 		for (Material material : interactBlacklist)
 			log(Level.INFO, " - " + material.name());
 		
-		playersLastPickupItem = new HashMap<Player, Item>();
+		playersLastPickupItem = new HashMap<Player, Location>();
 		playerProcessingGameModeEvent = new ArrayList<String>();
 	}
 
@@ -145,9 +146,9 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has the interact permission, let them do what they want
-		//if (hasPermission(player, "bcreative.player.interact")) {
-		//	return;
-		//}
+		if (hasPermission(player, "bcreative.player.interact")) {
+			return;
+		}
 		
 		// We only care about creative players
 		if (player.getGameMode() != GameMode.CREATIVE) {
@@ -184,9 +185,9 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has this permission let them drop items
-		//if (hasPermission(player, "bcreative.player.item.drop")) {
-		//	return;
-		//}
+		if (hasPermission(player, "bcreative.player.item.drop")) {
+			return;
+		}
 		
 		// We only care about creative mode
 		if (player.getGameMode() != GameMode.CREATIVE) {
@@ -212,9 +213,9 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has this permission, let them pick things up
-		//if (hasPermission(player, "bcreative.player.item.pickup")) {
-		//	return;
-		//}
+		if (hasPermission(player, "bcreative.player.item.pickup")) {
+			return;
+		}
 		
 		// We only care about creative mode
 		if (player.getGameMode() != GameMode.CREATIVE) {
@@ -231,21 +232,20 @@ public class bCreative extends Module implements Listener {
 		
 		// Get the item and the last item the player tried to pickup
 		final Item item = event.getItem();
-		final Item lastKnown = playersLastPickupItem.get(player);
-				
-		// If the player is trying to pickup a new item tell them they can't
-		if (item != lastKnown) {
+		final Location lastKnown = playersLastPickupItem.get(player);
+		
+		if (lastKnown == null || lastKnown.distanceSquared(item.getLocation()) > 25) {
+			sendMessage(getName(), player, "You cannot pickup items whilst in creative mode.");
+			sendMessage(getName(), player, "Item removed from world.");
 			
-			// If we have a last known, remove it
 			if (lastKnown != null) {
 				playersLastPickupItem.remove(player);
 			}
-			
-			// Update the last known item for this player
-			playersLastPickupItem.put(player, item);
-			
-			sendMessage(getName(), player, "You cannot pickup items whilst in creative mode.");
+			playersLastPickupItem.put(player, item.getLocation());
 		}
+		
+		item.remove();
+		
 	}
 
 	/* 
@@ -257,9 +257,9 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has this permission let them keep their gamemode inventory
-		//if (hasPermission(player, "bcreative.player.keepinventory")) {
-		//	return;
-		//}
+		if (hasPermission(player, "bcreative.player.keepinventory")) {
+			return;
+		}
 		
 		// We are already processing a player gamemode event for this player
 		if (playerProcessingGameModeEvent.contains(player.getName())) {
@@ -283,6 +283,10 @@ public class bCreative extends Module implements Listener {
 		
 		sendMessage(getName(), player, "Your " + oldGameMode.toLowerCase() + " inventory has been backed up.");
 		sendMessage(getName(), player, "When you go back into " + oldGameMode.toLowerCase() + " mode your inventory will be restored.");
+		
+		if (playersLastPickupItem.containsKey(player)) {
+			playersLastPickupItem.remove(player);
+		}
 		
 		playerProcessingGameModeEvent.remove(player.getName());		
 	}
