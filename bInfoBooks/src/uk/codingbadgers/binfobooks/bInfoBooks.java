@@ -132,11 +132,14 @@ public class bInfoBooks extends Module implements Listener {
 		}
 		
 		final BookMeta bookmeta = (BookMeta)item.getItemMeta();
-		if (!bookmeta.getDisplayName().equalsIgnoreCase("InfoBook")) {
-			return false;
+		final String bookName = bookmeta.getDisplayName();
+		for (InfoBook book : m_books.values()) {
+			if (bookName.equalsIgnoreCase(book.getName())) {
+				return true;
+			}
 		}
 		
-		return true;
+		return false;
 		
 	}
 	
@@ -249,11 +252,7 @@ public class bInfoBooks extends Module implements Listener {
 				
 				if (item.getType() == Material.WRITTEN_BOOK) {
 					final BookMeta bookmeta = (BookMeta)item.getItemMeta();
-					
-					if (!bookmeta.getDisplayName().equalsIgnoreCase("InfoBook")) {
-						continue;
-					}
-					
+
 					if (!infobook.getAuthor().equalsIgnoreCase(bookmeta.getAuthor())) {
 						continue;
 					}
