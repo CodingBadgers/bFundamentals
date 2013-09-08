@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.GameMode;
@@ -33,10 +34,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import uk.codingbadgers.bFundamentals.bFundamentals;
 
 @SuppressWarnings("unchecked")
 public class PlayerBackup {
@@ -74,6 +78,11 @@ public class PlayerBackup {
 	 * @param player the player to query
 	 */
 	private void setPlayerArmour(Player player, ItemStack[] armour) {
+		
+		if (armour.length != 4) {
+			bFundamentals.log(Level.SEVERE, player.getName() + "s armour player backup does not have 4 elements! It only has " + armour.length);
+			return;
+		}
 		
 		final PlayerInventory invent = player.getInventory();
 		
@@ -161,7 +170,7 @@ public class PlayerBackup {
 		obj.put("inventory", ItemStackArrayToJSONArray(invContents));
 		obj.put("armour", ItemStackArrayToJSONArray(armourContents));
 		obj.put("gamemode", gamemode);
-		
+
 		FileWriter stream = null;
 		BufferedWriter writer = null;
 		
@@ -198,6 +207,7 @@ public class PlayerBackup {
 			armourContents = JSONArrayToItemStackArray((JSONArray) object.get("armour"));
 			xp = Integer.valueOf((String) object.get("level"));
 			gamemode = (String) object.get("gamemode");
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} finally {
@@ -206,13 +216,14 @@ public class PlayerBackup {
 			}
 		}
 	}
-	
+
 	/**
 	 * Convert an itemstack array into a json array
 	 *
 	 * @param items The itemstack array to convert
 	 * @return A Json array of the given itemstack array
 	 */
+	@SuppressWarnings("deprecation")
 	private JSONArray ItemStackArrayToJSONArray(ItemStack[] items) {
 
 		JSONArray inv = new JSONArray();
@@ -221,11 +232,13 @@ public class PlayerBackup {
 			JSONObject item = new JSONObject();
 			
 			if (stack == null) {
-				continue;
+				stack = new ItemStack(Material.AIR, 1);
 			}
 			
-			item.put("id", stack.getType().name());
+			item.put("type", stack.getType().name());
 			item.put("amount", String.valueOf(stack.getAmount()));
+			item.put("durability", String.valueOf(stack.getDurability()));
+			item.put("data", String.valueOf(stack.getData().getData()));
 			
 			JSONArray enchants = new JSONArray();
 			for (Map.Entry<Enchantment, Integer> entry : stack.getEnchantments().entrySet()) {
@@ -234,10 +247,30 @@ public class PlayerBackup {
 				enchantment.put("level", String.valueOf(entry.getValue()));
 				enchants.add(enchantment);
 			}
-			item.put("enchant", enchants);
+			item.put("enchantment", enchants);
 			
-			if (stack.getItemMeta().hasDisplayName()) {
-				item.put("name", stack.getItemMeta().getDisplayName());
+			ItemMeta itemMeta = stack.getItemMeta();
+			if (itemMeta != null) {
+				
+				if (itemMeta.hasDisplayName() || itemMeta.getLore() != null) {
+					
+					JSONObject metadata = new JSONObject();
+	
+					if (itemMeta.hasDisplayName()) {
+						metadata.put("displayname", itemMeta.getDisplayName());
+					}
+					
+					List<String> lores = itemMeta.getLore();
+					if (lores != null) {
+						JSONArray itemLore = new JSONArray();
+						for (String loreString : lores) {
+							itemLore.add(loreString);
+						}
+						metadata.put("lores", itemLore);
+					}
+					
+					item.put("metadata", metadata);
+				}
 			}
 			
 			inv.add(item);
@@ -252,41 +285,74 @@ public class PlayerBackup {
 	 * @param array The json array to convert
 	 * @return An itemstack array of the given json array
 	 */
+	@SuppressWarnings("deprecation")
 	private ItemStack[] JSONArrayToItemStackArray(JSONArray array) {
 		
 		List<ItemStack> items = new ArrayList<ItemStack>(array.size());
 		
-		for (Object stack : array) {
+		for (Object itemObject : array) {
 			
-			if (!(stack instanceof JSONArray)) {
+			if (!(itemObject instanceof JSONObject)) {
 				continue;
 			}
 			
-			JSONObject obj = (JSONObject) stack;
+			JSONObject jsonItem = (JSONObject) itemObject;
 			
-			ItemStack item = new ItemStack(Material.valueOf((String) obj.get("id")));
-			item.setAmount(Integer.valueOf((String) obj.get("amount")));
+			// Parse item
+			ItemStack item = new ItemStack(Material.valueOf((String) jsonItem.get("type")));
+			item.setAmount(Integer.valueOf((String) jsonItem.get("amount")));
+			item.setDurability(Short.valueOf((String) jsonItem.get("durability")));
+			item.getData().setData(Byte.valueOf((String) jsonItem.get("data")));
 			
-			for (Object enchObj : (JSONArray) obj.get("enchant")) {
+			// Parse enchantments
+			JSONArray enchantments = (JSONArray)jsonItem.get("enchantment");
+			for (Object enchantmentObject : enchantments ) {
 
-				if (!(enchObj instanceof JSONArray)) {
+				if (!(enchantmentObject instanceof JSONObject)) {
 					continue;
 				}
 				
-				JSONObject ench = (JSONObject) enchObj;
-				
-				Enchantment enchantment = Enchantment.getByName((String) ench.get("id"));
-				item.addEnchantment(enchantment, Integer.valueOf((String) ench.get("level")));
+				JSONObject jsonEnchantment = (JSONObject) enchantmentObject;
+				Enchantment enchantment = Enchantment.getByName((String) jsonEnchantment.get("id"));
+				int enchantmentLevel = Integer.valueOf((String) jsonEnchantment.get("level"));
+				item.addEnchantment(enchantment, enchantmentLevel);
 			}
 			
-			if (obj.containsKey("name")) {
-				item.getItemMeta().setDisplayName((String) obj.get("name"));
+			// Parse metadata
+			if (jsonItem.containsKey("metadata")) {
+				
+				JSONObject metaData = (JSONObject) jsonItem.get("metadata");
+				
+				ItemMeta itemMeta = item.getItemMeta();
+				
+				if (metaData.containsKey("displayname")) {
+					itemMeta.setDisplayName((String) metaData.get("displayname"));
+				}
+				
+				if (metaData.containsKey("lores")) {
+					List<String> lores = new ArrayList<String>();
+					JSONArray jsonLores = (JSONArray) metaData.get("lores");
+					for (Object loreObject : jsonLores) {
+						String lore = (String) loreObject;
+						lores.add(lore);						
+					}
+					itemMeta.setLore(lores);
+				}
+				
+				item.setItemMeta(itemMeta);
 			}
 			
 			items.add(item);
 		}
 		
-		return items.toArray(new ItemStack[0]);
+		int itemIndex = 0;
+		ItemStack[] itemArray = new ItemStack[items.size()];
+		for (ItemStack item : items) {
+			itemArray[itemIndex] = item;
+			itemIndex++;
+		}
+		
+		return itemArray;
 	}
 	
 	/**
