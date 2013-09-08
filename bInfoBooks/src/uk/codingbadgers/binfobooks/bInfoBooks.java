@@ -1,3 +1,20 @@
+/**
+ * bInfoBooks 1.2-SNAPSHOT
+ * Copyright (C) 2013  CodingBadgers <plugins@mcbadgercraft.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package uk.codingbadgers.binfobooks;
 
 import java.io.BufferedReader;
@@ -115,11 +132,14 @@ public class bInfoBooks extends Module implements Listener {
 		}
 		
 		final BookMeta bookmeta = (BookMeta)item.getItemMeta();
-		if (!bookmeta.getDisplayName().equalsIgnoreCase("InfoBook")) {
-			return false;
+		final String bookName = bookmeta.getDisplayName();
+		for (InfoBook book : m_books.values()) {
+			if (bookName.equalsIgnoreCase(book.getName())) {
+				return true;
+			}
 		}
 		
-		return true;
+		return false;
 		
 	}
 	
@@ -232,11 +252,7 @@ public class bInfoBooks extends Module implements Listener {
 				
 				if (item.getType() == Material.WRITTEN_BOOK) {
 					final BookMeta bookmeta = (BookMeta)item.getItemMeta();
-					
-					if (!bookmeta.getDisplayName().equalsIgnoreCase("InfoBook")) {
-						continue;
-					}
-					
+
 					if (!infobook.getAuthor().equalsIgnoreCase(bookmeta.getAuthor())) {
 						continue;
 					}
@@ -264,7 +280,7 @@ public class bInfoBooks extends Module implements Listener {
 		bookmeta.setTitle(infobook.getName());
 		bookmeta.setLore(infobook.getTagLines());
 		bookmeta.setPages(infobook.getPages(player));		
-		bookmeta.setDisplayName("InfoBook");
+		bookmeta.setDisplayName(infobook.getName());
 		
 		book.setItemMeta(bookmeta);
 		player.getInventory().addItem(book);
