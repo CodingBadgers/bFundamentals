@@ -19,7 +19,7 @@ package uk.thecodingbadgers.bFundamentals.crash;
 
 import org.junit.Test;
 
-import uk.codingbadgers.bFundamentals.error.ExceptionHandler;
+import uk.codingbadgers.bFundamentals.error.ReportExceptionRunnable;
 import uk.thecodingbadgers.bFundamentals.TestContainer;
 import static org.junit.Assert.*;
 
@@ -28,7 +28,8 @@ public class CrashReportingTest extends TestContainer {
 	@Test
 	public void sendException() {
 		try {
-			ExceptionHandler.handleException(new Exception("Test exception"));
+			ReportExceptionRunnable run = new ReportExceptionRunnable(new Exception("Test Exception"));
+			assertTrue(run.run());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail(ex.getMessage());
