@@ -36,7 +36,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -161,11 +160,17 @@ public class bRanks extends Module implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
 		final Player player = event.getPlayer();
+		
+		final String playerName = player.getPlayerListName();
+		if (playerName.length() >= 12) {
+			player.setPlayerListName(playerName.substring(0, 11));
+		}
+		
 		final String rank = this.getPermissions().getPrimaryGroup(player);
 		Team team = m_rankScorboards.get(rank);
 		if (team != null)
 		{
-			team.addPlayer(player);
+			team.addPlayer(Bukkit.getOfflinePlayer(player.getPlayerListName()));
 		}
 	}
 	
