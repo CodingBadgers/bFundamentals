@@ -30,6 +30,7 @@
         <module>bQuiet</module>
         <module>bRanks</module> 
         <module>bPortals</module> 
+        <module>bSocks</module>
     </modules>
     
     <organization>
