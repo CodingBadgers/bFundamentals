@@ -86,4 +86,11 @@ public interface ConfigManager {
 	 */
 	public abstract String getCrashPassword();
 
+	/**
+	 * Gets the current module directory.
+	 *
+	 * @return the module directory
+	 */
+	public abstract File getModuleDirectory();
+
 }

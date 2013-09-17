@@ -66,6 +66,11 @@ public class TestConfigManager implements ConfigManager {
 	}
 
 	@Override
+	public File getModuleDirectory() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String getCrashPassword() {
 		return "PASSWORD";
 	}

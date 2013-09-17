@@ -18,6 +18,9 @@
 package uk.codingbadgers.bFundamentals.error;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.logging.Level;
+
+import uk.codingbadgers.bFundamentals.bFundamentals;
 
 public class ExceptionHandler implements UncaughtExceptionHandler {
 
@@ -29,7 +32,7 @@ public class ExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	public static boolean handleException(Throwable e) {
-		e.printStackTrace();
+		bFundamentals.getInstance().getLogger().log(Level.WARNING, null, e);
 		ReportExceptionRunnable run = new ReportExceptionRunnable(e);
 		return run.run();
 	}

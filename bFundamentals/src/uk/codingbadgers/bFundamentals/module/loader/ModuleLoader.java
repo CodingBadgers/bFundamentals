@@ -47,7 +47,7 @@ public class ModuleLoader {
 	 */
 	public ModuleLoader() {
 		m_modules = new LinkedList<Module>();
-		if (getModuleDir().mkdir()) {
+		if (bFundamentals.getConfigurationManager().getModuleDirectory().mkdir()) {
 			bFundamentals.log(Level.INFO, "Creating Module Directory...");
 		}
 	}
@@ -56,9 +56,10 @@ public class ModuleLoader {
 	 * Gets the directory of the modules.
 	 * 
 	 * @return the module dir
+	 * @deprecated {@link uk.codingbadgers.bFundamentals.ConfigManager.getModuleDirectory)}
 	 */
 	public File getModuleDir() {
-		return new File(bFundamentals.getInstance().getDataFolder(), "modules");
+		return bFundamentals.getConfigurationManager().getModuleDirectory();
 	}
 
 	/**
@@ -66,7 +67,7 @@ public class ModuleLoader {
 	 */
 	public void load() {
 
-		List<File> files = Arrays.asList(getModuleDir().listFiles(new FileExtensionFilter(".jar")));
+		List<File> files = Arrays.asList(bFundamentals.getConfigurationManager().getModuleDirectory().listFiles(new FileExtensionFilter(".jar")));
 		for (File file : files) {
 			loadModule(file);
 		}
@@ -116,8 +117,9 @@ public class ModuleLoader {
 			
 			for (Class<? extends Module> clazz : modules) {
 
-				if (bFundamentals.getConfigurationManager().isDebugEnabled())
-					getLogger().log(Level.INFO, "Loading module " + clazz.getName());
+				if (bFundamentals.getConfigurationManager().isDebugEnabled()) {
+					getLogger().log(Level.INFO, "Loading clazz " + clazz.getName());
+				}
 				
 				ModuleDescription description = moduledescription;
 				
@@ -142,7 +144,8 @@ public class ModuleLoader {
 				result.setFile(file);
 				result.setDesciption(description);
 				result.setJarFile(jarFile);
-				result.setDatafolder(new File(getModuleDir(), result.getName()));
+				result.setDatafolder(new File(bFundamentals.getConfigurationManager().getModuleDirectory(), result.getName()));
+				result.setClassLoader(loader);
 				result.init();
 
 				ModuleLoadEvent event = new ModuleLoadEvent(bFundamentals.getInstance(), result, jarFile);
@@ -157,7 +160,7 @@ public class ModuleLoader {
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " is in the wrong directory.");
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 		} catch (ClassNotFoundException e) {
-			getLogger().log(Level.WARNING, "Invalid path.yml.");
+			//getLogger().log(Level.WARNING, "Invalid path.yml."); Path.yml's are now deprecated
 			getLogger().log(Level.WARNING, e.getMessage());
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 		} catch (Exception e) {
@@ -181,7 +184,7 @@ public class ModuleLoader {
 	 *            the files name
 	 */
 	public void load(String fileName) {
-		File module = new File(getModuleDir() + File.separator + fileName + ".jar");
+		File module = new File(bFundamentals.getConfigurationManager().getModuleDirectory() + File.separator + fileName + ".jar");
 		load(module);
 	}
 
@@ -225,9 +228,6 @@ public class ModuleLoader {
 	public void unload(Module module) {
 		try {
 			module.setEnabled(false);
-			for (Listener listener : module.getListeners()) {
-				HandlerList.unregisterAll(listener);
-			}
 			m_modules.remove(module);
 		} catch (Exception ex) {
 			ExceptionHandler.handleException(ex);

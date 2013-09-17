@@ -40,6 +40,7 @@ public class BukkitConfigurationManager implements ConfigManager {
 	protected String m_logPrefix = null;
 	protected DatabaseSettings m_databaseSettings = null;
 	protected String m_crashPass;
+	protected File m_moduleDir;
 
 	/* (non-Javadoc)
 	 * @see uk.codingbadgers.bFundamentals.ConfigManager#loadConfiguration(java.io.File)
@@ -48,10 +49,14 @@ public class BukkitConfigurationManager implements ConfigManager {
 	public void loadConfiguration(File configFile) throws IOException {
 		FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 		
+		config.options().header("bFundamentals configuration");
+		
 		config.addDefault("general.language", "UK");
 		config.addDefault("general.debug", false);
         config.addDefault("general.crash.password", "Password");
 		
+        config.addDefault("module.loading.dir", "${plugindir}/modules");
+        
 		config.addDefault("module.update.enabled", false);
 		config.addDefault("module.update.download", false);
 		config.addDefault("module.update.apply", false);
@@ -66,13 +71,16 @@ public class BukkitConfigurationManager implements ConfigManager {
         config.addDefault("database.password", "");
         config.addDefault("database.port", 3306);
         config.addDefault("database.updateRate", 5);
-		
+
+		config.options().copyHeader(true);
 		config.options().copyDefaults(true);
 		config.save(configFile);
 		
 		m_language = config.getString("general.language");
 		m_debug = config.getBoolean("general.debug");
 		m_crashPass = config.getString("general.crash.password", "Password");
+		
+		m_moduleDir = parseDirectory(config.getString("module.loading.dir"));
 		
 		m_autoUpdate = config.getBoolean("module.update.enabled");
 		m_autoDownload = config.getBoolean("module.update.download");
@@ -92,68 +100,55 @@ public class BukkitConfigurationManager implements ConfigManager {
 		
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#getDatabaseSettings()
-	 */
+	private File parseDirectory(String string) {
+		string = string.replace("${plugindir}", bFundamentals.getInstance().getDataFolder().getAbsolutePath());
+		string = string.replace("${basedir}", new File(".").getAbsolutePath());
+		return new File(string);
+	}
+
 	@Override
 	public DatabaseSettings getDatabaseSettings() {
 		return m_databaseSettings;
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#getLanguage()
-	 */
 	@Override
 	public String getLanguage() {
 		return m_language;
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#isDebugEnabled()
-	 */
 	@Override
 	public boolean isDebugEnabled() {
 		return m_debug;
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#isAutoUpdateEnabled()
-	 */
 	@Override
 	public boolean isAutoUpdateEnabled() {
 		return m_autoUpdate;
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#isAutoDownloadEnabled()
-	 */
 	@Override
 	public boolean isAutoDownloadEnabled() {
 		return m_autoDownload;
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#isAutoInstallEnabled()
-	 */
 	@Override
 	public boolean isAutoInstallEnabled() {
 		return m_autoApply;
 	}
 	
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#getLogPrefix()
-	 */
 	@Override
 	public String getLogPrefix() {
 		return m_logPrefix;
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.codingbadgers.bFundamentals.ConfigManager#getCrashPassword()
-	 */
 	@Override
 	public String getCrashPassword() {
 		return m_crashPass;
+	}
+
+	@Override
+	public File getModuleDirectory() {
+		return m_moduleDir;
 	}
 
 }

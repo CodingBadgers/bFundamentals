@@ -26,14 +26,18 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.apache.commons.io.IOUtils;
@@ -45,6 +49,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
@@ -56,6 +61,7 @@ import uk.codingbadgers.bFundamentals.config.annotation.Element;
 import uk.codingbadgers.bFundamentals.module.annotation.ModuleInfo;
 import uk.codingbadgers.bFundamentals.module.events.ModuleDisableEvent;
 import uk.codingbadgers.bFundamentals.module.events.ModuleEnableEvent;
+import uk.codingbadgers.bFundamentals.module.loader.ClassFinder;
 import uk.codingbadgers.bFundamentals.module.loader.ModuleLoader;
 import uk.codingbadgers.bFundamentals.update.UpdateThread;
 import uk.codingbadgers.bFundamentals.update.Updater;
@@ -85,6 +91,7 @@ public abstract class Module implements Listener {
 	private List<Class<? extends ConfigFile>> m_configFiles;
 	private List<Listener> m_listeners = new ArrayList<Listener>();
 	private Map<String, String> m_languageMap = new HashMap<String, String>();
+	private ModuleClassLoader m_loader;
 
 	/**
 	 * Instantiates a new module with default settings.
@@ -284,6 +291,24 @@ public abstract class Module implements Listener {
 	}
 
 	/**
+	 * Gets the vault chat instance.
+	 * 
+	 * @return the vault chat instance
+	 */
+	public final Chat getChat() {
+		return bFundamentals.getChat();
+	}
+
+	/**
+	 * Gets the vault economy instance.
+	 * 
+	 * @return the vault economy instance
+	 */
+	public final Economy getEconomy() {
+		return bFundamentals.getEconomy();
+	}
+	
+	/**
 	 * The enable method for this module, called on enabling the module via 
 	 * {@link #setEnabled(boolean)} this is used to register commands, events
 	 * and any other things that should be registered on enabling the module.
@@ -323,6 +348,22 @@ public abstract class Module implements Listener {
 
 			onEnable();
 			m_enabled = true;
+
+			try {
+				Set<Class<? extends Listener>> listeners = ClassFinder.findListeners(m_loader, new URL[] {m_file.toURI().toURL()});
+				debugConsole("Loading " + listeners.size() + " listeners");
+				
+				for (Class<? extends Listener> clazz : listeners) {
+					try {
+						debugConsole("Loading Listener (" + clazz.getName() + ")");
+						register(clazz.newInstance());
+					} catch (Exception ex) {
+						log(Level.WARNING, clazz.getName() + " does not have atleast one public no argument constructor.");
+					}
+				}
+			} catch (Exception ex) {
+			}
+			
 		} else {
 			if (!m_enabled) {
 				return;
@@ -333,6 +374,9 @@ public abstract class Module implements Listener {
 
 			onDisable();
 			ModuleCommandHandler.deregisterCommand(this);
+			for (Listener listener : getListeners()) {
+				HandlerList.unregisterAll(listener);
+			}
 			m_enabled = false;
 		}
 	}
@@ -362,15 +406,6 @@ public abstract class Module implements Listener {
 	 */
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
 		return false;
-	}
-
-	/**
-	 * Gets the version of this module loaded from the path.yml file.
-	 * 
-	 * @return the module version
-	 */
-	public final String getVersion() {
-		return getDesciption().getVersion();
 	}
 
 	/**
@@ -441,8 +476,7 @@ public abstract class Module implements Listener {
 	 * file should be {@code static} and have a {@link Element}
 	 * annotation associated with it.
 	 * 
-	 * @param clazz
-	 *            the config class
+	 * @param clazz the config class
 	 */
 	public final void registerConfig(Class<? extends ConfigFile> clazz) {
 		if (m_configFiles == null) {
@@ -459,13 +493,17 @@ public abstract class Module implements Listener {
 		m_configFiles.add(clazz);
 	}
 	
+	/* Start Loading specific methods */
+	
 	/**
 	 * Set the datafolder.
 	 *
 	 * @param dataFolder the data folder
-	 * @return the file
 	 */
 	public final void setDatafolder(File dataFolder) {
+		if (m_dataFolder != null) {
+			throw new IllegalStateException("Data folder already set");
+		}
 		dataFolder.mkdirs();
 		this.m_dataFolder = dataFolder;
 	}
@@ -474,9 +512,11 @@ public abstract class Module implements Listener {
 	 * Set the file for this loadable.
 	 *
 	 * @param file the file
-	 * @return the file
 	 */
 	public final void setFile(File file) {
+		if (m_file != null) {
+			throw new IllegalStateException("File already set");
+		}
 		this.m_file = file;
 	}
 
@@ -484,9 +524,11 @@ public abstract class Module implements Listener {
 	 * Set the jar file.
 	 *
 	 * @param jar the jar
-	 * @return the jar file
 	 */
 	public final void setJarFile(JarFile jar) {
+		if (m_jar != null) {
+			throw new IllegalStateException("Jar file already set");
+		}
 		this.m_jar = jar;
 	}
 
@@ -494,11 +536,27 @@ public abstract class Module implements Listener {
 	 * Set the {@link ModuleDescription} for this module.
 	 *
 	 * @param ldf the loadable description file
-	 * @return the loadable description file
 	 */
 	public final void setDesciption(ModuleDescription ldf) {
+		if (m_description != null) {
+			throw new IllegalStateException("Description already set");
+		}
 		this.m_description = ldf;
 	}
+
+	/**
+	 * Sets the {@link ModuleClassLoader} for this module
+	 * 
+	 * @param loader the current class loader for this module
+	 */
+	public final void setClassLoader(ModuleClassLoader loader) {
+		if (m_loader != null) {
+			throw new IllegalStateException("Class loader already set");
+		}
+		this.m_loader = loader;
+	}
+
+	/* End Loading specific methods */
 
 	/**
 	 * Gets the config.
@@ -536,10 +594,28 @@ public abstract class Module implements Listener {
 	 *
 	 * @return The name
 	 */
+	public final ModuleClassLoader getClassLoader() {
+		return m_loader;
+	}
+
+	/**
+	 * Gets the name of the Loadable.
+	 *
+	 * @return The name
+	 */
 	public final String getName() {
 		return getDesciption().getName();
 	}
 
+	/**
+	 * Gets the version of this module loaded from the path.yml file.
+	 * 
+	 * @return the module version
+	 */
+	public final String getVersion() {
+		return getDesciption().getVersion();
+	}
+	
 	/**
 	 * Gets an embedded resource in this plugin.
 	 *
@@ -580,15 +656,17 @@ public abstract class Module implements Listener {
 	/**
 	 * Saves the config.
 	 */
-	public final void saveConfig() {
+	public final boolean saveConfig() {
 		if (m_config == null || m_configFile == null) {
-			return;
+			return false;
 		}
 
 		try {
 			m_config.save(m_configFile);
 		} catch (IOException e) {
+			return false;
 		}
+		return true;
 	}
 
 	/**
