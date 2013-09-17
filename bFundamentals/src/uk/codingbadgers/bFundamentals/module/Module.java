@@ -62,6 +62,7 @@ import uk.codingbadgers.bFundamentals.module.annotation.ModuleInfo;
 import uk.codingbadgers.bFundamentals.module.events.ModuleDisableEvent;
 import uk.codingbadgers.bFundamentals.module.events.ModuleEnableEvent;
 import uk.codingbadgers.bFundamentals.module.loader.ClassFinder;
+import uk.codingbadgers.bFundamentals.module.loader.ModuleClassLoader;
 import uk.codingbadgers.bFundamentals.module.loader.ModuleLoader;
 import uk.codingbadgers.bFundamentals.update.UpdateThread;
 import uk.codingbadgers.bFundamentals.update.Updater;
@@ -102,6 +103,9 @@ public abstract class Module implements Listener {
 		m_debug = bFundamentals.getConfigurationManager().isDebugEnabled();
 	}
 
+	/**
+	 * Initialise this module
+	 */
 	public final void init() {
 		m_log = new ModuleLogger(this);
 	}
@@ -111,6 +115,9 @@ public abstract class Module implements Listener {
 		log(Level.INFO, "Set new updater to " + m_updater.getUpdater().getUpdater());
 	}
 
+	/**
+	 * If enabled, check if this module needs a update
+	 */
 	public final void update() {
 		if (m_updater == null) {
 			log(Level.INFO, "Updater is null, cannot check for updates");
@@ -604,7 +611,7 @@ public abstract class Module implements Listener {
 	 * @return The name
 	 */
 	public final String getName() {
-		return getDesciption().getName();
+		return getDescription().getName();
 	}
 
 	/**
@@ -613,7 +620,7 @@ public abstract class Module implements Listener {
 	 * @return the module version
 	 */
 	public final String getVersion() {
-		return getDesciption().getVersion();
+		return getDescription().getVersion();
 	}
 	
 	/**
@@ -655,6 +662,8 @@ public abstract class Module implements Listener {
 
 	/**
 	 * Saves the config.
+	 * 
+	 * @return if the config was saved successfully
 	 */
 	public final boolean saveConfig() {
 		if (m_config == null || m_configFile == null) {
@@ -670,11 +679,11 @@ public abstract class Module implements Listener {
 	}
 
 	/**
-	 * Gets the desciption.
+	 * Gets the description.
 	 *
-	 * @return the desciption
+	 * @return the description
 	 */
-	public final ModuleDescription getDesciption() {
+	public final ModuleDescription getDescription() {
 		return this.m_description;
 	}
 	

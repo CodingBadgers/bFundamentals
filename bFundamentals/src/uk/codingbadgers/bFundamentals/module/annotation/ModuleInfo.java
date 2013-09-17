@@ -23,17 +23,40 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The Annotation ModuleInfo, defines the module information for a class.
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ModuleInfo {
 
+	/**
+	 * The module's name.
+	 *
+	 * @return the module's name
+	 */
 	String value();
-	
+
+	/**
+	 * The module's version.
+	 *
+	 * @return the module's version
+	 */
 	String version() default "1.0";
-	
+
+	/**
+	 * The module's authors.
+	 *
+	 * @return the module's authors
+	 */
 	String[] authors() default {"Unkown"};
 
+	/**
+	 * The module's description.
+	 *
+	 * @return the module's description
+	 */
 	String description() default "";
 	
 }

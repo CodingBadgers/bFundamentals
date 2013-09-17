@@ -23,28 +23,53 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bFundamentals.module.loader.ModuleLoader;
 
+/**
+ * The ModuleLoadEvent, called when a module is loaded via 
+ * {@link ModuleLoader#loadModule(java.io.File)}.
+ */
 public class ModuleLoadEvent extends ModuleEvent {
 	
 	private static final HandlerList handlers = new HandlerList();
 	
 	
+	/* (non-Javadoc)
+	 * @see uk.codingbadgers.bFundamentals.module.events.ModuleEvent#getHandlers()
+	 */
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
 	
+	/**
+	 * Gets the handler list.
+	 *
+	 * @return the handler list
+	 */
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 	
 	private final JarFile jarFile;
 
+	/**
+	 * Instantiates a new module load event.
+	 *
+	 * @param plugin the plugin
+	 * @param loadable the loadable
+	 * @param jarFile the jar file
+	 */
 	public ModuleLoadEvent(Plugin plugin, Module loadable, JarFile jarFile) {
 		super(plugin, loadable);
 		this.jarFile = jarFile;
 	}
 
+	/**
+	 * Gets the jar file.
+	 *
+	 * @return the jar file
+	 */
 	public JarFile getJarFile() {
 		return jarFile;
 	}

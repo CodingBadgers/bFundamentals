@@ -21,8 +21,18 @@ import org.bukkit.plugin.Plugin;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 
+/**
+ * The ModuleDisableEvent, called when a module is disabled via 
+ * {@link Module#setEnabled(boolean)}.
+ */
 public class ModuleDisableEvent extends ModuleEvent {
 
+	/**
+	 * Instantiates a new module disable event.
+	 *
+	 * @param plugin the plugin
+	 * @param loadable the loadable
+	 */
 	public ModuleDisableEvent(Plugin plugin, Module loadable) {
 		super(plugin, loadable);
 	}

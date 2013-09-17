@@ -31,7 +31,7 @@ import uk.codingbadgers.bFundamentals.utils.CollectionUtils;
 
 /**
  * The Class LoadableDescriptionFile, represents the data stored in the
- * about a module, either by a path.yml file of a {@link Loadable} or a
+ * about a module, either by a path.yml file of a {@link Module} or a
  * {@link ModuleInfo} annotation.
  * 
  * @author James Fitzpatrick
@@ -66,7 +66,8 @@ public class ModuleDescription {
      * Instantiates a new module description from the data in a 
      * {@link ModuleInfo} annotation.
      *
-     * @param istream the input stream that this file is loaded from
+     * @param info the {@link ModuleInfo} annotation
+     * @param mainclass the mainclass loaded
      */
     public ModuleDescription(ModuleInfo info, String mainclass) {
     	this.name = info.value();

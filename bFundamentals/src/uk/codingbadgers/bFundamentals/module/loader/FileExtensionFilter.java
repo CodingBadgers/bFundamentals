@@ -20,14 +20,25 @@ package uk.codingbadgers.bFundamentals.module.loader;
 import java.io.File;
 import java.io.FileFilter;
 
+/**
+ * The Class FileExtensionFilter.
+ */
 public final class FileExtensionFilter implements FileFilter {
 	
 	private final String extension;
 	
+	/**
+	 * Instantiates a new file extension filter.
+	 *
+	 * @param extension the extension to test for
+	 */
 	public FileExtensionFilter(String extension) {
 		this.extension = extension;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.io.FileFilter#accept(java.io.File)
+	 */
 	public boolean accept(File file) {
 		return file.getName().endsWith(extension);
 	}

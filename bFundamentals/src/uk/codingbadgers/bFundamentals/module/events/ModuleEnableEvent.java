@@ -21,8 +21,18 @@ import org.bukkit.plugin.Plugin;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 
+/**
+ * The ModuleEnableEvent, called when a module is enabled via 
+ * {@link Module#setEnabled(boolean)}.
+ */
 public class ModuleEnableEvent extends ModuleEvent {
 
+	/**
+	 * Instantiates a new module enable event.
+	 *
+	 * @param plugin the plugin
+	 * @param loadable the loadable
+	 */
 	public ModuleEnableEvent(Plugin plugin, Module loadable) {
 		super(plugin, loadable);
 	}

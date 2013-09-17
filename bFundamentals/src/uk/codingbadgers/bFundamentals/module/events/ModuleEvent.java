@@ -23,15 +23,26 @@ import org.bukkit.plugin.Plugin;
 
 import uk.codingbadgers.bFundamentals.module.Module;
 
-public class ModuleEvent extends Event {
+/**
+ * A module event, represents an event that .
+ */
+public abstract class ModuleEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
 
+	/* (non-Javadoc)
+	 * @see org.bukkit.event.Event#getHandlers()
+	 */
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
 	
+	/**
+	 * Gets the handler list.
+	 *
+	 * @return the handler list
+	 */
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
@@ -39,15 +50,31 @@ public class ModuleEvent extends Event {
 	private final Plugin plugin;
 	private final Module loadable;
 
+	/**
+	 * Instantiates a new module event.
+	 *
+	 * @param plugin the plugin
+	 * @param loadable the module involved in the event
+	 */
 	public ModuleEvent(Plugin plugin, Module loadable) {
 		this.plugin = plugin;
 		this.loadable = loadable;
 	}
 
+	/**
+	 * Gets the module involved in the event.
+	 *
+	 * @return the module
+	 */
 	public Module getModule() {
 		return loadable;
 	}
 
+	/**
+	 * Gets the plugin.
+	 *
+	 * @return the plugin
+	 */
 	public Plugin getPlugin() {
 		return plugin;
 	}

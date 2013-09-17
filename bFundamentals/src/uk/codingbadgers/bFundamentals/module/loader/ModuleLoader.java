@@ -38,20 +38,20 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.error.ExceptionHandler;
 import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.bFundamentals.module.ModuleClassLoader;
 import uk.codingbadgers.bFundamentals.module.ModuleDescription;
 import uk.codingbadgers.bFundamentals.module.ModuleHelpTopic;
 import uk.codingbadgers.bFundamentals.module.annotation.ModuleInfo;
 import uk.codingbadgers.bFundamentals.module.events.ModuleLoadEvent;
 
+// TODO: Auto-generated Javadoc
 /**
- * The ModuleLoader.
+ * The ModuleLoader, used to load bFundamentals {@link Module}'s at runtime,
+ * will automatically find any classes that extend {@link Module} in jars in
+ * the module directory and load them in.
  */
 public class ModuleLoader {
 
@@ -73,7 +73,7 @@ public class ModuleLoader {
 	 * Gets the directory of the modules.
 	 * 
 	 * @return the module dir
-	 * @deprecated {@link uk.codingbadgers.bFundamentals.ConfigManager.getModuleDirectory)}
+	 * @deprecated {@link uk.codingbadgers.bFundamentals.ConfigManager#getModuleDirectory()}
 	 */
 	public File getModuleDir() {
 		return bFundamentals.getConfigurationManager().getModuleDirectory();
@@ -103,6 +103,12 @@ public class ModuleLoader {
 		bFundamentals.log(Level.INFO, "Loaded " + m_modules.size() + " modules.");
 	}
 
+	/**
+	 * Load a module into the server.
+	 *
+	 * @param file the module's jar file
+	 * @return the module instance
+	 */
 	public Module loadModule(File file) {
 		Module result = null;
 
@@ -195,10 +201,9 @@ public class ModuleLoader {
 	}
 
 	/**
-	 * Loads a module with a given name
-	 * 
-	 * @param fileName
-	 *            the files name
+	 * Loads a module with a given name.
+	 *
+	 * @param fileName the files name
 	 */
 	public void load(String fileName) {
 		File module = new File(bFundamentals.getConfigurationManager().getModuleDirectory() + File.separator + fileName + ".jar");
@@ -206,10 +211,9 @@ public class ModuleLoader {
 	}
 
 	/**
-	 * Loads a module with a jar file
-	 * 
-	 * @param file
-	 *            the jar file for this module
+	 * Loads a module with a jar file.
+	 *
+	 * @param file the jar file for this module
 	 */
 	public void load(File file) {
 		if (getModule(file) != null) {
@@ -289,7 +293,7 @@ public class ModuleLoader {
 	}
 
 	/**
-	 * Update all the loaded modules if an updater is set
+	 * Update all the loaded modules if an updater is set.
 	 */
 	public void update() {
 		if (!bFundamentals.getConfigurationManager().isAutoUpdateEnabled()) {
@@ -337,7 +341,14 @@ public class ModuleLoader {
 		return null;
 	}
 
-	public Class<?> getClassByName(String name) {
+	/**
+	 * Gets a class by its name from any of the module class loads.
+	 *
+	 * @param name the full class name, in the format for {@link Class#forName(String)}
+	 * @return the class specified by its name
+	 * @throws ClassNotFoundException if the specific class cannot be found
+	 */
+	Class<?> getClassByName(String name) throws ClassNotFoundException {
 		Class<?> cachedClass = classes.get(name);
 
 		if (cachedClass != null) {
@@ -355,10 +366,16 @@ public class ModuleLoader {
 				}
 			}
 		}
-		return null;
+		throw new ClassNotFoundException(name);
 	}
 
-	public void setClass(String name, Class<?> clazz) {
+	/**
+	 * Sets a class for a specific name in the internal cache.
+	 *
+	 * @param name the name
+	 * @param clazz the class
+	 */
+	void setClass(String name, Class<?> clazz) {
 		if (!classes.containsKey(name)) {
 			classes.put(name, clazz);
 
@@ -369,7 +386,10 @@ public class ModuleLoader {
 		}
 	}
 
-	public void sort() {
+	/**
+	 * Sort the modules by name in the module list.
+	 */
+	void sort() {
 		List<Module> sortedLoadables = new ArrayList<Module>();
 		List<String> names = new ArrayList<String>();
 

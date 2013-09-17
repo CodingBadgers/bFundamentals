@@ -25,15 +25,32 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
 import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.bFundamentals.module.ModuleClassLoader;
 
+/**
+ * The Class ClassFinder, used to find specific types of classes quickly for
+ * module auto loading and registration.
+ */
 public class ClassFinder {
 
+	/**
+	 * Find all the module classes in a class loader.
+	 *
+	 * @param loader the loader
+	 * @param url the urls to check
+	 * @return all classes that extend {@link Module} in that loader
+	 */
 	public static Set<Class<? extends Module>> findModules(ModuleClassLoader loader, URL[] url) {
 		Reflections reflect = new Reflections(new ConfigurationBuilder().addUrls(url).addClassLoader(loader).addClassLoader(ClassFinder.class.getClassLoader()));
 		return reflect.getSubTypesOf(Module.class);
 	}
 	
+	/**
+	 * Find all the listener classes in a class loader.
+	 *
+	 * @param loader the loader
+	 * @param url the urls to check
+	 * @return all classes that implement {@link Listener} in that loader
+	 */
 	public static Set<Class<? extends Listener>> findListeners(ModuleClassLoader loader, URL[] url) {
 		Reflections reflect = new Reflections(new ConfigurationBuilder().addUrls(url).addClassLoader(loader).addClassLoader(ClassFinder.class.getClassLoader()));
 		return reflect.getSubTypesOf(Listener.class);
