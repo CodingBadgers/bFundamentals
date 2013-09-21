@@ -191,6 +191,11 @@ public class bAnimalCare extends Module implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
 		
+		final Player player = event.getPlayer();
+		if (!Module.hasPermission(player, "bAnimalCare.teleportHorse")) {
+			return;
+		}
+		
 		ArrayList<String> commands = new ArrayList<String>();
 		commands.add("spawn");
 		commands.add("tp");
@@ -220,11 +225,15 @@ public class bAnimalCare extends Module implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityTeleport(PlayerTeleportEvent event) {
 
-		if (event.getCause() != TeleportCause.PLUGIN && event.getCause() != TeleportCause.COMMAND) {
+		final Player player = event.getPlayer();
+		if (!Module.hasPermission(player, "bAnimalCare.teleportHorse")) {
 			return;
 		}
 		
-		final Player player = event.getPlayer();
+		if (event.getCause() != TeleportCause.PLUGIN && event.getCause() != TeleportCause.COMMAND) {
+			return;
+		}
+
 		final Entity vehicle = m_tpVehicle.get(event.getPlayer().getName());
 
 		if (vehicle == null) {
