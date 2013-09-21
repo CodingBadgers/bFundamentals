@@ -315,7 +315,7 @@ public class PlayerBackup {
 				JSONObject jsonEnchantment = (JSONObject) enchantmentObject;
 				Enchantment enchantment = Enchantment.getByName((String) jsonEnchantment.get("id"));
 				int enchantmentLevel = Integer.valueOf((String) jsonEnchantment.get("level"));
-				item.addEnchantment(enchantment, enchantmentLevel);
+				item.addUnsafeEnchantment(enchantment, enchantmentLevel);
 			}
 			
 			// Parse metadata
