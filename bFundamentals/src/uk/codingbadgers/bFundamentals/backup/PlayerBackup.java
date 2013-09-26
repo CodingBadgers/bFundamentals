@@ -25,48 +25,101 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
+
 @SuppressWarnings("unchecked")
 public class PlayerBackup {
 
-	private String name;
-	private File backup;
+	private String name = null;
+	private File backup = null;
 	
 	private ItemStack[] invContents = null;
 	private ItemStack[] armourContents = null;
 	private int xp = 0;
-	private int gamemode = 0;
+	private String gamemode = null;
 	
-	public PlayerBackup(Player player) throws IOException {
+	/**
+	 * Get the players armour inventory stack
+	 *
+	 * @param player the player to query
+	 * @return A itemstack array of the players armour
+	 */
+	private ItemStack[] getPlayerArmour(Player player) {
 		
-		if (!BackupFactory.BACKUP_DIR.exists()) {
-			BackupFactory.BACKUP_DIR.mkdirs();
+		final PlayerInventory invent = player.getInventory();
+		ItemStack[] armour = new ItemStack[4];
+		
+		armour[0] = invent.getHelmet();
+		armour[1] = invent.getChestplate();
+		armour[2] = invent.getLeggings();
+		armour[3] = invent.getBoots();
+		
+		return armour;
+	}
+	
+	/**
+	 * Set the players armour inventory stack
+	 *
+	 * @param player the player to query
+	 */
+	private void setPlayerArmour(Player player, ItemStack[] armour) {
+		
+		if (armour.length != 4) {
+			bFundamentals.log(Level.SEVERE, player.getName() + "s armour player backup does not have 4 elements! It only has " + armour.length);
+			return;
 		}
 		
+		final PlayerInventory invent = player.getInventory();
+		
+		invent.setHelmet(armour[0]);
+		invent.setChestplate(armour[1]);
+		invent.setLeggings(armour[2]);
+		invent.setBoots(armour[3]);
+	}
+	
+	/**
+	 * Create a player backup from a given player and write it to a specified file
+	 *
+	 * @param backupFile The file where the player backup should be written
+	 * @param player The player to backup
+	 */
+	public PlayerBackup(File backupFile, Player player) throws IOException {
+				
 		this.name = player.getName();
 		this.invContents = player.getInventory().getContents();
-		this.armourContents = player.getInventory().getArmorContents();
+		this.armourContents = getPlayerArmour(player);
 		this.xp = player.getTotalExperience();
-		this.gamemode = player.getGameMode().getValue();
-		this.backup = new File(BackupFactory.BACKUP_DIR, player.getWorld().getName().replace(File.separatorChar, '_') + File.separatorChar + name.replace(File.separatorChar, '_') + ".json");
+		this.gamemode = player.getGameMode().name();
+		this.backup = backupFile;
 		
-		if (!this.backup.getParentFile().exists()) {
-			this.backup.getParentFile().mkdir();
+		File backupFolder = backupFile.getParentFile();
+		if (!backupFolder.exists()) {
+			backupFolder.mkdirs();
 		}
 		
 		writeToFile();
 	}
 	
+	/**
+	 * Parse a given file to create a player backup object
+	 *
+	 * @param backupFile The file where the player backup should be read from
+	 */
 	public PlayerBackup(File file) throws IOException {
 		Validate.notNull(file, "Backup file cannot be null");
 		Validate.isTrue(file.exists(), "Backup file must exist");
@@ -76,21 +129,34 @@ public class PlayerBackup {
 		readFromFile();
 	}
 	
+	/**
+	 * Get the player name this player backup represents
+	 *
+	 * @return The player name this backup represents
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Restore a players backup
+	 *
+	 * @param player The player who we are restoring too
+	 */
 	public void restore(Player player) {
 		if (!player.getName().equalsIgnoreCase(name)) {
 			return;
 		}
-		
+
 		player.getInventory().setContents(invContents);
-		player.getInventory().setArmorContents(armourContents);
+		setPlayerArmour(player, armourContents);
 		player.setTotalExperience(xp);
-		player.setGameMode(GameMode.getByValue(gamemode));
+		player.setGameMode(GameMode.valueOf(gamemode));
 	}
 	
+	/**
+	 * Write a player backup to file
+	 */
 	public void writeToFile() throws IOException {
 		
 		if (!backup.exists()) {
@@ -101,10 +167,10 @@ public class PlayerBackup {
 		
 		obj.put("name", name);
 		obj.put("level", String.valueOf(xp));
-		obj.put("inventory", convertInvToArray(invContents));
-		obj.put("armour", convertInvToArray(armourContents));
-		obj.put("gamemode", String.valueOf(gamemode));
-		
+		obj.put("inventory", ItemStackArrayToJSONArray(invContents));
+		obj.put("armour", ItemStackArrayToJSONArray(armourContents));
+		obj.put("gamemode", gamemode);
+
 		FileWriter stream = null;
 		BufferedWriter writer = null;
 		
@@ -120,9 +186,11 @@ public class PlayerBackup {
 		}
 	}
 	
+	/**
+	 * Read a player backup from file
+	 */
 	public void readFromFile() throws IOException {
-		
-		// should never come to this
+
 		if (backup == null || !backup.exists()) {
 			return;
 		}
@@ -135,10 +203,11 @@ public class PlayerBackup {
 			JSONObject object = (JSONObject) parser.parse(reader);
 			
 			name = (String) object.get("name");
-			invContents = convertArrayToInv((JSONArray) object.get("inventory"));
-			armourContents = convertArrayToInv((JSONArray) object.get("armour"));
+			invContents = JSONArrayToItemStackArray((JSONArray) object.get("inventory"));
+			armourContents = JSONArrayToItemStackArray((JSONArray) object.get("armour"));
 			xp = Integer.valueOf((String) object.get("level"));
-			gamemode = Integer.valueOf((String) object.get("gamemode"));
+			gamemode = (String) object.get("gamemode");
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} finally {
@@ -147,34 +216,61 @@ public class PlayerBackup {
 			}
 		}
 	}
-	
-	private JSONArray convertInvToArray(ItemStack[] items) {
+
+	/**
+	 * Convert an itemstack array into a json array
+	 *
+	 * @param items The itemstack array to convert
+	 * @return A Json array of the given itemstack array
+	 */
+	@SuppressWarnings("deprecation")
+	private JSONArray ItemStackArrayToJSONArray(ItemStack[] items) {
 
 		JSONArray inv = new JSONArray();
 		
-		for (ItemStack stack : invContents) {
+		for (ItemStack stack : items) {
 			JSONObject item = new JSONObject();
 			
 			if (stack == null) {
-				continue;
+				stack = new ItemStack(Material.AIR, 1);
 			}
 			
-			item.put("id", String.valueOf(stack.getTypeId()));
+			item.put("type", stack.getType().name());
 			item.put("amount", String.valueOf(stack.getAmount()));
+			item.put("durability", String.valueOf(stack.getDurability()));
+			item.put("data", String.valueOf(stack.getData().getData()));
 			
 			JSONArray enchants = new JSONArray();
-			
 			for (Map.Entry<Enchantment, Integer> entry : stack.getEnchantments().entrySet()) {
 				JSONObject enchantment = new JSONObject();
-				enchantment.put("id", String.valueOf(entry.getKey().getId()));
+				enchantment.put("id", entry.getKey().getName());
 				enchantment.put("level", String.valueOf(entry.getValue()));
 				enchants.add(enchantment);
 			}
+			item.put("enchantment", enchants);
 			
-			item.put("enchant", enchants);
-			
-			if (stack.getItemMeta().hasDisplayName()) {
-				item.put("name", stack.getItemMeta().getDisplayName());
+			ItemMeta itemMeta = stack.getItemMeta();
+			if (itemMeta != null) {
+				
+				if (itemMeta.hasDisplayName() || itemMeta.getLore() != null) {
+					
+					JSONObject metadata = new JSONObject();
+	
+					if (itemMeta.hasDisplayName()) {
+						metadata.put("displayname", itemMeta.getDisplayName());
+					}
+					
+					List<String> lores = itemMeta.getLore();
+					if (lores != null) {
+						JSONArray itemLore = new JSONArray();
+						for (String loreString : lores) {
+							itemLore.add(loreString);
+						}
+						metadata.put("lores", itemLore);
+					}
+					
+					item.put("metadata", metadata);
+				}
 			}
 			
 			inv.add(item);
@@ -183,43 +279,87 @@ public class PlayerBackup {
 		return inv;
 	}
 	
-	private ItemStack[] convertArrayToInv(JSONArray array) {
+	/**
+	 * Convert a json array into an itemstack array
+	 *
+	 * @param array The json array to convert
+	 * @return An itemstack array of the given json array
+	 */
+	@SuppressWarnings("deprecation")
+	private ItemStack[] JSONArrayToItemStackArray(JSONArray array) {
 		
 		List<ItemStack> items = new ArrayList<ItemStack>(array.size());
 		
-		for (Object stack : array) {
+		for (Object itemObject : array) {
 			
-			if (!(stack instanceof JSONArray)) {
+			if (!(itemObject instanceof JSONObject)) {
 				continue;
 			}
 			
-			JSONObject obj = (JSONObject) stack;
+			JSONObject jsonItem = (JSONObject) itemObject;
 			
-			ItemStack item = new ItemStack(Integer.valueOf((String) obj.get("id")));
-			item.setAmount(Integer.valueOf((String) obj.get("amount")));
+			// Parse item
+			ItemStack item = new ItemStack(Material.valueOf((String) jsonItem.get("type")));
+			item.setAmount(Integer.valueOf((String) jsonItem.get("amount")));
+			item.setDurability(Short.valueOf((String) jsonItem.get("durability")));
+			item.getData().setData(Byte.valueOf((String) jsonItem.get("data")));
 			
-			for (Object enchObj : (JSONArray) obj.get("enchant")) {
+			// Parse enchantments
+			JSONArray enchantments = (JSONArray)jsonItem.get("enchantment");
+			for (Object enchantmentObject : enchantments ) {
 
-				if (!(enchObj instanceof JSONArray)) {
+				if (!(enchantmentObject instanceof JSONObject)) {
 					continue;
 				}
 				
-				JSONObject ench = (JSONObject) enchObj;
-				
-				Enchantment enchantment = Enchantment.getById(Integer.valueOf((String) ench.get("id")));
-				item.addEnchantment(enchantment, Integer.valueOf((String) ench.get("level")));
+				JSONObject jsonEnchantment = (JSONObject) enchantmentObject;
+				Enchantment enchantment = Enchantment.getByName((String) jsonEnchantment.get("id"));
+				int enchantmentLevel = Integer.valueOf((String) jsonEnchantment.get("level"));
+				item.addUnsafeEnchantment(enchantment, enchantmentLevel);
 			}
 			
-			if (obj.containsKey("name")) {
-				item.getItemMeta().setDisplayName((String) obj.get("name"));
+			// Parse metadata
+			if (jsonItem.containsKey("metadata")) {
+				
+				JSONObject metaData = (JSONObject) jsonItem.get("metadata");
+				
+				ItemMeta itemMeta = item.getItemMeta();
+				
+				if (metaData.containsKey("displayname")) {
+					itemMeta.setDisplayName((String) metaData.get("displayname"));
+				}
+				
+				if (metaData.containsKey("lores")) {
+					List<String> lores = new ArrayList<String>();
+					JSONArray jsonLores = (JSONArray) metaData.get("lores");
+					for (Object loreObject : jsonLores) {
+						String lore = (String) loreObject;
+						lores.add(lore);						
+					}
+					itemMeta.setLore(lores);
+				}
+				
+				item.setItemMeta(itemMeta);
 			}
 			
 			items.add(item);
 		}
 		
-		return items.toArray(new ItemStack[0]);
+		int itemIndex = 0;
+		ItemStack[] itemArray = new ItemStack[items.size()];
+		for (ItemStack item : items) {
+			itemArray[itemIndex] = item;
+			itemIndex++;
+		}
+		
+		return itemArray;
 	}
 	
+	/**
+	 * Delete the backup file
+	 * 
+	 * @return True if the file was deleted, false otherwise
+	 */
 	public boolean deleteFile() {
 		return backup.delete();
 	}

@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,14 +35,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.events.PermissionEntityEvent;
 import ru.tehkode.permissions.events.PermissionEntityEvent.Action;
-
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
@@ -98,12 +95,7 @@ public class bRanks extends Module implements Listener {
 		
 		for (Player player : Bukkit.getOnlinePlayers())
 		{
-			final String rank = this.getPermissions().getPrimaryGroup(player);
-			Team team = m_rankScorboards.get(rank);
-			if (team != null)
-			{
-				team.addPlayer(player);
-			}
+			addPlayerToTeam(player);
 		}
 	}
 	
@@ -135,9 +127,7 @@ public class bRanks extends Module implements Listener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		this.log(Level.INFO, jsonContents);
-		
+
 		JSONObject rankJSON = (JSONObject)JSONValue.parse(jsonContents);		
 		HashMap<String, String> rankMap = new HashMap<String, String>();		
 		
@@ -146,8 +136,7 @@ public class bRanks extends Module implements Listener {
 			String nickname = (String)rankJSON.get(group);
 			if (nickname == null)
 				continue;
-			
-			this.log(Level.INFO, "Loading rank map for '" + group + "' -> '" + nickname + "'");
+
 			rankMap.put(group, nickname);
 		}		
 
@@ -161,14 +150,18 @@ public class bRanks extends Module implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
 		final Player player = event.getPlayer();
-		final String rank = this.getPermissions().getPrimaryGroup(player);
-		Team team = m_rankScorboards.get(rank);
-		if (team != null)
-		{
-			team.addPlayer(player);
+		
+		final String playerName = player.getPlayerListName();
+		if (playerName.length() > 13) {
+			player.setPlayerListName(playerName.substring(0, 13));
 		}
+		
+		addPlayerToTeam(player);
 	}
 	
+	/**
+	 * Called when a players rank changes
+	 */
 	@EventHandler
 	public void onRankChange(PermissionEntityEvent event) {
 		
@@ -180,13 +173,16 @@ public class bRanks extends Module implements Listener {
 		if (player == null)
 			return;
 		
+		addPlayerToTeam(player);		
+	}
+	
+	private void addPlayerToTeam(Player player) {
 		final String rank = this.getPermissions().getPrimaryGroup(player);
 		Team team = m_rankScorboards.get(rank);
 		if (team != null)
 		{
-			team.addPlayer(player);
+			team.addPlayer(Bukkit.getOfflinePlayer(player.getPlayerListName()));
 		}
-		
 	}
 
 }

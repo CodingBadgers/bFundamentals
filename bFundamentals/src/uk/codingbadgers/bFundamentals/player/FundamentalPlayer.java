@@ -17,18 +17,20 @@
  */
 package uk.codingbadgers.bFundamentals.player;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.messaging.Messenger;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
-import uk.codingbadgers.bFundamentals.backup.BackupMap;
+import uk.codingbadgers.bFundamentals.backup.BackupFactory;
 import uk.codingbadgers.bFundamentals.backup.PlayerBackup;
 
 /**
@@ -37,7 +39,6 @@ import uk.codingbadgers.bFundamentals.backup.PlayerBackup;
 public class FundamentalPlayer {
 
 	protected Player m_player;
-	protected BackupMap m_backups;
 	protected HashMap<Class<? extends PlayerData>, PlayerData> m_playerData = new HashMap<Class<? extends PlayerData>, PlayerData>();
 
 	/**
@@ -47,7 +48,6 @@ public class FundamentalPlayer {
 	 */
 	public FundamentalPlayer(Player player) {
 		m_player = player;
-		m_backups = new BackupMap(getPlayer());
 	}
 	
 	/**
@@ -172,30 +172,78 @@ public class FundamentalPlayer {
 	public void destroy() {
 		m_playerData.clear();
 		m_player = null;
-		m_backups = null;
 	}
-	
-	public PlayerBackup backupInventory() {
-		return m_backups.backupPlayer(m_player.getWorld(), false);
-	}
-
-	public PlayerBackup backupInventory(boolean clearInv) {
-		return m_backups.backupPlayer(m_player.getWorld(), clearInv);
-	}
-	
-	public PlayerBackup backupInventory(World world) {
-		return m_backups.backupPlayer(world, false);
+		
+	/**
+	 * Backup a player to a file based on their name in a given folder.
+	 * Do not clear the players inventory though.
+	 *
+	 * @param BackupFolder The folder the backup should be created in
+	 */
+	public PlayerBackup backupInventory(File backupFolder) {
+		return backupInventory(backupFolder, false);
 	}
 
-	public PlayerBackup backupInventory(World world, boolean clearInv) {
-		return m_backups.backupPlayer(world, clearInv);
+	/**
+	 * Backup a player to a file based on their name in a given folder.
+	 *
+	 * @param BackupFolder The folder the backup should be created in
+	 * @param clearInv clear the players inventory after backing up
+	 */
+	public PlayerBackup backupInventory(File backupFolder, boolean clearInv) {
+		
+		File backupFile = new File(backupFolder + File.separator + m_player.getName() + ".json");				
+		PlayerBackup backup = BackupFactory.createBackup(backupFile, m_player);
+		
+		// clear the inventory only if the backup was successful
+		if (clearInv && backup != null) {
+			clearInventory(true);
+		}
+		
+		return backup;
 	}
 	
-	public boolean restoreInventory() {
-		return m_backups.restorePlayer(m_player.getWorld());
+	/**
+	 * Restore a player to a backup from the given folder
+	 *
+	 * @param backupFolder The folder that the players backup resides in
+	 * @return true if successful and false otherwise
+	 */
+	public boolean restoreInventory(File restoreFolder) throws FileNotFoundException {
+		
+		clearInventory(true);
+		
+		File backupFile = new File(restoreFolder + File.separator + m_player.getName() + ".json");		
+		if (!backupFile.exists()) {
+			throw(new FileNotFoundException("A backup file could not be found for the player " + m_player.getName() + " in the folder " + restoreFolder.getAbsolutePath()));
+		}
+
+		PlayerBackup backup = BackupFactory.readBackup(backupFile);
+
+		if (backup != null) {
+			backup.restore(m_player);
+			backup.deleteFile();
+			return true;
+		}
+		
+		return false;
 	}
-	
-	public boolean restoreInventory(World world) {
-		return m_backups.restorePlayer(world);
+
+	/**
+	 * Clear all items from a players inventory
+	 *
+	 * @param clearArmour Should we clear the players armour as well 
+	 * @return true if successful and false otherwise
+	 */
+	public void clearInventory(boolean clearArmour) {
+		
+		PlayerInventory inventory = m_player.getInventory();
+		inventory.clear();
+		if (clearArmour) {
+			inventory.setHelmet(null);
+			inventory.setChestplate(null);
+			inventory.setLeggings(null);
+			inventory.setBoots(null);
+		}
 	}
 }
