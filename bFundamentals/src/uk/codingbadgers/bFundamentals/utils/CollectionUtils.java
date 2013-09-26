@@ -21,8 +21,18 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList.Builder;
 
+/**
+ * The Utility class for using google collections.
+ */
 public class CollectionUtils {
 
+	/**
+	 * Create a immutable copy of a list.
+	 *
+	 * @param <T> the generic type of the list
+	 * @param list the list to create a copy of
+	 * @return a immutable copy of the list
+	 */
 	public static <T> List<T> toImmutableList(List<T> list) {
 		Builder<T> builder = new Builder<T>();
 		builder.addAll(list);

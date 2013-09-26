@@ -23,7 +23,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 
 import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.bFundamentals.module.loader.ModuleLoader;
 
 /**
  * The ModuleLoadEvent, called when a module is loaded via 
