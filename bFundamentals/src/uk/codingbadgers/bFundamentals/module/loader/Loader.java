@@ -175,10 +175,14 @@ public class Loader {
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " is in the wrong directory.");
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 		} catch (ClassNotFoundException e) {
+            getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 			getLogger().log(Level.WARNING, "Invalid path.yml.");
 			getLogger().log(Level.WARNING, e.getMessage());
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
-		} catch (Exception e) {
+		} catch (NoClassDefFoundError e) {
+            getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
+            getLogger().log(Level.WARNING, "The class " + e.getMessage() + " cannot be found.");
+            getLogger().log(Level.WARNING, "Is this module missing a required dependency?");
+		} catch (Throwable e) {
 			ExceptionHandler.handleException(e);
 			getLogger().log(Level.WARNING, "Unknown cause.");
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");

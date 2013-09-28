@@ -50,7 +50,7 @@
 							<artifactSet>
 								<includes>
 									<include>commons-*:*</include>
-									<include>org.jnbt:jnbt</include>
+									<include>org.jnbt:jNBT</include>
 									<include>org.apache.httpcomponents:*</include>
 								</includes>
 							</artifactSet>
