@@ -48,7 +48,6 @@ import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommandHandler;
 import uk.codingbadgers.bFundamentals.config.ConfigFactory;
 import uk.codingbadgers.bFundamentals.config.ConfigFile;
-import uk.codingbadgers.bFundamentals.config.annotation.Element;
 import uk.codingbadgers.bFundamentals.module.loader.Loadable;
 import uk.codingbadgers.bFundamentals.update.UpdateThread;
 import uk.codingbadgers.bFundamentals.update.Updater;

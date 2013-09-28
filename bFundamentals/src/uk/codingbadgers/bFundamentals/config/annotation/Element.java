@@ -23,8 +23,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import uk.codingbadgers.bFundamentals.config.ConfigFile;
-import uk.codingbadgers.bFundamentals.config.ConfigFactory;
 import uk.codingbadgers.bFundamentals.config.deserialiser.ConfigMapper;
 import uk.codingbadgers.bFundamentals.config.deserialiser.DefaultConfigMapper;
 
