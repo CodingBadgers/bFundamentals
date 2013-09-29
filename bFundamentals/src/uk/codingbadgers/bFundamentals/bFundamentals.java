@@ -236,7 +236,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	public static BukkitDatabase getBukkitDatabase() {
 		if (m_database == null) {
 			DatabaseSettings settings = m_configuration.getDatabaseSettings();
-			m_database = bDatabaseManager.createDatabase("bFundamentals", m_instance, settings.type);
+			m_database = bDatabaseManager.createDatabase(settings.name, m_instance, settings.type);
 			if (settings.type == DatabaseType.SQL) {
 				m_database.login(settings.host, settings.user, settings.password, settings.port);
 			}

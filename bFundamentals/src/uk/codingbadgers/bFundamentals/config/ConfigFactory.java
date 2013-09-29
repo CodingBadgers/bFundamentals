@@ -26,7 +26,6 @@ import java.util.Arrays;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.config.annotation.Catagory;
 import uk.codingbadgers.bFundamentals.config.annotation.Element;
 import uk.codingbadgers.bFundamentals.config.deserialiser.ConfigMapper;

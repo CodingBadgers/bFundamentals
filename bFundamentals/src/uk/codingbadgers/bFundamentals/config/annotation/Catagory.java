@@ -23,9 +23,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import uk.codingbadgers.bFundamentals.config.ConfigFile;
-import uk.codingbadgers.bFundamentals.config.ConfigFactory;
-
 /**
  * Repersents a class that is serialised in a config file by the
  * bFundamentals {@link ConfigFactory} as a category inside the file.

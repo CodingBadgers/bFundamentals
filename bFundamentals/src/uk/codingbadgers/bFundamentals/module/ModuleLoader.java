@@ -71,7 +71,7 @@ public class ModuleLoader {
 				module.onLoad();
 				Bukkit.getHelpMap().addTopic(new ModuleHelpTopic(module));
 				module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				ExceptionHandler.handleException(ex);
 			}
 		}
@@ -129,7 +129,7 @@ public class ModuleLoader {
 				HandlerList.unregisterAll(listener);
 			}
 			m_modules.remove(module);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			ExceptionHandler.handleException(ex);
 		}
 	}
@@ -141,7 +141,7 @@ public class ModuleLoader {
 		for (Module module : m_modules) {
 			try {
 				module.setEnabled(true);
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				ExceptionHandler.handleException(ex);
 			}
 		}
@@ -155,7 +155,7 @@ public class ModuleLoader {
 		for (Module module : modules) {
 			try {
 				unload(module);
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				ExceptionHandler.handleException(ex);
 			}
 		}

@@ -31,6 +31,8 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.PluginManager;
 
+import com.google.common.collect.ImmutableList;
+
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
@@ -133,6 +135,9 @@ public class ModuleCommandHandler {
 	 * @return the commands for that module
 	 */
 	public static List<ModuleCommand> getCommands(Module module) {
-		return commands.get(module);
+	    if (!commands.containsKey(module)) {
+	        return new ImmutableList.Builder<ModuleCommand>().build();
+	    }
+		return new ImmutableList.Builder<ModuleCommand>().addAll(commands.get(module)).build();
 	}	
 }
