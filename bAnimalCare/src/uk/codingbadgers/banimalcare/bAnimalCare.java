@@ -64,6 +64,8 @@ public class bAnimalCare extends Module implements Listener {
 	
 	private static int MAX_NOOF_PETS = 10;
 	
+	private String m_dbPrefix = "";
+	
 	/**
 	 * Called when the module is disabled.
 	 */
@@ -75,6 +77,9 @@ public class bAnimalCare extends Module implements Listener {
 	 * Called when the module is loaded.
 	 */
 	public void onEnable() {
+		
+		m_dbPrefix = bFundamentals.getConfigurationManager().getDatabaseSettings().prefix;
+		
 		WORLDGUARD = (WorldGuardPlugin)m_plugin.getServer().getPluginManager().getPlugin("WorldGuard");
 		register(this);
 		registerCommand(new AnimalCommand(this));
@@ -455,11 +460,11 @@ public class bAnimalCare extends Module implements Listener {
 	 */	
 	private void setupDatabase() {
 		
-		if (m_database.tableExists("bAnimalCare"))
+		if (m_database.tableExists(m_dbPrefix + "bAnimalCare"))
 			return;
 		
 		final String createQuery = 
-		"CREATE TABLE bAnimalCare " +
+		"CREATE TABLE " + m_dbPrefix + "bAnimalCare " +
 		"(" +
 			"Player varchar(32)," +
 			"EntityID TEXT," +
@@ -475,7 +480,7 @@ public class bAnimalCare extends Module implements Listener {
 	 */		
 	private void loadPets() {
 		
-		final String selectAll = "Select * FROM bAnimalCare";
+		final String selectAll = "Select * FROM " + m_dbPrefix + "bAnimalCare";
 		
 		ResultSet result = m_database.queryResult(selectAll);
 		if (result != null) {
@@ -533,7 +538,7 @@ public class bAnimalCare extends Module implements Listener {
 	private void addNewPet(String player, Entity entity) {
 		
 		String addPet = 
-			"INSERT INTO bAnimalCare " +
+			"INSERT INTO " + m_dbPrefix + "bAnimalCare " +
 				"VALUES ('" +
 				player + "', '" +
 				entity.getUniqueId().toString() + "', '" +
@@ -550,7 +555,7 @@ public class bAnimalCare extends Module implements Listener {
 	private void updatePet(Entity entity) {
 		
 		String updatePet = 
-			"UPDATE bAnimalCare " +
+			"UPDATE " + m_dbPrefix + "bAnimalCare " +
 				"SET Location='" + locationToString(entity.getLocation()) + "' " +
 				"WHERE EntityID='" + entity.getUniqueId().toString() +
 			"'";
@@ -564,7 +569,7 @@ public class bAnimalCare extends Module implements Listener {
 		m_pets.remove(entityID);
 
 		String removePet = 
-				"DELETE FROM bAnimalCare " +
+				"DELETE FROM " + m_dbPrefix + "bAnimalCare " +
 					"WHERE EntityID='" +
 					entityID.toString() + 
 				"'";
