@@ -26,6 +26,11 @@
         	<id>remoteentities-repo</id>
         	<url>http://repo.infinityblade.de/remoteentities/releases</url>
     	</repository>
+    	
+    	<repository>
+    		<id>citizens-repo</id>
+    		<url>http://repo.citizensnpcs.co/</url>
+    	</repository>
 		
 	</repositories>
 	
@@ -50,6 +55,12 @@
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
+        </dependency>
+ 
+        <dependency>
+            <artifactId>citizensapi</artifactId>
+            <groupId>net.citizensnpcs</groupId>
+            <version>2.0.10-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

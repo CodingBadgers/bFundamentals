@@ -25,8 +25,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+import net.citizensnpcs.api.event.NPCSpawnEvent;
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -176,13 +180,29 @@ public class bRanks extends Module implements Listener {
 		addPlayerToTeam(player);		
 	}
 	
+	/**
+	 * Called when a citizens NPC is spawned
+	 */
+	@EventHandler
+	public void onRankChange(NPCSpawnEvent event) {
+
+		NPC npc = event.getNPC();
+		LivingEntity entity = npc.getBukkitEntity();
+		if (entity == null || !(entity instanceof Player))
+			return;
+			
+		Player player = (Player)entity;
+		addPlayerToTeam(player);		
+	}
+	
+	/**
+	 * Add a given player to a team based upon their pex rank
+	 */
 	private void addPlayerToTeam(Player player) {
 		final String rank = this.getPermissions().getPrimaryGroup(player);
 		Team team = m_rankScorboards.get(rank);
-		if (team != null)
-		{
+		if (team != null) {
 			team.addPlayer(Bukkit.getOfflinePlayer(player.getPlayerListName()));
 		}
 	}
-
 }
