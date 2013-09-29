@@ -27,6 +27,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bsign.listener.BlockListener;
 import uk.codingbadgers.bsign.listener.PlayerListener;
@@ -64,6 +65,9 @@ public class bSignModule extends Module {
 	/** Access to the bFundamental database. */
 	public static BukkitDatabase DATABASE = null;
 	
+	/** Access to the bFundamental database. */
+	public static String DBPREFIX = "";
+	
 
 	/**
 	 * This is called when the module is unloaded
@@ -84,11 +88,13 @@ public class bSignModule extends Module {
 		MODULE = this;
 		PLUGIN = m_plugin;
 		DATABASE = m_database;
+		DBPREFIX = bFundamentals.getConfigurationManager().getDatabaseSettings().prefix;
+		
 		loadLanguageFile();
 
-		if (!DATABASE.tableExists("bSign")) {
+		if (!DATABASE.tableExists(DBPREFIX + "bSign")) {
 			// the bSign table doesn't exist, create one
-			String createTable = "CREATE TABLE bSign " +
+			String createTable = "CREATE TABLE " + DBPREFIX + "bSign " +
 				"(" +
 				"Type varchar(32)," +
 				"Context varchar(255)," +
@@ -114,7 +120,7 @@ public class bSignModule extends Module {
 		int noofSignsInWorld = 0;
 		
 		// load the signs from the table
-		String selectAllSigns = "Select * FROM bSign";
+		String selectAllSigns = "Select * FROM " + DBPREFIX + "bSign";
 		ResultSet result = bSignModule.DATABASE.queryResult(selectAllSigns);
 		
 		try {

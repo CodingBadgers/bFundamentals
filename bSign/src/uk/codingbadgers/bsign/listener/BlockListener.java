@@ -123,7 +123,7 @@ public class BlockListener implements Listener {
 		
 		String location = contextSign.getLocation().getX() + "," + contextSign.getLocation().getY() + "," + contextSign.getLocation().getZ() + "," + contextSign.getLocation().getWorld().getName();
 		
-		String addSign = "DELETE FROM bSign " +
+		String addSign = "DELETE FROM " + bSignModule.DBPREFIX + "bSign " +
 				"WHERE Location = '" +
 				location + 
 				"'";

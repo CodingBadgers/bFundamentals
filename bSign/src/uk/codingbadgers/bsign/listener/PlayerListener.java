@@ -546,7 +546,7 @@ public class PlayerListener implements Listener {
 			String type = contextSign.getType(); 
 			String location = contextSign.getLocation().getX() + "," + contextSign.getLocation().getY() + "," + contextSign.getLocation().getZ() + "," + contextSign.getLocation().getWorld().getName();
 			
-			String addSign = "INSERT INTO bSign " +
+			String addSign = "INSERT INTO " + bSignModule.DBPREFIX + "bSign " +
 					"VALUES ('" +
 					type + "', '" +
 					contextSign.getContext() + "', '" +
