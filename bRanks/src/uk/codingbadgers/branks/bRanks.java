@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCSpawnEvent;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -36,6 +37,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -51,6 +54,8 @@ import uk.codingbadgers.bFundamentals.module.Module;
 public class bRanks extends Module implements Listener {
 
 	private HashMap<String, Team> m_rankScorboards = new HashMap<String, Team>();
+	
+	private String m_dbPrefix = "";
 	
 	/**
 	 * Called when the module is disabled.
@@ -68,6 +73,9 @@ public class bRanks extends Module implements Listener {
 	 */
 	public void onEnable() {
 		register(this);		
+		m_dbPrefix = bFundamentals.getConfigurationManager().getDatabaseSettings().prefix;
+		
+		setupDatabase();
 		
 		HashMap<String, String> rankMap = loadRankMappings();
 		
@@ -94,12 +102,25 @@ public class bRanks extends Module implements Listener {
 			prefix = prefix.length() > 16 ? prefix.substring(0, 15) : prefix;
 			
 			team.setPrefix(prefix);
+			team.setAllowFriendlyFire(true);
+			team.setCanSeeFriendlyInvisibles(false);
+	
 			m_rankScorboards.put(group, team);
 		}
 		
-		for (Player player : Bukkit.getOnlinePlayers())
-		{
+		// Update all players online
+		for (Player player : Bukkit.getOnlinePlayers())	{
 			addPlayerToTeam(player);
+		}
+		
+		// Update all npcs
+		for (NPC npc : CitizensAPI.getNPCRegistry()) {
+			LivingEntity entity = npc.getBukkitEntity();
+			if (entity == null || !(entity instanceof Player))
+				return;
+				
+			Player player = (Player)entity;
+			addPlayerToTeam(player);		
 		}
 	}
 	
@@ -164,6 +185,24 @@ public class bRanks extends Module implements Listener {
 	}
 	
 	/**
+	 * Called when a player leaves
+	 */	
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		final Player player = event.getPlayer();
+		removePrefixFromDatabase(player.getName());
+	}
+	
+	/**
+	 * Called when a player gets kicked
+	 */	
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerKick(PlayerKickEvent event) {
+		final Player player = event.getPlayer();
+		removePrefixFromDatabase(player.getName());
+	}
+	
+	/**
 	 * Called when a players rank changes
 	 */
 	@EventHandler
@@ -177,6 +216,7 @@ public class bRanks extends Module implements Listener {
 		if (player == null)
 			return;
 		
+		removePrefixFromDatabase(player.getName());
 		addPlayerToTeam(player);		
 	}
 	
@@ -184,7 +224,7 @@ public class bRanks extends Module implements Listener {
 	 * Called when a citizens NPC is spawned
 	 */
 	@EventHandler
-	public void onRankChange(NPCSpawnEvent event) {
+	public void onNPCSpawn(NPCSpawnEvent event) {
 
 		NPC npc = event.getNPC();
 		LivingEntity entity = npc.getBukkitEntity();
@@ -192,7 +232,7 @@ public class bRanks extends Module implements Listener {
 			return;
 			
 		Player player = (Player)entity;
-		addPlayerToTeam(player);		
+		addPlayerToTeam(player);				
 	}
 	
 	/**
@@ -203,6 +243,57 @@ public class bRanks extends Module implements Listener {
 		Team team = m_rankScorboards.get(rank);
 		if (team != null) {
 			team.addPlayer(Bukkit.getOfflinePlayer(player.getPlayerListName()));
+			updatePrefixInDatabase(player.getName(), team.getPrefix() + player.getPlayerListName());
 		}
+	}
+	
+	/**
+	 * Make sure the database table exists, else create it
+	 */	
+	private void setupDatabase() {
+		
+		if (m_database.tableExists(m_dbPrefix + "bRanks"))
+			return;
+		
+		final String createQuery = 
+		"CREATE TABLE " + m_dbPrefix + "bRanks " +
+		"(" +
+			"Player varchar(32)," +
+			"PlayerNameWithPrefix varchar(32)" +
+		")";
+
+		m_database.query(createQuery, true);
+		
+	}
+
+	/**
+	 * update or add the players name including rank prefix into a database
+	 */
+	private void updatePrefixInDatabase(String playerName, String prefixedName) {
+		
+		String addName = 
+			"INSERT INTO " + m_dbPrefix + "bRanks " +
+				"VALUES ('" +
+				playerName + "', '" +
+				prefixedName +
+			"')";
+		
+		m_database.query(addName);
+		
+	}
+	
+	/**
+	 * remove the players name including rank prefix into a database
+	 */
+	private void removePrefixFromDatabase(String playerName) {
+		
+		String removeName = 
+			"DELETE FROM " + m_dbPrefix + "bRanks " +
+				"WHERE Player='" +
+				playerName + 
+			"'";
+			
+		m_database.query(removeName);
+		
 	}
 }
