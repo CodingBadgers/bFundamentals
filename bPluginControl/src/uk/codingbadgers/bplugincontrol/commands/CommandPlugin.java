@@ -32,10 +32,8 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
-import org.bukkit.plugin.java.JavaPluginLoader;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
@@ -161,6 +159,7 @@ public class CommandPlugin extends ModuleCommand {
 	/**
 	 * Unload a given plugin.
 	 */
+	@SuppressWarnings("unchecked")
 	private boolean unloadPlugin(Player player, String pluginName) {
 		
 		PluginManager pluginManager = Bukkit.getServer().getPluginManager();
