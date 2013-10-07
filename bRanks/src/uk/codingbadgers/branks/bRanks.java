@@ -18,12 +18,21 @@
 package uk.codingbadgers.branks;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCSpawnEvent;
@@ -31,6 +40,8 @@ import net.citizensnpcs.api.npc.NPC;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,52 +50,81 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.messaging.Messenger;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.mcsg.double0negative.tabapi.TabAPI;
 
 import ru.tehkode.permissions.PermissionEntity;
+import ru.tehkode.permissions.PermissionGroup;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 import ru.tehkode.permissions.events.PermissionEntityEvent;
 import ru.tehkode.permissions.events.PermissionEntityEvent.Action;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
-public class bRanks extends Module implements Listener {
+public class bRanks extends Module implements Listener, PluginMessageListener {
 
+	// TeamName and Team
 	private HashMap<String, Team> m_rankScorboards = new HashMap<String, Team>();
 	
-	private String m_dbPrefix = "";
+	// Player Name and List Name
+	private HashMap<String, String> m_allPlayers = new HashMap<String, String>();
+	
+	// The maximum length a players name can be
+	private final int m_maxNameLength = 12;
+	
+	// Timer for update loop
+	private int m_updateLoopTimerID = -1;
+	
+	// The update loop time delay
+	private final Long m_updateTimeRate = 100L;
 	
 	/**
 	 * Called when the module is disabled.
 	 */
 	public void onDisable() {		
-		for (Team team : m_rankScorboards.values())
-		{
+		
+		Bukkit.getScheduler().cancelTask(m_updateLoopTimerID);
+		
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			TabAPI.clearTab(player);
+		}
+		
+		for (Team team : m_rankScorboards.values())	{
 			team.unregister();
 		}
 		m_rankScorboards.clear();
+		m_allPlayers.clear();
+		
+		Messenger messanger = Bukkit.getServer().getMessenger();
+		messanger.unregisterOutgoingPluginChannel(m_plugin);
+		messanger.unregisterIncomingPluginChannel(m_plugin);
 	}
 
 	/**
 	 * Called when the module is loaded.
 	 */
 	public void onEnable() {
-		register(this);		
-		m_dbPrefix = bFundamentals.getConfigurationManager().getDatabaseSettings().prefix;
+		register(this);	
 		
-		setupDatabase();
+		Messenger messanger = Bukkit.getServer().getMessenger();
+		messanger.registerOutgoingPluginChannel(m_plugin, "BungeeCord");
+		messanger.registerIncomingPluginChannel(m_plugin, "BungeeCord", this);
 		
+		m_allPlayers.clear();
 		HashMap<String, String> rankMap = loadRankMappings();
 		
 		// Create a scoreboard for each rank
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		Scoreboard mainScoreboard = manager.getMainScoreboard();
 		
-		for (String group : this.getPermissions().getGroups())
-		{
+		for (String group : this.getPermissions().getGroups()) {
+			
 			String prefix;
 			if (rankMap != null && rankMap.containsKey(group))
 				prefix = rankMap.get(group);
@@ -102,28 +142,52 @@ public class bRanks extends Module implements Listener {
 			prefix = prefix.length() > 16 ? prefix.substring(0, 15) : prefix;
 			
 			team.setPrefix(prefix);
-			team.setAllowFriendlyFire(true);
-			team.setCanSeeFriendlyInvisibles(false);
-	
 			m_rankScorboards.put(group, team);
 		}
 		
-		// Update all players online
-		for (Player player : Bukkit.getOnlinePlayers())	{
-			addPlayerToTeam(player);
+		Player[] onlinePlayers = Bukkit.getOnlinePlayers();		
+		for (Player player : onlinePlayers) {
+			addPlayerToTeam(player, false);
 		}
 		
-		// Update all npcs
 		for (NPC npc : CitizensAPI.getNPCRegistry()) {
-			LivingEntity entity = npc.getBukkitEntity();
-			if (entity == null || !(entity instanceof Player))
-				return;
-				
-			Player player = (Player)entity;
-			addPlayerToTeam(player);		
+			
+			if (npc.getBukkitEntity() == null || npc.getBukkitEntity().getType() != EntityType.PLAYER)
+				continue;
+			
+			Player player = (Player)npc.getBukkitEntity();
+			addPlayerToTeam(player, true);
 		}
+		
+		if (onlinePlayers.length != 0) {
+			requestAllPlayers(onlinePlayers[0]);
+		}
+		
+		updateTabList();
+		
+		doUpdateLoop();
 	}
 	
+	private void doUpdateLoop() {
+		
+		m_updateLoopTimerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(m_plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				
+				if (Bukkit.getOnlinePlayers().length != 0) {
+					requestAllPlayers(Bukkit.getOnlinePlayers()[0]);
+				}
+				
+			}
+			
+		}, m_updateTimeRate, m_updateTimeRate);
+		
+	}
+
+	/**
+	 * Load the rank mappings from the ranks config file
+	 */
 	private HashMap<String, String> loadRankMappings() {
 		
 		File rankMapFile = new File(this.getDataFolder() + File.separator + "ranks.json");
@@ -177,29 +241,39 @@ public class bRanks extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		final String playerName = player.getPlayerListName();
-		if (playerName.length() > 13) {
-			player.setPlayerListName(playerName.substring(0, 13));
+		if (playerName.length() > m_maxNameLength) {
+			player.setPlayerListName(playerName.substring(0, m_maxNameLength));
 		}
 		
-		addPlayerToTeam(player);
+		addPlayerToTeam(player, false);
+		requestAllPlayers(player);	
+		broadcastTabUpdate(player, 20L);
 	}
 	
 	/**
 	 * Called when a player leaves
 	 */	
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerQuit(PlayerQuitEvent event) {
+	public void onPlayerLeave(PlayerQuitEvent event) {
+
 		final Player player = event.getPlayer();
-		removePrefixFromDatabase(player.getName());
+		m_allPlayers.remove(player.getName());
+		updateTabList();
+		broadcastTabUpdate(player, 0L);
+		
 	}
 	
 	/**
-	 * Called when a player gets kicked
+	 * Called when a player is kicked
 	 */	
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerKick(PlayerKickEvent event) {
+	public void onPlayerKicked(PlayerKickEvent event) {
+
 		final Player player = event.getPlayer();
-		removePrefixFromDatabase(player.getName());
+		m_allPlayers.remove(player.getName());
+		updateTabList();
+		broadcastTabUpdate(player, 0L);
+		
 	}
 	
 	/**
@@ -216,8 +290,8 @@ public class bRanks extends Module implements Listener {
 		if (player == null)
 			return;
 		
-		removePrefixFromDatabase(player.getName());
-		addPlayerToTeam(player);		
+		addPlayerToTeam(player, false);		
+		broadcastTabUpdate(player, 20L);
 	}
 	
 	/**
@@ -232,68 +306,219 @@ public class bRanks extends Module implements Listener {
 			return;
 			
 		Player player = (Player)entity;
-		addPlayerToTeam(player);				
+		addPlayerToTeam(player, true);		
 	}
 	
 	/**
 	 * Add a given player to a team based upon their pex rank
 	 */
-	private void addPlayerToTeam(Player player) {
+	private void addPlayerToTeam(Player player, boolean isNPC) {
 		final String rank = this.getPermissions().getPrimaryGroup(player);
 		Team team = m_rankScorboards.get(rank);
 		if (team != null) {
 			team.addPlayer(Bukkit.getOfflinePlayer(player.getPlayerListName()));
-			updatePrefixInDatabase(player.getName(), team.getPrefix() + player.getPlayerListName());
+			if (!isNPC) {
+				m_allPlayers.put(player.getName(), player.getPlayerListName());
+				updateTabList();
+			}
 		}
 	}
 	
 	/**
-	 * Make sure the database table exists, else create it
+	 * Request a list of all players on the bungee network
 	 */	
-	private void setupDatabase() {
+	private void requestAllPlayers(final Player player) {
 		
-		if (m_database.tableExists(m_dbPrefix + "bRanks"))
-			return;
-		
-		final String createQuery = 
-		"CREATE TABLE " + m_dbPrefix + "bRanks " +
-		"(" +
-			"Player varchar(32)," +
-			"PlayerNameWithPrefix varchar(32)" +
-		")";
+		Bukkit.getScheduler().scheduleSyncDelayedTask(m_plugin, new Runnable() {
 
-		m_database.query(createQuery, true);
+			@Override
+			public void run() {
+				ByteArrayOutputStream b = new ByteArrayOutputStream();
+				DataOutputStream out = new DataOutputStream(b);
 		
-	}
-
-	/**
-	 * update or add the players name including rank prefix into a database
-	 */
-	private void updatePrefixInDatabase(String playerName, String prefixedName) {
-		
-		String addName = 
-			"INSERT INTO " + m_dbPrefix + "bRanks " +
-				"VALUES ('" +
-				playerName + "', '" +
-				prefixedName +
-			"')";
-		
-		m_database.query(addName);
-		
+				try {
+					out.writeUTF("PlayerList");
+					out.writeUTF("ALL");
+					player.sendPluginMessage(m_plugin, "BungeeCord", b.toByteArray());
+				} catch(Exception ex) {}
+			}
+			
+		}, 20L);
 	}
 	
 	/**
-	 * remove the players name including rank prefix into a database
-	 */
-	private void removePrefixFromDatabase(String playerName) {
+	 * Broadcast a tab update across the bungee network
+	 */	
+	private void broadcastTabUpdate(final Player player, Long delay) {
 		
-		String removeName = 
-			"DELETE FROM " + m_dbPrefix + "bRanks " +
-				"WHERE Player='" +
-				playerName + 
-			"'";
+		Bukkit.getScheduler().scheduleSyncDelayedTask(m_plugin, new Runnable() {
+
+			@Override
+			public void run() {
+
+				ByteArrayOutputStream b = new ByteArrayOutputStream();
+				DataOutputStream out = new DataOutputStream(b);
+		
+				try {
+					out.writeUTF("Forward");
+					out.writeUTF("ALL");
+					out.writeUTF("UpdateTab"); 
+					
+					ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
+					DataOutputStream msgout = new DataOutputStream(msgbytes);
+					msgout.writeUTF("SexyLemons");
+					 
+					out.writeShort(msgbytes.toByteArray().length);
+					out.write(msgbytes.toByteArray());
+					
+					player.sendPluginMessage(m_plugin, "BungeeCord", b.toByteArray());
+
+				} catch(Exception ex) {}
+
+			}
 			
-		m_database.query(removeName);
+		}, delay);
+	}
+
+	/**
+	 * Called when a plugin message is received
+	 */	
+	@Override
+	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+
+		if (!channel.equals("BungeeCord")) {
+            return;
+        }
+
+		try {
+			DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
+        	String subchannel = in.readUTF();
+
+        	if (subchannel.equalsIgnoreCase("PlayerList")) {
+        		in.readUTF(); // The name of the server you got the player list of, as given in args.
+        		
+        		ArrayList<String> playerList = new ArrayList<String>();
+        		String[] playerArray = in.readUTF().split(", ");
+        		for (String playerName : playerArray) {
+        			playerList.add(playerName);
+        		}
+        		
+        		HashMap<String, String> oldPlayerList = new HashMap<String, String>();
+        		oldPlayerList.putAll(m_allPlayers);
+
+        		for (String playerName : oldPlayerList.keySet()) {
+        			if (!playerList.contains(playerName)) {
+        				m_allPlayers.remove(playerName);
+        			}
+        		}
+        		        		        		
+        		for (String playerName : playerList) {
+        			        			
+        			if (m_allPlayers.containsKey(playerName))
+        				continue;
+        			        			
+        			final String rank = this.getPermissions().getPrimaryGroup((String)null, playerName);
+        			Team team = m_rankScorboards.get(rank);
+        			if (team != null) {
+        				
+        				String listName = playerName;        				
+        				if (listName.length() > m_maxNameLength) {
+        					listName = listName.substring(0, m_maxNameLength);
+            			}
+
+        				team.addPlayer(Bukkit.getOfflinePlayer(listName));
+        				m_allPlayers.put(playerName, listName);
+        			}
+        		}
+        		
+        		updateTabList();
+        		
+        	}
+        	else if (subchannel.equalsIgnoreCase("UpdateTab")) {
+
+        		Bukkit.getScheduler().scheduleSyncDelayedTask(m_plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						if (Bukkit.getOnlinePlayers().length != 0) {
+		        			requestAllPlayers(Bukkit.getOnlinePlayers()[0]);
+		        		}
+					}
+        			
+        		}, 20L);
+        		
+        	}
+        
+		} catch(Exception ex) {}
+		
+	}
+
+	/**
+	 * Update the tab list for all players online
+	 */	
+	private void updateTabList() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			updateTabList(player.getName());
+		}
+	}
+
+	/**
+	 * Update the tablist for a given player
+	 */	
+	private void updateTabList(final String playerToUpdateName) {
+		
+		Bukkit.getScheduler().scheduleSyncDelayedTask(m_plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				
+				Player player = Bukkit.getPlayer(playerToUpdateName);
+				if (player == null)
+					return;
+				
+				TabAPI.setPriority(m_plugin, player, 2);
+				TabAPI.clearTab(player);
+				
+				TabAPI.setTabString(m_plugin, player, 0, 0, ChatColor.GOLD + "||============");
+				TabAPI.setTabString(m_plugin, player, 0, 1, ChatColor.GOLD + Bukkit.getServerName());
+				TabAPI.setTabString(m_plugin, player, 0, 2, ChatColor.GOLD + "============||");
+				
+				int x = 0;
+				int y = 2;
+
+				SortedMap<Integer, PermissionGroup> pexRanks = new TreeMap<Integer, PermissionGroup>(); 
+				pexRanks.putAll(PermissionsEx.getPermissionManager().getRankLadder("default"));
+								
+				for (PermissionGroup group : pexRanks.values()) {
+					
+					Team team = m_rankScorboards.get(group.getName());
+					if (team != null) {
+						Set<OfflinePlayer> teamPlayers = team.getPlayers();
+						for (OfflinePlayer teamPlayer : teamPlayers) {
+
+							if (!m_allPlayers.containsValue(teamPlayer.getName()))
+								continue;
+							
+							TabAPI.setTabString(m_plugin, player, y, x, teamPlayer.getName());
+							x++;
+							if (x >= 3) {
+								y++;
+								x = 0;
+							}
+						}
+						
+						/*if (teamPlayers.size() != 0 && x != 0) {
+							y++;
+							x = 0;
+						}*/
+					}
+					
+				}
+								
+				TabAPI.updatePlayer(player); 
+			}
+
+		}, 20L);
 		
 	}
 }

@@ -12,45 +12,19 @@
 	
 	<repositories>
 	    
-	    <repository>
-      		<id>spout-repo</id>
-     	 	<url>http://repo.spout.org</url>
-    	</repository>
-    	
-		<repository>
-			<id>sk89q-maven</id>
-			<url>http://maven.sk89q.com/repo</url>
-		</repository>
-		
-		<repository>
-        	<id>remoteentities-repo</id>
-        	<url>http://repo.infinityblade.de/remoteentities/releases</url>
-    	</repository>
-    	
     	<repository>
     		<id>citizens-repo</id>
     		<url>http://repo.citizensnpcs.co/</url>
     	</repository>
+    	
+    	<repository>
+			<id>drtshock-repo</id>
+			<url>http://ci.drtshock.com/plugin/repository/everything</url>
+		</repository>
 		
 	</repositories>
 	
-    <dependencies>
-        <dependency>
-			<groupId>com.sk89q</groupId>
-			<artifactId>worldedit</artifactId>
-			<version>5.3</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.sk89q</groupId>
-			<artifactId>worldguard</artifactId>
-			<version>5.3</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		
+    <dependencies>		
         <dependency>
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
@@ -62,5 +36,12 @@
             <groupId>net.citizensnpcs</groupId>
             <version>2.0.10-SNAPSHOT</version>
         </dependency>
+        
+		<dependency>
+			<groupId>org.mcsg.double0negative</groupId>
+			<artifactId>tabapi</artifactId>
+			<version>B%200.1.15</version>
+			<scope>compile</scope>
+		</dependency>
     </dependencies>
 </project>
