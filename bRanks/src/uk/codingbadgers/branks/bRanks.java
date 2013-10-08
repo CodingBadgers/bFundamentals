@@ -28,7 +28,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.SortedMap;
@@ -83,6 +82,9 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
 	
 	// The update loop time delay
 	private final Long m_updateTimeRate = 100L;
+	
+	// 
+	private boolean m_requireUpdate = true;
 	
 	/**
 	 * Called when the module is disabled.
@@ -409,6 +411,7 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
         		for (String playerName : oldPlayerList.keySet()) {
         			if (!playerList.contains(playerName)) {
         				m_allPlayers.remove(playerName);
+        				m_requireUpdate = true;
         			}
         		}
         		        		        		
@@ -416,6 +419,8 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
         			        			
         			if (m_allPlayers.containsKey(playerName))
         				continue;
+        			
+        			m_requireUpdate = true;
         			        			
         			final String rank = this.getPermissions().getPrimaryGroup((String)null, playerName);
         			Team team = m_rankScorboards.get(rank);
@@ -457,9 +462,15 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
 	 * Update the tab list for all players online
 	 */	
 	private void updateTabList() {
+		
+		if (!m_requireUpdate)
+			return;
+		
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			updateTabList(player.getName());
 		}
+		
+		m_requireUpdate = false;
 	}
 
 	/**

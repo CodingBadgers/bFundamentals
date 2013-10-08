@@ -20,5 +20,10 @@
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
         </dependency>
+		<dependency>
+            <artifactId>EstateAgent</artifactId>
+            <groupId>uk.thecodingbadgers</groupId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 </project>
