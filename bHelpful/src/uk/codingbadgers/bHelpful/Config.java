@@ -33,7 +33,7 @@ public class Config implements ConfigFile {
 	@Element("label.list")
 	public static final String LIST_LABEL = "list";
 	@Element("label.list")
-	public static final String REGISTER_LABEL = "list";
+	public static final String REGISTER_LABEL = "register";
 	@Element("label.rules")
 	public static final String RULES_LABEL = "rules";
 	@Element("label.vote")

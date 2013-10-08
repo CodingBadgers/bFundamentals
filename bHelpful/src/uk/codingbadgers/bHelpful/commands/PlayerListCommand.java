@@ -50,11 +50,12 @@ public class PlayerListCommand extends ConfigCommand {
 
 	@Override
 	protected void handleCommand(CommandSender sender, String label, String[] args) {
+
 		if (sender instanceof ConsoleCommandSender) {
 			return;
 		}
 		
-		listPlayers(sender);
+		displayList(sender);
 	}
 	
 	public static void displayList(CommandSender sender)  {
@@ -144,7 +145,7 @@ public class PlayerListCommand extends ConfigCommand {
             out.append(") ");
             out.append(ChatColor.WHITE);
         }
-       
+
         // no point continuing as no-one is online, can only be reached by the console
         if (onlinePlayers == 0) {
         	return out.toString();
