@@ -22,12 +22,15 @@
     
     <modules>
         <module>bFundamentals</module>
-		<module>bPluginControl</module>
-        <module>bRanks</module> 
-        <module>bSocks</module>
-		<module>bSign</module>
+		<module>bInfoBooks</module>
+		<module>bPotioned</module>
 		<module>bAnimalCare</module>
 		<module>bHelpful</module>
+        <module>bCreative</module>
+        <module>bQuiet</module>
+        <module>bRanks</module> 
+        <module>bPortals</module> 
+        <module>bSocks</module>
     </modules>
     
     <organization>

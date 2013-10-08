@@ -25,31 +25,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-import n3wton.estate.agent.event.EstateAgentBuyEvent;
-import n3wton.estate.agent.event.EstateAgentMemberEvent;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -66,11 +54,6 @@ public class bCreative extends Module implements Listener {
 	 * The list of black listed interact materials
 	 */
 	private List<Material> interactBlacklist = null;
-	
-	/**
-	 * The list of black listed interact materials
-	 */
-	private List<EntityType> projectileBlacklist = null;
 	
 	/**
 	 * A hashmap of the last item a player tried to pickup
@@ -94,7 +77,6 @@ public class bCreative extends Module implements Listener {
 	@SuppressWarnings("deprecation")
 	public void onEnable() {
 		register(this);
-		registerCommand(new PlotCommand(this));
 		
 		// Create the folder where backups will go
 		backupFolder = new File(this.getDataFolder() + File.separator + "playerBackups");
@@ -139,10 +121,6 @@ public class bCreative extends Module implements Listener {
 		log(Level.INFO, "bCreative will block interaction with the following materials:");
 		for (Material material : interactBlacklist)
 			log(Level.INFO, " - " + material.name());
-		
-		projectileBlacklist = new ArrayList<EntityType>(); 
-		projectileBlacklist.add(EntityType.SPLASH_POTION);
-		projectileBlacklist.add(EntityType.THROWN_EXP_BOTTLE);
 		
 		playersLastPickupItem = new HashMap<Player, Location>();
 		playerProcessingGameModeEvent = new ArrayList<String>();
@@ -196,55 +174,6 @@ public class bCreative extends Module implements Listener {
 		// Cancel the event as the material is on the blacklist
 		event.setCancelled(true);
 		sendMessage(getName(), player, "You cannot open '" + material.name() + "' whilst in creative mode.");
-	}
-	
-	/* 
-	 * Called when a player eats/drinks/potions
-	 */
-	@EventHandler
-	public void onPlayerConsume(PlayerItemConsumeEvent event) {
-		
-		final Player player = event.getPlayer();
-		
-		// We only care about creative players
-		if (player.getGameMode() != GameMode.CREATIVE) {
-			return;
-		}
-				
-		// Is the player in a world where bCreative is active?
-		if (!activeWorlds.contains(player.getWorld().getName().toLowerCase())) { 
-			return;
-		}
-		
-		event.setCancelled(true);
-		sendMessage(getName(), player, "You cannot consume items whilst in creative mode.");
-	}
-	
-	/* 
-	 * Called when a projectile is launched
-	 */
-	@EventHandler
-	public void onProjectileLaunch(ProjectileLaunchEvent event) {
-		
-		final Projectile projectile = event.getEntity();
-		
-		final LivingEntity shooter = projectile.getShooter();
-		final Player player = shooter instanceof Player ? (Player)shooter : null;
-		
-		// If this projectile type isn't blacklisted, let it fly
-		if (player == null && !projectileBlacklist.contains(projectile.getType())) {
-			return;
-		}
-		
-		// Is the player in a world where bCreative is active?
-		if (!activeWorlds.contains(projectile.getWorld().getName().toLowerCase())) { 
-			return;
-		}
-				
-		event.setCancelled(true);		
-		if (player != null) {
-			sendMessage(getName(), player, "You cannot launch projectiles whilst in creative mode.");
-		}
 	}
 
 	/* 
@@ -328,14 +257,7 @@ public class bCreative extends Module implements Listener {
 		final Player player = event.getPlayer();
 		
 		// If the player has this permission let them keep their gamemode inventory
-		//if (hasPermission(player, "bcreative.player.keepinventory")) {
-		//	return;
-		//}
-		
-		GameMode gameMode = player.getGameMode();
-		
-		// Check they are in one of our worlds
-		if (gameMode != GameMode.CREATIVE && !activeWorlds.contains(player.getWorld().getName().toLowerCase())) { 
+		if (hasPermission(player, "bcreative.player.keepinventory")) {
 			return;
 		}
 		
@@ -346,7 +268,7 @@ public class bCreative extends Module implements Listener {
 		
 		playerProcessingGameModeEvent.add(player.getName());
 		
-		final String oldGameMode = gameMode.name();
+		final String oldGameMode = player.getGameMode().name();
 		final String newGameMode = event.getNewGameMode().name();
 		
 		final File backupFolder = new File(this.backupFolder + File.separator + oldGameMode);
@@ -367,49 +289,5 @@ public class bCreative extends Module implements Listener {
 		}
 		
 		playerProcessingGameModeEvent.remove(player.getName());		
-	}
-	
-	/* 
-	 * Called when a player buys a region
-	 */
-	@EventHandler
-	public void onPlayerBuyRegion(EstateAgentBuyEvent event) {
-		ProtectedRegion plot = event.getRegion();
-		if (plot == null) {
-			return;
-		}
-
-		for (String world : activeWorlds) {
-			if (plot.getId().startsWith(world)) {
-				Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "[bCreative] " + ChatColor.WHITE + event.getBuyer().getName() + " has entered the Creative Competition!");
-				Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "[bCreative] " + ChatColor.WHITE + "Wish them luck!");
-				return;
-			}
-		}
-		
-	}
-	
-	/* 
-	 * Called when a player tries to be a member of a region
-	 */
-	@EventHandler
-	public void onPlayerBuyRegion(EstateAgentMemberEvent event) {
-		ProtectedRegion plot = event.getRegion();
-		if (plot == null) {
-			return;
-		}
-
-		for (String world : activeWorlds) {
-			if (plot.getId().startsWith(world)) {
-				Module.sendMessage("bCreative", event.getPlayer(), "Creative Competitions must be created on your own.");
-				event.setCancelled(true);
-				return;
-			}
-		}
-		
-	}
-	
-	public List<String> getActiveWorlds() {
-		return this.activeWorlds;
 	}
 }
