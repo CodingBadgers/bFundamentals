@@ -72,7 +72,6 @@ public abstract class ConfigCommand extends ModuleCommand {
 		if (config) {
 			this.m_file = new File(bHelpful.MODULE.getDataFolder(), getClass().getSimpleName().substring(0, getClass().getSimpleName().indexOf("Command")) + ".cfg");
 		}
-		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	/**

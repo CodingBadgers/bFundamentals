@@ -37,6 +37,7 @@ public class MotdCommand extends ConfigCommand {
 
 	public MotdCommand() {
 		super(Config.MOTD_LABEL);
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override

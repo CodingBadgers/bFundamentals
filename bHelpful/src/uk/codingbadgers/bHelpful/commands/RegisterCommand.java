@@ -30,10 +30,12 @@ import uk.codingbadgers.bHelpful.Output;
 
 public class RegisterCommand extends ConfigCommand {
 
-	private List<String> message = new ArrayList<String>();
+	private List<String> message = null;
 	
 	public RegisterCommand() {
 		super("register");
+		this.message = new ArrayList<String>();
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override

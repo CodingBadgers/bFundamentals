@@ -45,6 +45,7 @@ public class PlayerListCommand extends ConfigCommand {
 
 	public PlayerListCommand() {
 		super(Config.LIST_LABEL, "/list", false);
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override

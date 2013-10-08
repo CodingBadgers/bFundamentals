@@ -42,6 +42,7 @@ public class NewsCommand extends ConfigCommand {
 
 	public NewsCommand() {
 		super(Config.NEWS_LABEL, "/" + Config.NEWS_LABEL + " [amount]", false);
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override

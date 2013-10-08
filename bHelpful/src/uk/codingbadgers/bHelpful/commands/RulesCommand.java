@@ -31,10 +31,12 @@ import uk.codingbadgers.bHelpful.Output;
 
 public class RulesCommand extends ConfigCommand {
 
-	private List<String> messages = new ArrayList<String>();
+	private List<String> messages = null;
 
 	public RulesCommand() {
 		super("rules");
+		this.messages = new ArrayList<String>();
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override
