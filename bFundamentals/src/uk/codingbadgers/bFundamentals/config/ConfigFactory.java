@@ -52,6 +52,7 @@ public class ConfigFactory {
 		
 		if (!configFile.exists()) {
 			configFile.createNewFile();
+			createDefaultConfig(clazz, configFile);
 		}
 		
 		loadConfig(clazz, configFile);
@@ -106,7 +107,6 @@ public class ConfigFactory {
 					removeModifier(field, Modifier.FINAL);
 					ConfigMapper<?> mapper = element.mapper().newInstance();
 					field.set(null, mapper.deserialise(config.get(catName + name, field.get(null))));
-					System.out.println(catName + name + ' ' + field.get(null));
 				}
 			}
 		}
@@ -180,7 +180,6 @@ public class ConfigFactory {
 					}
 
 					ConfigMapper mapper = element.mapper().newInstance();
-					System.out.println(catName + name + ' ' + mapper.serialise(field.get(null)));
 					config.addDefault(catName + name, mapper.serialise(field.get(null)));
 				}
 			}

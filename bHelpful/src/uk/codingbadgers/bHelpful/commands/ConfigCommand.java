@@ -153,18 +153,17 @@ public abstract class ConfigCommand extends ModuleCommand {
 					// should never be called
 					throw new IOException("Unkown error in creating default config file for " + m_label);
 				}
-				
+
 				Output.log(Level.INFO, "Creating default config for command " + m_label + " (" + m_file.getAbsolutePath() + ")");
-				
+
 				InputStream ins = getClass().getResourceAsStream("config" + File.separator + m_file.getName());
 				BufferedWriter writer = new BufferedWriter(new FileWriter(m_file));
 				SimpleDateFormat format = new SimpleDateFormat("d/M/y h:m:s");
-				String line = '#' + m_file.getName() + " generated on " + format.format(new Date());
-				writer.write(line);
-				writer.write('#');
+				writer.write('#' + m_file.getName() + " generated on " + format.format(new Date()) + "\n");
 
 				BufferedReader reader = null;
 
+                String line = "";
 				try {
 					if (ins != null) {
 						reader = new BufferedReader(new InputStreamReader(ins));

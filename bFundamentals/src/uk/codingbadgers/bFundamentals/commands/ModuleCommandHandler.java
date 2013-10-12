@@ -116,16 +116,20 @@ public class ModuleCommandHandler {
 			try {
 				Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
 				Command theCommand = commandMap.getCommand(command.getLabel());
+				
+				if (theCommand == null) {
+				    throw new Exception("Cannot find command " + command.getLabel() + " in bukkit command map");
+				}
+				
 				theCommand.unregister(commandMap);
 				knownCommands.remove(theCommand.getLabel().toLowerCase());
 				if (bFundamentals.getConfigurationManager().isDebugEnabled()) {
 					bFundamentals.log(Level.INFO, theCommand.getLabel().toLowerCase() + " for module " + module.getName() + " has been deregistered successfully");
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				bFundamentals.log(Level.INFO, "Error deregistrying " + command.getName() + " for module " + module.getName(), e);
 			}
 		}
-	
 	}
 
 	/**
