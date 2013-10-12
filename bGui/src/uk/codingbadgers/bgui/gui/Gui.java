@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -34,10 +36,11 @@ import uk.codingbadgers.bgui.click.ActionType;
 import uk.codingbadgers.bgui.click.ClickHandler;
 import uk.codingbadgers.bgui.exception.GuiFormatException;
 
-public class Gui {
+public final class Gui {
 
     private final String name;
     private final int size;
+    private final World world;
     private Map<Integer, GuiItem> items;
 
     public Gui(JSONObject json) {
@@ -48,6 +51,7 @@ public class Gui {
         }
         
         name = (String) json.get("name");
+        world = Bukkit.getWorld((String) json.get("world"));
         items = loadItems((JSONArray)json.get("items"));
     }
 
@@ -112,6 +116,10 @@ public class Gui {
 
     public String getName() {
         return name;
+    }
+    
+    public World getWorld() {
+        return world;
     }
 
 }

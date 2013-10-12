@@ -45,6 +45,10 @@ public class PlayerListener implements Listener {
         if (gui == null) {
             return; // something is really fucked up, #blameemma
         }
+        
+        if (!gui.getWorld().equals(player.getWorld())) {
+            return;
+        }
 
         event.setCancelled(gui.handleClick(player, player.getInventory().getHeldItemSlot()));
     }
@@ -56,12 +60,17 @@ public class PlayerListener implements Listener {
         if (inv != null) {
             int slot = event.getSlot();
             Gui gui = GuiHandler.getGui();
+            Player player = (Player) event.getWhoClicked();
 
             if (gui == null) {
                 return; // something is really fucked up, #blameemma
             }
 
-            event.setCancelled(gui.handleClick((Player)event.getWhoClicked(), slot));
+            if (!gui.getWorld().equals(player.getWorld())) {
+                return;
+            }
+
+            event.setCancelled(gui.handleClick(player, slot));
         }
     }
     
@@ -72,6 +81,10 @@ public class PlayerListener implements Listener {
 
         if (gui == null) {
             return; // something is really fucked up, #blameemma
+        }
+
+        if (!gui.getWorld().equals(player.getWorld())) {
+            return;
         }
 
         gui.displayInventory(player);
