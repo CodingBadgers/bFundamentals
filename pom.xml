@@ -31,6 +31,7 @@
         <module>bRanks</module> 
         <module>bPortals</module> 
         <module>bSocks</module>
+        <module>bGui</module>
     </modules>
     
     <organization>
