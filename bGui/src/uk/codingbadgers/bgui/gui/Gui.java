@@ -107,6 +107,12 @@ public final class Gui {
     
     public boolean handleClick(Player player, int slot) {
         if (items.containsKey(slot)) {
+            GuiItem item = items.get(slot);
+            
+            if (item == null || !item.getItem().isSimilar(player.getItemInHand())) {
+                return false;
+            }
+            
             items.get(slot).handleClick(player);
             return true;
         }
