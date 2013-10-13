@@ -41,12 +41,14 @@ import uk.codingbadgers.bHelpful.bHelpful;
 
 public class AnnouncementCommand extends ConfigCommand {
 
-	private List<List<String>> announcements = new ArrayList<List<String>>();
+	private List<List<String>> announcements = null;
 	private int lastAnnouncement = -1;
 	private BukkitTask task = null;
 
 	public AnnouncementCommand() {
 		super(Config.ANNOUNCE_LABEL, "/" + Config.ANNOUNCE_LABEL + " <list/broadcast/add/remove>", true);
+		this.announcements = new ArrayList<List<String>>();
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override
@@ -158,7 +160,6 @@ public class AnnouncementCommand extends ConfigCommand {
 		if (task != null) {
 			task.cancel();
 		}
-		System.out.println(announcements);
 		
 		this.announcements.clear();
 
@@ -225,14 +226,13 @@ public class AnnouncementCommand extends ConfigCommand {
 	}
 
 	private void addAnnouncement(String announcement) {
-		List<List<String>> announcements = this.announcements;
 		ArrayList<String> announceArray = new ArrayList<String>();
 
 		for (String part : announcement.split(";")) {
 			announceArray.add(part.trim());
 		}
 
-		announcements.add(announceArray);
+		this.announcements.add(announceArray);
 
 		File announcementConfig = m_file;
 
@@ -253,8 +253,7 @@ public class AnnouncementCommand extends ConfigCommand {
 	}
 	
 	private void removeAnnouncement(int id) {
-		List<List<String>> announcements = this.announcements;
-		announcements.remove(id);
+		this.announcements.remove(id);
 
 		File announcementConfig = m_file;
 
@@ -262,11 +261,11 @@ public class AnnouncementCommand extends ConfigCommand {
 			FileWriter fstream = new FileWriter(announcementConfig.getPath());
 			BufferedWriter writer = new BufferedWriter(fstream);
 
-			for (int i = 0; i < announcements.size(); i++) {
+			for (int i = 0; i < this.announcements.size(); i++) {
 				String announcement = "";
 
-				for (int j = 0; j < announcements.get(i).size(); j++) {
-					announcement += announcements.get(i).get(j) + "\n";
+				for (int j = 0; j < this.announcements.get(i).size(); j++) {
+					announcement += this.announcements.get(i).get(j) + "\n";
 				}
 
 				writer.write("~ANNOUNCEMENT~\n");

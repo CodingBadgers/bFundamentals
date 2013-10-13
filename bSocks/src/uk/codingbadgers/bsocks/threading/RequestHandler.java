@@ -1,5 +1,5 @@
 /**
- * bFundamentalsBuild 1.2-SNAPSHOT
+ * bSocks 1.2-SNAPSHOT
  * Copyright (C) 2013  CodingBadgers <plugins@mcbadgercraft.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -146,8 +148,9 @@ public class RequestHandler extends Thread {
 		JSONArray players = new JSONArray();
 		
 		for (OfflinePlayer player : m_plugin.getServer().getOfflinePlayers()) {
-			if (player.getName().startsWith((String) command.get("player")))
+			if (player.getName().startsWith((String) command.get("player"))) {
 				players.add(player.getName());
+			}
 		}
 		
 		responce.put("players", players);
@@ -221,41 +224,50 @@ public class RequestHandler extends Thread {
 		// send a message to a single player
 		if (mode.equalsIgnoreCase("sendMessage")) {
 			String playerName = (String) command.get("playerName");
-			String message = (String) command.get("context");
-			message = formatMessage(message);
+			final String message = formatMessage((String) command.get("context"));
 			
 			m_module.log(Level.INFO, "Sending message '" + message + "' to " + playerName);
 			
-			Player player = m_plugin.getServer().getPlayer(playerName);
+			final Player player = m_plugin.getServer().getPlayer(playerName);
 			if (player != null) {
-				player.sendMessage(message);
+				runSync(new Runnable() {
+					public void run() {
+						player.sendMessage(message);
+					}
+				});
 			}
 			
 		} 
 		// send a message to all players on the server
 		else if (mode.equalsIgnoreCase("sendMessageAll")) {
-			String message = (String)command.get("context");
-			message = formatMessage(message);
+			final String message = formatMessage((String)command.get("context"));
 			
 			m_module.log(Level.INFO, "Sending message '" + message + "' to all players");
-			
-			m_plugin.getServer().broadcastMessage(message);
+
+			runSync(new Runnable() {
+				public void run() {
+					m_plugin.getServer().broadcastMessage(message);
+				}
+			});
 			
 		} 
 		// message all players, excluding a given player
 		else if (mode.equalsIgnoreCase("sendMessageAllEx")) {
 			Player excludePlayer = m_plugin.getServer().getPlayer((String)command.get("exludedPlayer"));
 
-			String message = (String) command.get("context");
-			message = formatMessage(message);
+			final String message = formatMessage((String) command.get("context"));
 			
 			m_module.log(Level.INFO, " Sending message '" + message + "' to all players apart from " + excludePlayer.getName());
 			
 			Player[] players = m_plugin.getServer().getOnlinePlayers();
 			for (int i = 0; i < players.length; ++i) {
-				Player p = players[i];
+				final Player p = players[i];
 				if (p != excludePlayer) {
-					p.sendMessage(message);
+					runSync(new Runnable() {
+						public void run() {
+							p.sendMessage(message);
+						}
+					});
 				}				
 			}
 		}
@@ -266,6 +278,15 @@ public class RequestHandler extends Thread {
 		}
 	}
 	
+	/**
+	 * Run a task on the main server thread.
+	 * 
+	 * @param runnable
+	 */
+	private void runSync(Runnable runnable) {
+		Bukkit.getScheduler().runTask(m_plugin, runnable);
+	}
+
 	/**
 	 * Handle execute commands.
 	 *
@@ -290,8 +311,14 @@ public class RequestHandler extends Thread {
 		}
 
 		// get the command 
-		String command = (String)json.get("context");		
-		m_plugin.getServer().dispatchCommand(sender, command);		
+		final String command = (String)json.get("context");	
+		final CommandSender csender = sender;
+		
+		runSync(new Runnable() {
+			public void run() {
+				m_plugin.getServer().dispatchCommand(csender, command);	
+			}
+		});	
 		m_module.log(Level.INFO, "Executed command '" + command + "' as " + senderName);
 	}
 	
@@ -304,36 +331,8 @@ public class RequestHandler extends Thread {
 	private String formatMessage(String message) {
 
 		message = message.trim();
-		message = replaceColours(message);
-		
+		message = ChatColor.translateAlternateColorCodes('&', message);
 		return message;
-	}
-	
-	/**
-	 * Replace &<id> colours in a message.
-	 *
-	 * @param message the original message
-	 * @return the message with colour codes properly represented
-	 */
-	private static String replaceColours(String message) {
-		
-		// Store the message in a temp buffer
-		String formattedMessage = message;
-		
-		// we'll replace the &<c> as we go, so loop through all of them
-		while(formattedMessage.indexOf("&") != -1) {
-			
-			// get the colour code first as a string, then convert the hex based char into an integer
-			String code = formattedMessage.substring(formattedMessage.indexOf("&") + 1, formattedMessage.indexOf("&") + 2);
-			
-			// get all the text up to the first '&'
-			// get the chat colour from our colour code
-			// skip the &<c> and reattach the rest of the string
-			formattedMessage = formattedMessage.substring(0, formattedMessage.indexOf("&")) +  ChatColor.getByChar(code) + formattedMessage.substring(formattedMessage.indexOf("&") + 2);
-								
-		}
-		
-		return formattedMessage;
 	}
 	
 }

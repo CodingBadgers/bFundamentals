@@ -17,8 +17,6 @@
  */
 package uk.codingbadgers.bFundamentals.module;
 
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.help.HelpTopic;
@@ -34,9 +32,6 @@ public class ModuleHelpTopic extends HelpTopic {
 	/** The module instance that help topic is for. */
 	private Module m_module = null;
 	
-	/** The commands list. */
-	private List<ModuleCommand> m_commands = null;
-	
 	/**
 	 * Instantiates a new module help topic.
 	 *
@@ -44,7 +39,6 @@ public class ModuleHelpTopic extends HelpTopic {
 	 */
 	public ModuleHelpTopic (Module module) {
 		m_module = module;
-		m_commands = module.getCommands();
 		
 		name = m_module.getName();
 		shortText = "All commands for " + m_module.getName();
@@ -87,7 +81,7 @@ public class ModuleHelpTopic extends HelpTopic {
 	 */
 	@Override
 	public boolean canSee(CommandSender arg0) {
-		return m_commands.size() != 0;
+		return m_module.getCommands().size() != 0;
 	}
 
 }

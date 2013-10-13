@@ -31,15 +31,22 @@ public class bPortals extends Module {
 
 	private static bPortals instance;
 	private static WorldEditPlugin worldedit;
+	
+	private static PortalManager portalManager;
+	private static DatabaseManager dbManager;
 
 	/**
 	 * Called when the module is disabled.
 	 */
 	public void onDisable() {
-		PortalManager.getInstance().destroy();
+		portalManager.destroy();
+		dbManager.destroy();
+
+		portalManager = null;
+		dbManager = null;
 		
-		instance = null;
 		worldedit = null;
+		instance = null;
 	}
 
 	/**
@@ -56,7 +63,9 @@ public class bPortals extends Module {
 		
 		worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		
-		PortalManager.setInstance(new PortalManager());
+		portalManager = new PortalManager();
+		dbManager = new DatabaseManager(m_database);
+		
 		register(new PortalListener());
 		registerCommand(new PortalCommand());
 	}
@@ -67,6 +76,14 @@ public class bPortals extends Module {
 	
 	public static WorldEditPlugin getWorldEdit() {
 		return worldedit;
+	}
+	
+	public static DatabaseManager getDatabaseManager() {
+		return dbManager;
+	}
+	
+	public static PortalManager getPortalManager() {
+		return portalManager;
 	}
 	
 }

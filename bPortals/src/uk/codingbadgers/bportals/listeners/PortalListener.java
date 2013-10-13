@@ -17,6 +17,8 @@
  */
 package uk.codingbadgers.bportals.listeners;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -27,14 +29,34 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 
-import uk.codingbadgers.bportals.Portal;
-import uk.codingbadgers.bportals.PortalManager;
 import uk.codingbadgers.bportals.bPortals;
+import uk.codingbadgers.bportals.portal.Portal;
 
 public class PortalListener implements Listener {
+
+	private Map<Entity, Portal> data = new HashMap<Entity, Portal>();
+
+	@EventHandler()
+	public void onEntityEnterPortal(EntityPortalEnterEvent event) {
+		Portal portal = bPortals.getPortalManager().getPortalFromLocation(event.getLocation());
+		
+		if (portal != null) {
+			data.put(event.getEntity(), portal.immutableCopy());
+			bPortals.getInstance().debugConsole("You have entered the portal " + portal.getId());
+		}
+	}
+
+	@EventHandler()
+	public void onEntityExitPortal(EntityPortalEnterEvent event) {
+		if (data.containsKey(event.getEntity())) {
+			data.remove(event.getEntity());
+			bPortals.getInstance().debugConsole("You have exited the portal");
+		}
+	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityPortal(EntityPortalEvent event) {
@@ -59,26 +81,25 @@ public class PortalListener implements Listener {
 	public Location handlePortalEvent(Entity entity, Location from, Location to) {
 		bPortals.getInstance().debugConsole(entity.getType() + "");
 		
-		if (!PortalManager.getInstance().isAllowedEntityType(entity.getType())) {
+		if (!bPortals.getPortalManager().isAllowedEntityType(entity.getType())) {
 			return null;
 		}
-
-		Portal portal = PortalManager.getInstance().getPortalFromLocation(from);
-
-		if (portal == null) {
-			bPortals.getInstance().debugConsole("No portal at " + from);
+		
+		if (!data.containsKey(entity)) {
 			return null;
 		}
+		
+		Portal portal = data.get(entity);
 
-		Location dest = portal.getTeleportLocation();
-
-		if (dest == null) {
+		if (!portal.hasTeleportLocation()) {
 			bPortals.getInstance().getLogger().log(Level.INFO, "Portal " + portal.getId() + " does not have a destination set.");
 			if (entity instanceof Player) {
 				((Player) entity).sendMessage(ChatColor.DARK_PURPLE + "[bPortals] " + ChatColor.RESET + "This portal has no destination set.");
 			}
 			return portal.getExitLocation();
 		}
+		
+		Location dest = portal.getTeleportLocation();
 
 		bPortals.getInstance().debugConsole(portal.getId());
 		bPortals.getInstance().debugConsole(portal.getExitLocation().toString());
@@ -90,7 +111,7 @@ public class PortalListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockPhysics(BlockPhysicsEvent event) {
 		if (event.getChangedType() == Material.PORTAL || event.getBlock().getType() == Material.PORTAL) {
-			if (PortalManager.getInstance().isPortal(event.getBlock().getLocation())) {
+			if (bPortals.getPortalManager().isPortal(event.getBlock().getLocation())) {
 				event.setCancelled(true);
 			}
 		}

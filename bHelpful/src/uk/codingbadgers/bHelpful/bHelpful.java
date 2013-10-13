@@ -59,7 +59,7 @@ public class bHelpful extends Module {
      * @see uk.codingbadgers.bFundamentals.module.Module#onEnable()
      */
     public void onEnable() {   
-        register(new BadgerDocsListener(this));
+        register(new PlayerListener(this));
         
         registerCommand(new AnnouncementCommand());
         registerCommand(new MaintenanceCommand());

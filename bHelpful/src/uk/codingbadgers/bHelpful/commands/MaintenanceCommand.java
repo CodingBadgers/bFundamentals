@@ -31,6 +31,7 @@ public class MaintenanceCommand extends ConfigCommand {
 
 	public MaintenanceCommand() {
 		super("motd", "/motd", false);
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override

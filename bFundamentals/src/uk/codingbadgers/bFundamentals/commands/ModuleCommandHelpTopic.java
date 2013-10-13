@@ -54,6 +54,10 @@ public class ModuleCommandHelpTopic extends HelpTopic {
 			return true;
 		}
 		
+		if (m_command == null) {
+		    return false;
+		}
+		
 		Player player = (Player) sender;
 		
 		return Module.hasPermission(player, m_command.getPermission()) || Module.hasPermission(player, "bfundamentals.admin");
@@ -64,6 +68,10 @@ public class ModuleCommandHelpTopic extends HelpTopic {
 	 */
 	@Override 
 	public String getFullText(CommandSender sender) {
+	    if (m_command == null) {
+	        return "";
+	    }
+	    
 		// Build full text
         StringBuilder sb = new StringBuilder();
 

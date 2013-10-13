@@ -31,6 +31,8 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.PluginManager;
 
+import com.google.common.collect.ImmutableList;
+
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
@@ -114,16 +116,20 @@ public class ModuleCommandHandler {
 			try {
 				Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandMap);
 				Command theCommand = commandMap.getCommand(command.getLabel());
+				
+				if (theCommand == null) {
+				    throw new Exception("Cannot find command " + command.getLabel() + " in bukkit command map");
+				}
+				
 				theCommand.unregister(commandMap);
 				knownCommands.remove(theCommand.getLabel().toLowerCase());
 				if (bFundamentals.getConfigurationManager().isDebugEnabled()) {
 					bFundamentals.log(Level.INFO, theCommand.getLabel().toLowerCase() + " for module " + module.getName() + " has been deregistered successfully");
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				bFundamentals.log(Level.INFO, "Error deregistrying " + command.getName() + " for module " + module.getName(), e);
 			}
 		}
-	
 	}
 
 	/**
@@ -133,6 +139,9 @@ public class ModuleCommandHandler {
 	 * @return the commands for that module
 	 */
 	public static List<ModuleCommand> getCommands(Module module) {
-		return commands.get(module);
+	    if (!commands.containsKey(module)) {
+	        return new ImmutableList.Builder<ModuleCommand>().build();
+	    }
+		return new ImmutableList.Builder<ModuleCommand>().addAll(commands.get(module)).build();
 	}	
 }

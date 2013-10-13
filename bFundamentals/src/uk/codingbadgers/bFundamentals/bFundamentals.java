@@ -116,7 +116,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	}
 
 	public static void setInstance(bFundamentals plugin) {
-		if (m_configuration != null) {
+		if (m_instance != null) {
 			throw new RuntimeException("Plugin instance already set, cannot redeclare");
 		}
 		m_instance = plugin;
@@ -138,6 +138,10 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		bFundamentals.log(Level.INFO, "bFundamentals Disabled.");
 		m_moduleLoader.disable();
 		m_database.freeDatabase();
+
+		// Clear instances
+		m_instance = null;
+		m_configuration = null;
 	}
 	
 	/**
@@ -232,7 +236,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	public static BukkitDatabase getBukkitDatabase() {
 		if (m_database == null) {
 			DatabaseSettings settings = m_configuration.getDatabaseSettings();
-			m_database = bDatabaseManager.createDatabase("bFundamentals", m_instance, settings.type);
+			m_database = bDatabaseManager.createDatabase(settings.name, m_instance, settings.type);
 			if (settings.type == DatabaseType.SQL) {
 				m_database.login(settings.host, settings.user, settings.password, settings.port);
 			}

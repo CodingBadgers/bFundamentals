@@ -35,4 +35,8 @@ public class DatabaseUtils {
 		double z = Double.valueOf(itr.next());
 		return new Location(Bukkit.getWorld(world), x, y, z);
 	}
+	
+	public String putToString(Location loc) {
+		return loc.getWorld() + "," + loc.getX() + "," + loc.getY() + "," + loc.getZ();
+	}
 }

@@ -66,7 +66,7 @@ public class ModuleCommand extends Command implements TabExecutor {
 	public ModuleCommand(String label, String usage) {
 		super(label);
 		m_label = label;
-		m_usage = usage;
+		m_usage = usage == null ? "/" + m_label : usage;
 		m_description = usage;
 		m_helpTopic = new ModuleCommandHelpTopic(this);
 		m_permission = "bfundamentals.command." + m_label;

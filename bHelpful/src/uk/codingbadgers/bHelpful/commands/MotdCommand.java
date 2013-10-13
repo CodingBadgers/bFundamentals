@@ -33,10 +33,12 @@ import uk.codingbadgers.bHelpful.bHelpful;
 
 public class MotdCommand extends ConfigCommand {
 
-	private static List<String> message = new ArrayList<String>();
+	private static List<String> message = null;
 
 	public MotdCommand() {
 		super(Config.MOTD_LABEL);
+		message = new ArrayList<String>();
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override

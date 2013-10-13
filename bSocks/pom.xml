@@ -34,7 +34,7 @@
 			<artifactId>FigAdmin</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/figadmin.jar</systemPath>
+			<systemPath>${project.basedir}/lib/FigAdmin.jar</systemPath>
 		</dependency>
     </dependencies>
 </project>

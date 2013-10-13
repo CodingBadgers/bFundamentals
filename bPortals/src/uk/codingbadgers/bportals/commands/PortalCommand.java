@@ -31,9 +31,9 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.regions.Region;
 
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
-import uk.codingbadgers.bportals.Portal;
-import uk.codingbadgers.bportals.PortalManager;
 import uk.codingbadgers.bportals.bPortals;
+import uk.codingbadgers.bportals.portal.Portal;
+import static uk.codingbadgers.bportals.utils.LocationUtils.*;
 
 /*
  * TODO Note this is a temporary command for testing and should not be released.
@@ -98,7 +98,7 @@ public class PortalCommand extends ModuleCommand {
 
 		String id = args[1];
 		
-		if (PortalManager.getInstance().portalExists(id)) {
+		if (bPortals.getPortalManager().portalExists(id)) {
 			sender.sendMessage(ChatColor.DARK_PURPLE + "[bPortals] " + ChatColor.RESET + "Portal " + args[1] + " already exists");
 			return;
 		}
@@ -113,7 +113,7 @@ public class PortalCommand extends ModuleCommand {
 			bPortals.getInstance().debugConsole(sel.getMinimumPoint().toString());
 			bPortals.getInstance().debugConsole(sel.getMaximumPoint().toString());
 			
-			PortalManager.createPortal(sel, id, sender);
+			bPortals.getPortalManager().createPortal(sel, id, sender);
 
 			try {
 				session.setBlocks(localSession.getSelection(player.getWorld()), new BaseBlock(90));
@@ -134,8 +134,8 @@ public class PortalCommand extends ModuleCommand {
 			return;
 		}
 		
-		Portal portal1 = PortalManager.getInstance().getPortalById(args[1]);
-		Portal portal2 = PortalManager.getInstance().getPortalById(args[2]);
+		Portal portal1 = bPortals.getPortalManager().getPortalById(args[1]);
+		Portal portal2 = bPortals.getPortalManager().getPortalById(args[2]);
 		
 		if (portal1 == null || portal2 == null) {	
 			sender.sendMessage(ChatColor.DARK_PURPLE + "[bPortals] " + ChatColor.RESET + (portal1 == null ? args[1] : args[2]) + " does not exist.");
@@ -149,8 +149,8 @@ public class PortalCommand extends ModuleCommand {
 
 	private void listPortals(Player sender, String[] args) {
 		sender.sendMessage(ChatColor.DARK_PURPLE + "--[-- bPortals --]--");
-		for (Portal portal : PortalManager.getInstance().getPortals()) {
-			sender.sendMessage(ChatColor.BLUE + portal.getId() + ChatColor.AQUA + " " + portal.getExitLocation() + " " + (portal.hasTeleportLocation() ? portal.getTeleportLocation() : ""));
+		for (Portal portal : bPortals.getPortalManager().getPortals()) {
+			sender.sendMessage(ChatColor.BLUE + portal.getId() + ChatColor.AQUA + " " + convertLocationToFloorVector(portal.getExitLocation()) + " " + (portal.hasTeleportLocation() ? convertLocationToFloorVector(portal.getTeleportLocation()) : ""));
 		}
 	}
 

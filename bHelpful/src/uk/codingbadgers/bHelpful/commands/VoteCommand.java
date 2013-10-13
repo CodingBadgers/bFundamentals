@@ -31,10 +31,12 @@ import uk.codingbadgers.bHelpful.Output;
 
 public class VoteCommand extends ConfigCommand {
 
-	private List<String> message = new ArrayList<String>();
+	private List<String> message = null;
 
 	public VoteCommand() {
 		super(Config.VOTE_LABEL);
+		this.message = new ArrayList<String>();
+		HelpfulCommandHandler.registerCommand(this);
 	}
 
 	@Override
