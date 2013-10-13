@@ -47,11 +47,10 @@ import uk.codingbadgers.bFundamentals.module.ModuleHelpTopic;
 import uk.codingbadgers.bFundamentals.module.annotation.ModuleInfo;
 import uk.codingbadgers.bFundamentals.module.events.ModuleLoadEvent;
 
-// TODO: Auto-generated Javadoc
 /**
  * The ModuleLoader, used to load bFundamentals {@link Module}'s at runtime,
- * will automatically find any classes that extend {@link Module} in jars in
- * the module directory and load them in.
+ * it will automatically find any classes that extend {@link Module} in jars
+ * in the module directory and load them in.
  */
 public class ModuleLoader {
 
@@ -123,7 +122,7 @@ public class ModuleLoader {
 
 			modules.addAll(ClassFinder.findModules(loader, urls));
 			
-			// Old system, left for backwards compatibility
+			// Old system descriptive system, left for backwards compatibility
 			if (jarFile.getEntry("path.yml") != null) {
 				JarEntry element = jarFile.getJarEntry("path.yml");
 				moduledescription = new ModuleDescription(jarFile.getInputStream(element));
@@ -178,19 +177,26 @@ public class ModuleLoader {
 				loaders.put(result.getName(), loader);
 			}
 
-		} catch (ClassCastException e) {
-			e.printStackTrace();
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " is in the wrong directory.");
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
-		} catch (ClassNotFoundException e) {
-			//getLogger().log(Level.WARNING, "Invalid path.yml."); Path.yml's are now deprecated
-			getLogger().log(Level.WARNING, e.getMessage());
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
-		} catch (Exception e) {
-			ExceptionHandler.handleException(e);
-			getLogger().log(Level.WARNING, "Unknown cause.");
-			getLogger().log(Level.WARNING, e.getMessage());
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
+		} catch (Throwable e) {
+		    if (e instanceof Error && !(e instanceof NoClassDefFoundError)) {
+		        getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load because of a serious error");
+                getLogger().log(Level.WARNING, e.getClass().getName());
+		    } else {
+	            getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
+		    }
+		    
+		    if (e instanceof ClassCastException) {
+	            getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " is in the wrong directory.");
+		    } else if (e instanceof ClassNotFoundException || e instanceof NoClassDefFoundError) {
+	            getLogger().log(Level.WARNING, "Could not find class " + e.getMessage());
+                getLogger().log(Level.WARNING, "Are you missing a required dependecy?");
+		    } else if (e instanceof RuntimeException) {
+                getLogger().log(Level.WARNING, "Unknown cause", e);
+		    } else {
+	            getLogger().log(Level.WARNING, "Unknown cause.");
+	            getLogger().log(Level.WARNING, e.getMessage());
+	            ExceptionHandler.handleException(e);
+		    }
 		}
 
 		return result;

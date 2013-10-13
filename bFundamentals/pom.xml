@@ -55,7 +55,9 @@
 							<artifactSet>
 								<includes>
 									<include>commons-*:*</include>
-									<include>org.jnbt:jNBT</include>
+									<include>org.jnbt:jNBT</include>	
+									<include>org.javassist:javassist</include>
+									<include>org.reflections:reflections</include>
 									<include>org.apache.httpcomponents:*</include>
 								</includes>
 							</artifactSet>

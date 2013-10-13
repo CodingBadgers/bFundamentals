@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.bukkit.event.Listener;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -40,7 +41,7 @@ public class ClassFinder {
 	 * @return all classes that extend {@link Module} in that loader
 	 */
 	public static Set<Class<? extends Module>> findModules(ModuleClassLoader loader, URL[] url) {
-		Reflections reflect = new Reflections(new ConfigurationBuilder().addUrls(url).addClassLoader(loader).addClassLoader(ClassFinder.class.getClassLoader()));
+		Reflections reflect = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forClassLoader(loader)).addClassLoader(loader));
 		return reflect.getSubTypesOf(Module.class);
 	}
 	

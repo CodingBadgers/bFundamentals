@@ -69,6 +69,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			throw new ClassNotFoundException(name);
 		}
 		
+		System.out.println("Finding class " + name);
+		
 		Class<?> result = classes.get(name);
 
 		if (result == null) {
