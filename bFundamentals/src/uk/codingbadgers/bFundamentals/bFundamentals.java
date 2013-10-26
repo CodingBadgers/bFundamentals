@@ -47,6 +47,8 @@ import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
+import uk.codingbadgers.bFundamentals.bungee.BungeeMessenger;
+import uk.codingbadgers.bFundamentals.bungee.SimpleBungeeMessenger;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleLoader;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
@@ -67,6 +69,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	
 	private static ModuleLoader m_moduleLoader = null;
 	private static ConfigManager m_configuration = null;
+	private static BungeeMessenger m_messenger = null;
 	
 	public static FundamentalPlayerArray Players = new FundamentalPlayerArray(); 
 	
@@ -78,6 +81,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	public void onLoad() {
 		setInstance(this);
 		m_log = getLogger();
+		
 		log(Level.INFO, "bFundamentals Loading");
 	}
 	
@@ -96,6 +100,9 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(bFundamentals.getInstance(), "BungeeCord");
+		setBungeeMessenger(new SimpleBungeeMessenger());
 		
 		// load the modules in
 		m_moduleLoader = new ModuleLoader();
@@ -129,6 +136,13 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		m_configuration = manager;
 	}
 
+    public void setBungeeMessenger(BungeeMessenger manager) {
+        if (m_messenger != null) {
+            throw new RuntimeException("Bungee messenger already set, cannot redeclare");
+        }
+        m_messenger = manager;
+    }
+
 	/**
 	 * Called when the plugin is being disabled
 	 * Here we disable the module and thus all modules
@@ -142,6 +156,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		// Clear instances
 		m_instance = null;
 		m_configuration = null;
+		m_messenger = null;
 	}
 	
 	/**
@@ -185,12 +200,30 @@ public class bFundamentals extends JavaPlugin implements Listener {
 
 	/**
 	 * Get the bFundamentals plugin instance.
-	 * @return the instance
+	 * @return the plugin instance
 	 */
 	public static bFundamentals getInstance() {
 		return m_instance;
 	}
-	
+
+    /**
+     * Get the configuration manager
+     * 
+     * @return the configuration manager for bFundamentals
+     */
+    public static ConfigManager getConfigurationManager() {
+        return m_configuration;
+    }
+
+    /**
+     * Get the Bungee messenger
+     * 
+     * @return the bungee messeneger instance
+     */
+    public static BungeeMessenger getBungeeMessenger() {
+        return m_messenger;
+    }
+    
 	/**
 	 * Static access to log as bFundamentals
 	 * 
@@ -217,15 +250,6 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		Validate.notNull(e, "The exception to log cannot be null");
 		
 		m_log.log(level, msg, e);
-	}
-	
-	/**
-	 * Get the configuration manager
-	 * 
-	 * @return the configuration manager for bFundamentals
-	 */
-	public static ConfigManager getConfigurationManager() {
-		return m_configuration;
 	}
 	
 	/**
