@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 
 public interface BungeeMessenger {
 
-    public void sendRawMessage(byte[] message);
+    public boolean sendRawMessage(byte[] message);
     
-    public void sendRawMessage(byte[] message, boolean queue);
+    public boolean sendRawMessage(byte[] message, boolean queue);
 
     public void sendRawPlayerMessage(Player player, byte[] message);
 

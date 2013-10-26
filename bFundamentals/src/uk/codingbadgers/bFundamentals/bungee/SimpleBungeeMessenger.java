@@ -9,6 +9,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.ImmutableList;
+
 import uk.codingbadgers.bFundamentals.bFundamentals;
 
 public class SimpleBungeeMessenger implements BungeeMessenger {
@@ -21,18 +23,21 @@ public class SimpleBungeeMessenger implements BungeeMessenger {
     }
     
     @Override
-    public void sendRawMessage(byte[] message) {
-        sendRawMessage(message, true);
+    public boolean sendRawMessage(byte[] message) {
+        return sendRawMessage(message, true);
     }
 
     @Override
-    public void sendRawMessage(byte[] message, boolean shouldQueue) {
+    public boolean sendRawMessage(byte[] message, boolean shouldQueue) {
         if (Bukkit.getOnlinePlayers().length > 0) {
             Player p = Bukkit.getOnlinePlayers()[0];
             p.sendPluginMessage(bFundamentals.getInstance(), "BungeeCord", message);
+            return true;
         } else if (shouldQueue){
             queue.add(message);
         }
+        
+        return false;
     }
     
     @Override
@@ -88,8 +93,13 @@ public class SimpleBungeeMessenger implements BungeeMessenger {
     
     @Override
     public void sendQueuedCommands() {
-        for (byte[] message : queue) {
-            sendRawMessage(message, false);
+        List<byte[]> cache = new ArrayList<byte[]>(queue);
+        
+        for (byte[] message : cache) {
+            if (sendRawMessage(message, false)) {
+                queue.remove(message);
+            }
+            
         }
     }
     
