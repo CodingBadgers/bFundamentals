@@ -9,8 +9,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.google.common.collect.ImmutableList;
-
 import uk.codingbadgers.bFundamentals.bFundamentals;
 
 public class SimpleBungeeMessenger implements BungeeMessenger {
