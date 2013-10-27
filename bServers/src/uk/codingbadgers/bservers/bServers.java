@@ -40,6 +40,7 @@ public class bServers extends Module implements PluginMessageListener {
 
     @Override
     public void onDisable() {
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(bFundamentals.getInstance(), "BungeeCord", this);
     }
 
     @Override
