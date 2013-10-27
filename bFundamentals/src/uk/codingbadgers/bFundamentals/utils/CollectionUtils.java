@@ -15,31 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.bFundamentals.module.loader;
+package uk.codingbadgers.bFundamentals.utils;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList.Builder;
 
 /**
- * The Class FileExtensionFilter.
+ * The Utility class for using google collections.
  */
-public final class FileExtensionFilter implements FileFilter {
-	
-	private final String extension;
-	
+public class CollectionUtils {
+
 	/**
-	 * Instantiates a new file extension filter.
+	 * Create a immutable copy of a list.
 	 *
-	 * @param extension the extension to test for
+	 * @param <T> the generic type of the list
+	 * @param list the list to create a copy of
+	 * @return a immutable copy of the list
 	 */
-	public FileExtensionFilter(String extension) {
-		this.extension = extension;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.io.FileFilter#accept(java.io.File)
-	 */
-	public boolean accept(File file) {
-		return file.getName().endsWith(extension);
+	public static <T> List<T> toImmutableList(List<T> list) {
+		Builder<T> builder = new Builder<T>();
+		builder.addAll(list);
+		return builder.build();
 	}
 }

@@ -15,31 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.bFundamentals.module.loader;
+package uk.codingbadgers.bFundamentals.module.events;
 
-import java.io.File;
-import java.io.FileFilter;
+import org.bukkit.plugin.Plugin;
+
+import uk.codingbadgers.bFundamentals.module.Module;
 
 /**
- * The Class FileExtensionFilter.
+ * The ModuleEnableEvent, called when a module is enabled via 
+ * {@link Module#setEnabled(boolean)}.
  */
-public final class FileExtensionFilter implements FileFilter {
-	
-	private final String extension;
-	
+public class ModuleEnableEvent extends ModuleEvent {
+
 	/**
-	 * Instantiates a new file extension filter.
+	 * Instantiates a new module enable event.
 	 *
-	 * @param extension the extension to test for
+	 * @param plugin the plugin
+	 * @param loadable the loadable
 	 */
-	public FileExtensionFilter(String extension) {
-		this.extension = extension;
+	public ModuleEnableEvent(Plugin plugin, Module loadable) {
+		super(plugin, loadable);
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.io.FileFilter#accept(java.io.File)
-	 */
-	public boolean accept(File file) {
-		return file.getName().endsWith(extension);
-	}
+
 }
