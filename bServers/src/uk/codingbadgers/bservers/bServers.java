@@ -1,5 +1,5 @@
 /**
- * bGui 1.2-SNAPSHOT
+ * bFundamentalsBuild 1.2-SNAPSHOT
  * Copyright (C) 2013  CodingBadgers <plugins@mcbadgercraft.com>
  *
  * This program is free software: you can redistribute it and/or modify
