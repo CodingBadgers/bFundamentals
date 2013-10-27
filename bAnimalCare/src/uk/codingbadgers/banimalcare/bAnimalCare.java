@@ -221,7 +221,14 @@ public class bAnimalCare extends Module implements Listener {
 		
 		if (attackPlayer != null) {
 			Module.sendMessage("bAnimalCare", attackPlayer, "This animal is a pet. You can't hurt it.");
-			if (m_pets.get(entityID).GetOwner().equalsIgnoreCase(attackPlayer.getName())) {
+			
+			PlayerPet playerPet = m_pets.get(entityID);
+			
+			if (Module.hasPermission(attackPlayer, "bAnimalCare.override")) {
+				Module.sendMessage("bAnimalCare", attackPlayer, "Animal owner: " + playerPet.GetOwner());
+			}
+			
+			if (playerPet.GetOwner().equalsIgnoreCase(attackPlayer.getName())) {
 				Module.sendMessage("bAnimalCare", attackPlayer, "To kill your pet. First release it by using String.");
 			}
 		}
@@ -564,7 +571,7 @@ public class bAnimalCare extends Module implements Listener {
 		
 	}
 	
-	private void releasePet(Player player, UUID entityID) {
+	private void releasePet(OfflinePlayer player, UUID entityID) {
 		
 		m_pets.remove(entityID);
 
@@ -651,7 +658,7 @@ public class bAnimalCare extends Module implements Listener {
 		
 	}
 
-	public void releasePet(Player player, String petIdString) {
+	public void releasePet(OfflinePlayer player, String petIdString) {
 		int petIndex = Integer.parseInt(petIdString);
 		
 		final String playerName = player.getName();
@@ -668,7 +675,10 @@ public class bAnimalCare extends Module implements Listener {
 			if (index == petIndex) {
 				UUID petId = UUID.fromString(petEntry.getKey());
 				releasePet(player, petId);
-				Module.sendMessage(getName(), player, "Your pet has been released...");
+				
+				if (player.isOnline()) {
+					Module.sendMessage(getName(), player.getPlayer(), "Your pet has been released...");
+				}
 				
 				Entity pet = entityFromUUID(petId);
 				if (pet == null) {

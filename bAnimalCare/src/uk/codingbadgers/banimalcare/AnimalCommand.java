@@ -74,6 +74,15 @@ public class AnimalCommand extends ModuleCommand {
 			if (args.length == 2) {
 				m_module.releasePet(player, args[1]);
 			}
+			if (args.length == 3) {
+				OfflinePlayer owner = Bukkit.getOfflinePlayer(args[1]);
+				if (!owner.hasPlayedBefore()) {
+					Module.sendMessage(m_module.getName(), player, "Invalid command usage: /pet release <owner> <id>");
+					return true;
+				}
+				
+				m_module.releasePet(owner, args[2]);
+			}
 			else {
 				Module.sendMessage(m_module.getName(), player, "Invalid command usage: /pet release <id>");
 			}
