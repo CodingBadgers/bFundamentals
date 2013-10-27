@@ -19,9 +19,12 @@ package uk.codingbadgers.bFundamentals.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -73,7 +76,6 @@ public class ConfigFactory {
 		FileConfiguration config = YamlConfiguration.loadConfiguration(configfile);
 
 		Class<?>[] catagories = clazz.getClasses();
-		catagories = Arrays.copyOf(catagories, catagories.length + 1);
 		catagories = insertAtBegining(catagories, clazz);
 		
 		for (Class<?> catagory : catagories) {
@@ -111,15 +113,18 @@ public class ConfigFactory {
 			}
 		}
 	}
-	
-	private static Class<?>[] insertAtBegining(Class<?>[] catagories, Class<?> clazz) {
-		Class<?>[] buffer = new Class<?>[catagories.length];
-		buffer[0] = clazz;
-		
-		for (int i = 0; i< catagories.length - 1; i++) {
-			buffer[i + 1] = catagories[i];
-		}
-		return buffer;
+
+    @SuppressWarnings("unchecked")
+	private static <T> T[] insertAtBegining(T[] original, T... addition) {
+        List<T> buffer = new ArrayList<T>();
+        
+        for (T add : addition) {
+            buffer.add(add);
+        }
+        
+        buffer.addAll(Arrays.asList(original));
+        
+        return buffer.toArray((T[]) Array.newInstance(original.getClass().getComponentType(), buffer.size()));
 	}
 	
 	private static void removeModifier(Field field, int mod) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
@@ -148,7 +153,6 @@ public class ConfigFactory {
 		FileConfiguration config = YamlConfiguration.loadConfiguration(configfile);
 
 		Class<?>[] catagories = clazz.getClasses();
-		catagories = Arrays.copyOf(catagories, catagories.length + 1);
 		catagories = insertAtBegining(catagories, clazz);
 		
 		for (Class<?> catagory : catagories) {

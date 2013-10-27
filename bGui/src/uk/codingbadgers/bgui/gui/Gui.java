@@ -69,9 +69,10 @@ public final class Gui {
             
             Material mat = Material.getMaterial((String) json.get("item"));
             String name = (String) json.get("name");
+            short data = ((Number) json.get("data")).shortValue();
             String[] lore = convertLore((JSONArray) json.get("lore"));
             
-            ItemStack stack = new ItemStack(mat);
+            ItemStack stack = new ItemStack(mat, 1, data);
             ItemMeta meta = stack.getItemMeta();
             meta.setDisplayName(name);
             meta.setLore(Arrays.asList(lore));
