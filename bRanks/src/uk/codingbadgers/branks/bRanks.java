@@ -83,7 +83,7 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
 	// The update loop time delay
 	private final Long m_updateTimeRate = 100L;
 	
-	// 
+	// Require a tab update if true
 	private boolean m_requireUpdate = true;
 	
 	/**
@@ -240,6 +240,8 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
+		m_requireUpdate = true;
+		
 		final Player player = event.getPlayer();
 		
 		final String playerName = player.getPlayerListName();
