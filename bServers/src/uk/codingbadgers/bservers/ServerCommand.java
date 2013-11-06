@@ -17,6 +17,8 @@
  */
 package uk.codingbadgers.bservers;
 
+import java.util.List;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,6 +33,14 @@ public class ServerCommand extends ModuleCommand {
 
     public ServerCommand(String server) {
         super(server, "/" + server);
+        this.server = server;
+    }
+    
+    public ServerCommand(String server, List<String> list) {
+        super(server, "/" + server);
+        for (String string : list) {
+        	addAliase(string);
+        }
         this.server = server;
     }
 

@@ -59,7 +59,7 @@ public class bServers extends Module implements PluginMessageListener {
                 for (String string : serverList) {
                     log(Level.INFO, "Registering command for " + string);
                     
-                    ModuleCommand cmd = new ServerCommand(string);
+                    ModuleCommand cmd = new ServerCommand(string, getConfig().getStringList("servers." + string));
                     registerCommand(cmd);
                 }
             } 
