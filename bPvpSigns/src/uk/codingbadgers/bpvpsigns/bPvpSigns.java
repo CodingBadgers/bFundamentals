@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -30,8 +29,12 @@ import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.events.PAExitEvent;
 import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.events.PALeaveEvent;
+import net.slipcor.pvparena.events.PAEndEvent;
+import net.slipcor.pvparena.events.PALoseEvent;
+import net.slipcor.pvparena.events.PAWinEvent;
 import net.slipcor.pvparena.managers.ArenaManager;
 
 import org.bukkit.Bukkit;
@@ -50,6 +53,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 
 
@@ -265,7 +269,74 @@ public class bPvpSigns extends Module implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPALeave(PALeaveEvent event) {
 		
-		log(Level.INFO, "PA Leave!");
+		Arena arena = event.getArena();
+		final String name = arena.getName();
+		Sign sign = this.signs.get(name);
+		if (sign == null) {
+			return;
+		}
+		
+		updatePvpSign(sign);
+		
+	}
+	
+	/**
+	 * Called when a player exit a pa
+	 */	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPAExit(PAExitEvent event) {
+		
+		Arena arena = event.getArena();
+		final String name = arena.getName();
+		Sign sign = this.signs.get(name);
+		if (sign == null) {
+			return;
+		}
+		
+		updatePvpSign(sign);
+		
+	}
+	
+	/**
+	 * Called when a pa ends
+	 */	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPAEnd(PAEndEvent event) {
+
+		Arena arena = event.getArena();
+		final String name = arena.getName();
+
+		final Sign sign = this.signs.get(name);
+		if (sign == null) {
+			return;
+		}
+		
+		updatePvpSign(sign);
+		
+	}
+	
+	/**
+	 * Called when a pa ends
+	 */	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPAWin(PAWinEvent event) {
+		
+		Arena arena = event.getArena();
+		final String name = arena.getName();
+		Sign sign = this.signs.get(name);
+		if (sign == null) {
+			return;
+		}
+		
+		updatePvpSign(sign);
+		
+	}
+	
+	/**
+	 * Called when a pa ends
+	 */	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPALoose(PALoseEvent event) {
 		
 		Arena arena = event.getArena();
 		final String name = arena.getName();
@@ -282,32 +353,36 @@ public class bPvpSigns extends Module implements Listener {
 	 * updates a pa sign
 	 * @param sign The sign
 	 */
-	private void updatePvpSign(Sign sign) {
+	private void updatePvpSign(final Sign sign) {
+		
 
-		String arenaName = ChatColor.stripColor(sign.getLine(1));
-		Arena arena = ArenaManager.getArenaByName(arenaName);
-		if (arena == null) {
-			return;
-		}
-		
-		log(Level.INFO, "Update: " + arenaName);
-		
-		sign.setLine(1, ChatColor.BOLD + arenaName);
-		
-		final int maxPlayers = arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
-		int noofPlayers = 0;
-		
-		for (ArenaTeam team : arena.getTeams()) {
-			noofPlayers += team.getTeamMembers().size();
-		}
-		
-		log(Level.INFO, "Max: " + maxPlayers);
-		log(Level.INFO, "Noof: " + noofPlayers);
-		
-		sign.setLine(2, noofPlayers + "/" + maxPlayers);
-		sign.setLine(3, arena.isFightInProgress() ? ChatColor.RED + "FIGHTING" : ChatColor.DARK_GREEN + "WAITING");
-		
-		sign.update(true);
+		Bukkit.getScheduler().runTaskLater(bFundamentals.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				String arenaName = ChatColor.stripColor(sign.getLine(1));
+				Arena arena = ArenaManager.getArenaByName(arenaName);
+				if (arena == null) {
+					return;
+				}
+
+				sign.setLine(1, ChatColor.BOLD + arenaName);
+				
+				final int maxPlayers = arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
+				int noofPlayers = 0;
+				
+				for (ArenaTeam team : arena.getTeams()) {
+					noofPlayers += team.getTeamMembers().size();
+				}
+				
+				sign.setLine(2, noofPlayers + "/" + maxPlayers);
+				sign.setLine(3, arena.isFightInProgress() ? ChatColor.RED + "FIGHTING" : ChatColor.DARK_GREEN + "WAITING");
+				
+				sign.update(true);
+			}
+			
+		}, 20L);
+
 	}
 	
 	/**
