@@ -19,10 +19,12 @@ package uk.codingbadgers.bFundamentals.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -269,6 +271,7 @@ public class ModuleCommand extends Command implements TabExecutor {
         Validate.notNull(alias, "Alias cannot be null");
 
         List<String> completions = null;
+        
         try {
         	completions = onTabComplete(sender, this, alias, args);
         } catch (Throwable ex) {
@@ -284,7 +287,10 @@ public class ModuleCommand extends Command implements TabExecutor {
         if (completions == null) {
             return super.tabComplete(sender, alias, args);
         }
-        return completions;
+        
+        List<String> sortable = new ArrayList<String>(completions);
+        Collections.sort(sortable, String.CASE_INSENSITIVE_ORDER);
+        return ImmutableList.copyOf(completions);
     }
 	
 	/**
@@ -303,18 +309,29 @@ public class ModuleCommand extends Command implements TabExecutor {
 	 * @see Module#onCommand(CommandSender, String, String[])
 	 */
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {		
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {	
+		Builder<String> builder = ImmutableList.builder();
+		
 		if (m_children.size() >= 1 && args.length == 1) {
-			Builder<String> builder = ImmutableList.builder();
 			for (ModuleChildCommand child : m_children) {
 				if (child.getLabel().startsWith(args[0])) {
 					builder.add(child.getLabel());
 				}
 			}
-			return builder.build();
+		} else {
+			if (args.length == 0) {
+				return builder.build();
+			}
+			
+			String name = args[args.length - 1];
+			List<OfflinePlayer> players = m_module.matchPlayer(name, true);
+			
+			for (OfflinePlayer player : players) {
+				builder.add(player.getName());
+			}
 		}
 		
-		return ImmutableList.of();
+		return builder.build();
 	}
 
 	/**

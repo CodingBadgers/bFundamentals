@@ -72,7 +72,8 @@ public class ConfigFactory {
 	 * @throws NoSuchFieldException the no such field exception
 	 * @throws InstantiationException the instantiation exception
 	 */
-	public static void loadConfig(Class<? extends ConfigFile> clazz, File configfile) throws IllegalArgumentException, IllegalAccessException, SecurityException, NoSuchFieldException, InstantiationException {
+    @SuppressWarnings("unchecked")
+    public static void loadConfig(Class<? extends ConfigFile> clazz, File configfile) throws IllegalArgumentException, IllegalAccessException, SecurityException, NoSuchFieldException, InstantiationException {
 		FileConfiguration config = YamlConfiguration.loadConfiguration(configfile);
 
 		Class<?>[] catagories = clazz.getClasses();
