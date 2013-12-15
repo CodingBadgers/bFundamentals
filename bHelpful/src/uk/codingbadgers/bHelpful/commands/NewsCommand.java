@@ -25,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,7 +62,7 @@ public class NewsCommand extends ConfigCommand {
     		noofEvents = messages.size() + 1;
     	}
     	
-    	for(int i = 0; i < noofEvents; ++i ) {
+    	for(int i = messages.size() - noofEvents; i < messages.size(); ++i ) {
     		try  {
     			sender.sendMessage(messages.get(messages.size()-i-1));		
     		} catch (Exception ex) {
@@ -97,6 +98,7 @@ public class NewsCommand extends ConfigCommand {
 	            	
 		            for (int i = 0; i < json.size(); i++) {
 		            	JSONObject post = (JSONObject) json.get(i);
+		            	System.out.println(post.get("title"));
 			            message += ChatColor.RED + "[" + (String) post.get("date") + "] " + ChatColor.RESET;
 			            message += (String)post.get("title") + "\n";
 			            message += "                      ";
@@ -106,7 +108,7 @@ public class NewsCommand extends ConfigCommand {
 		            }
 		            
 				} catch (FileNotFoundException e1) {
-					bHelpful.MODULE.getLogger().warning(e1.getMessage());
+					bHelpful.MODULE.getLogger().log(Level.WARNING, "Error loading news data", e1);
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
