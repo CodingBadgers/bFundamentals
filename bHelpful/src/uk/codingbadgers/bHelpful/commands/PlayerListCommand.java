@@ -98,8 +98,7 @@ public class PlayerListCommand extends ConfigCommand {
 		int onlinePlayers = 0;
 		
         for (String player : players) {
-            String[] playerGroups = bFundamentals.getPermissions().getPlayerGroups("", player);
-            String group = playerGroups.length > 0 ? playerGroups[0] : "";
+            String group = bFundamentals.getPermissions().getPrimaryGroup(Bukkit.getWorlds().get(0), player);
             
             if (groups.containsKey(group)) {
                 groups.get(group).add(player);

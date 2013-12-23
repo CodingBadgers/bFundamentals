@@ -98,7 +98,6 @@ public class NewsCommand extends ConfigCommand {
 	            	
 		            for (int i = 0; i < json.size(); i++) {
 		            	JSONObject post = (JSONObject) json.get(i);
-		            	System.out.println(post.get("title"));
 			            message += ChatColor.RED + "[" + (String) post.get("date") + "] " + ChatColor.RESET;
 			            message += (String)post.get("title") + "\n";
 			            message += "                      ";
