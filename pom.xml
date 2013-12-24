@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkit.version>1.6.2-R0.2-SNAPSHOT</bukkit.version>
+		<bukkit.version>1.7.2-R0.1-SNAPSHOT</bukkit.version>
         <buildNumber>Unknown</buildNumber>
         <license.header>header.txt</license.header>
     </properties>
@@ -100,13 +100,13 @@
 		<dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
-            <version>5.7.3</version>
+            <version>5.8.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 		<dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldedit</artifactId>
-            <version>5.5.3</version>
+            <version>5.5.8</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
