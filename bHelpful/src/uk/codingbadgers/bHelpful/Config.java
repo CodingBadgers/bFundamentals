@@ -42,5 +42,5 @@ public class Config implements ConfigFile {
 	@Element("announce.interval")
 	public static final int ANNOUNCEMENT_INTERVAL = 15 * 60;
 	@Element("news.link")
-	public static final String NEWS_LINK = "http://mcbadgercraft.com/thecodingbadgers/bSocks/web/news.php";
+	public static final String NEWS_LINK = "http://mcbadgercraft.com/server/news.php";
 }

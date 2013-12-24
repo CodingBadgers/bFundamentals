@@ -38,6 +38,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -54,8 +56,8 @@ import uk.codingbadgers.bFundamentals.update.Updater;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 /**
- * The base Module class any module should extend this, it also provides helper
- * methods for the module.
+ * The base Module class any module should extend this, it also provides
+ * helper methods for the module.
  */
 public abstract class Module extends Loadable implements Listener {
 
@@ -205,10 +207,8 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Log a message console via this modules logger.
 	 * 
-	 * @param level
-	 *            the Log level
-	 * @param string
-	 *            the message
+	 * @param level the Log level
+	 * @param string the message
 	 */
 	public void log(Level level, String string) {
 		m_log.log(Level.INFO, string);
@@ -226,8 +226,7 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Register a bukkit event listener.
 	 * 
-	 * @param listener
-	 *            the bukkit event listener
+	 * @param listener the bukkit event listener
 	 */
 	public final void register(Listener listener) {
 		m_plugin.getServer().getPluginManager().registerEvents(listener, m_plugin);
@@ -244,7 +243,7 @@ public abstract class Module extends Loadable implements Listener {
 	}
 
 	/**
-	 * The enable method for this module, called on enabling the module via 
+	 * The enable method for this module, called on enabling the module via
 	 * {@link #setEnabled(boolean)} this is used to register commands, events
 	 * and any other things that should be registered on enabling the module.
 	 */
@@ -252,20 +251,21 @@ public abstract class Module extends Loadable implements Listener {
 
 	/**
 	 * The disable method for this module, called on disabling the module via
-	 * {@link #setEnabled(boolean)} this is used to clean up after the module when
-	 * it is disabled.
+	 * {@link #setEnabled(boolean)} this is used to clean up after the module
+	 * when it is disabled.
 	 */
 	public abstract void onDisable();
 
 	/**
 	 * The load method for this module, called on loading the module via the
-	 * {@link ModuleLoader} this is called before any module in that load batch
-	 * is loaded. 
+	 * {@link ModuleLoader} this is called before any module in that load
+	 * batch is loaded.
 	 */
-	public void onLoad() {}
-	
+	public void onLoad() {
+	}
+
 	/**
-	 * Sets the module enabled status, will call {@link #onEnable()} if the 
+	 * Sets the module enabled status, will call {@link #onEnable()} if the
 	 * module isn't already enabled and you want to enable it and will call
 	 * {@link #onDisable()} if the module isn't already disabled and you want
 	 * to disable it.
@@ -277,20 +277,20 @@ public abstract class Module extends Loadable implements Listener {
 			if (m_enabled) {
 				return;
 			}
-			
+
 			onEnable();
 			m_enabled = true;
 		} else {
 			if (!m_enabled) {
 				return;
 			}
-			
+
 			onDisable();
 			ModuleCommandHandler.deregisterCommand(this);
 			m_enabled = false;
 		}
 	}
-	
+
 	/**
 	 * Returns the current state of the module, if it is enabled or disabled.
 	 * 
@@ -302,16 +302,14 @@ public abstract class Module extends Loadable implements Listener {
 
 	/**
 	 * The command handing method for this module, this is only called if the
-	 * command handing for that {@link ModuleCommand} returns false, preferably
-	 * the {@link ModuleCommand#onCommand(CommandSender, String, String[])}
-	 * should be used, this is just left for backwards comparability.
+	 * command handing for that {@link ModuleCommand} returns false,
+	 * preferably the
+	 * {@link ModuleCommand#onCommand(CommandSender, String, String[])} should
+	 * be used, this is just left for backwards comparability.
 	 * 
-	 * @param sender
-	 *            the command sender
-	 * @param label
-	 *            the command label used
-	 * @param args
-	 *            the arguments for the command
+	 * @param sender the command sender
+	 * @param label the command label used
+	 * @param args the arguments for the command
 	 * @return true, if the command has been handled, false if it hasn't
 	 */
 	public boolean onCommand(CommandSender sender, String label, String[] args) {
@@ -330,10 +328,8 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Checks if a player has a specific permission.
 	 * 
-	 * @param player
-	 *            the player to check
-	 * @param node
-	 *            the permission node
+	 * @param player the player to check
+	 * @param node the permission node
 	 * @return true, if the player has the permission
 	 */
 	public static boolean hasPermission(final Player player, final String node) {
@@ -346,12 +342,9 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Send message to a player formated in the default style.
 	 * 
-	 * @param name
-	 *            the name of the module
-	 * @param player
-	 *            the player to send to
-	 * @param message
-	 *            the message
+	 * @param name the name of the module
+	 * @param player the player to send to
+	 * @param message the message
 	 */
 	public static void sendMessage(String name, CommandSender player, String message) {
 		player.sendMessage(ChatColor.DARK_PURPLE + "[" + name + "] " + ChatColor.RESET + message);
@@ -360,8 +353,7 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Register a command to this module.
 	 * 
-	 * @param command
-	 *            the command
+	 * @param command the command
 	 */
 	protected void registerCommand(ModuleCommand command) {
 		ModuleCommandHandler.registerCommand(this, command);
@@ -381,8 +373,7 @@ public abstract class Module extends Loadable implements Listener {
 	 * Gets the language value for the current loaded language, case
 	 * insensitive, all keys are forced to be in lower case.
 	 * 
-	 * @param key
-	 *            the language key
+	 * @param key the language key
 	 * @return the language value, if available, the key with hyphens removed
 	 *         and in lower case otherwise
 	 */
@@ -424,8 +415,7 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Set the debug mode for this module
 	 * 
-	 * @param debug
-	 *            whether debug is on or not
+	 * @param debug whether debug is on or not
 	 */
 	public void setDebug(boolean debug) {
 		m_debug = debug;
@@ -434,8 +424,7 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Output a message to console if debug mode is on
 	 * 
-	 * @param message
-	 *            the message to output
+	 * @param message the message to output
 	 */
 	public void debugConsole(String message) {
 		if (!m_debug)
@@ -447,11 +436,10 @@ public abstract class Module extends Loadable implements Listener {
 	/**
 	 * Registers a config class as a config and loads it, class must extend
 	 * {@link ConfigFile} and each element that is going to be included in the
-	 * file should be {@code static} and have a {@link Element}
-	 * annotation associated with it.
+	 * file should be {@code static} and have a {@link Element} annotation
+	 * associated with it.
 	 * 
-	 * @param clazz
-	 *            the config class
+	 * @param clazz the config class
 	 */
 	public void registerConfig(Class<? extends ConfigFile> clazz) {
 		if (m_configFiles == null) {
@@ -466,5 +454,42 @@ public abstract class Module extends Loadable implements Listener {
 			e.printStackTrace();
 		}
 		m_configFiles.add(clazz);
+	}
+
+	/**
+	 * Get a list of players whose name matches a given string
+	 * 
+	 * @param match The name to match
+	 * @param onlineOnly Only return players who are currently online
+	 * @return A list of offline players whose names match the entry string
+	 */
+	public List<OfflinePlayer> matchPlayer(String match, boolean onlineOnly) {
+
+		Server server = m_plugin.getServer();
+		List<OfflinePlayer> matches = new ArrayList<OfflinePlayer>();
+
+		OfflinePlayer[] offlinePlayers = server.getOfflinePlayers();
+		for (OfflinePlayer player : offlinePlayers) {
+
+			if (onlineOnly && !player.isOnline()) {
+				continue;
+			}
+
+			final String playerName = player.getName();
+
+			// exact name, just return this
+			if (playerName.equalsIgnoreCase(match)) {
+				matches.clear();
+				matches.add(player);
+				return matches;
+			}
+
+			// match is contained within this player add them to the list
+			if (playerName.toLowerCase().startsWith(match.toLowerCase())) {
+				matches.add(player);
+			}
+		}
+
+		return matches;
 	}
 }

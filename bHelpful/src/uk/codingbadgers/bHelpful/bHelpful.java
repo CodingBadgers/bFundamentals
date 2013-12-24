@@ -60,6 +60,8 @@ public class bHelpful extends Module {
      */
     public void onEnable() {   
         register(new PlayerListener(this));
+
+        registerConfig(Config.class);
         
         registerCommand(new AnnouncementCommand());
         registerCommand(new MaintenanceCommand());
@@ -69,10 +71,6 @@ public class bHelpful extends Module {
         registerCommand(new RegisterCommand());
         registerCommand(new RulesCommand());
         registerCommand(new VoteCommand());
-        
-        registerConfig(Config.class);
-        
-        this.setUpdater(new BadgerUpdater(this));
         
         log(Level.INFO, "bHelpful enabled");      		
     }

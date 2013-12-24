@@ -30,7 +30,8 @@ import uk.codingbadgers.bHelpful.bHelpful;
 public class MaintenanceCommand extends ConfigCommand {
 
 	public MaintenanceCommand() {
-		super("motd", "/motd", false);
+		super("maintenance", "/motd", false);
+		addAliase("mm");
 		HelpfulCommandHandler.registerCommand(this);
 	}
 
@@ -89,6 +90,7 @@ public class MaintenanceCommand extends ConfigCommand {
         				}
         			}
         		}
+        		
         		return;
         	}
         }
