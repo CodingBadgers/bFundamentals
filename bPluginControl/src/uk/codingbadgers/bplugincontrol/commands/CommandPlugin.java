@@ -19,6 +19,7 @@ package uk.codingbadgers.bplugincontrol.commands;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -299,5 +300,73 @@ public class CommandPlugin extends ModuleCommand {
 		
 		return true;
 	}
+    
+    /**
+     * 
+     * @param alias
+     * @return 
+     */
+    @Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {	
+        
+        List<String> result = new ArrayList<String>();
+        
+        // Commands
+        if (args.length == 1) {
+            compareAndAdd(result, "reload", args[0]);
+            compareAndAdd(result, "disable", args[0]);
+            compareAndAdd(result, "enable", args[0]);
+            compareAndAdd(result, "load", args[0]);
+            compareAndAdd(result, "unload", args[0]);
+            compareAndAdd(result, "info", args[0]);
+            return result;
+        }
+        
+        // plugin name
+        if (args.length == 2) {
+            final boolean fileName = args[0].equalsIgnoreCase("load");
+            if (fileName) {
+                File pluginFolder = bFundamentals.getInstance().getDataFolder().getParentFile();
+                for (File plugin : pluginFolder.listFiles()) {
+                    if (plugin.isDirectory()) {
+                        continue;
+                    }
+                    if (!plugin.getName().endsWith(".jar")) {
+                        continue;
+                    }
+                    compareAndAdd(result, plugin.getName(), args[1]);
+                }
+            } else {
+                PluginManager pluginManager = Bukkit.getServer().getPluginManager();
+                for (Plugin plugin : pluginManager.getPlugins()) {
+                    compareAndAdd(result, plugin.getName(), args[1]);
+                }
+            }
+            return result;
+        }
+        
+        return result;
+        
+    }
+
+    /**
+     * 
+     * @param result
+     * @param name
+     * @param string 
+     */
+    private void compareAndAdd(List<String> result, String name, String substring) {
+        
+        if (substring.isEmpty()) {
+            result.add(name);
+            return;
+        }
+        
+        if (name.toLowerCase().startsWith(substring.toLowerCase())) {
+            result.add(name);
+            return;
+        }
+        
+    }
 	
 }
