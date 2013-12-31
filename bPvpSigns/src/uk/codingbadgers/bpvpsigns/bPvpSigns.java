@@ -381,7 +381,7 @@ public class bPvpSigns extends Module implements Listener {
 				sign.update(true);
 			}
 			
-		}, 20L);
+		}, 60L);
 
 	}
 	
