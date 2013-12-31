@@ -3,9 +3,11 @@ package uk.codingbadgers.bstore;
 import java.util.logging.Level;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
 import uk.codingbadgers.bFundamentals.module.Module;
@@ -124,17 +126,22 @@ public class CommandStore extends ModuleCommand {
         }
         
         // See how long the investment is for
+        String userFriendlyInvestorLength;
         long investorLength = 0;
         final long oneDay = 1000 * 60 * 60 * 24;
         if (length.equalsIgnoreCase("1week")) {
             investorLength = oneDay * 7;
+            userFriendlyInvestorLength = "One Week Investor";
         } else if (length.equalsIgnoreCase("1month")) {
             investorLength = oneDay * 30;
+            userFriendlyInvestorLength = "One Month Investor";
         } else if (length.equalsIgnoreCase("3month")) {
             investorLength = oneDay * 90;
+            userFriendlyInvestorLength = "Three Months Investor";
         } else {
             try {
                 investorLength = Integer.parseInt(length) * 1000 * 60; // if it isnt a string, presume length in minutes
+                userFriendlyInvestorLength = investorLength + " Minutes Investor";
             } catch (NumberFormatException ex) {
                 Module.sendMessage(module.getName(), sender, "Invalid investment length. Valid: 1week, 1month, 3month, [x] in minutes");
                 bFundamentals.log(Level.WARNING, "Invalid length of investment specified.", ex);
@@ -181,6 +188,8 @@ public class CommandStore extends ModuleCommand {
         
         Module.sendMessage(module.getName(), sender, "[Sucess] Investor Purchase - '" + playerName + "' length '" + length + "' old rank '" + oldRank + "' .");
         
+        broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased " + ChatColor.YELLOW + userFriendlyInvestorLength + ChatColor.GOLD + "!");
+        
     }
 
     /**
@@ -189,34 +198,37 @@ public class CommandStore extends ModuleCommand {
      * @param playerName
      * @param string 
      */
-    private void handlePurchaseXP(CommandSender sender, String playerName, String levels) {
+    private void handlePurchaseXP(CommandSender sender, String playerName, String levelsString) {
         
         if (!sender.hasPermission("bStore.purchase.xp")) {
             Module.sendMessage(module.getName(), sender, "You do not have the required permission 'bStore.purchase.xp'.");
             return;
         }
         
+        int levels = 0;
+        String userFriendlyXPLevels;
+        try {
+            levels = Integer.parseInt(levelsString);
+            userFriendlyXPLevels = levels + " Levels of Experience";
+        } catch(NumberFormatException ex) {
+            Module.sendMessage(module.getName(), sender, "Failed to purchase xp for player '" + playerName + "' levels '" + levels + "'.");
+            bFundamentals.log(Level.WARNING, "Failed to purchase xp for player '" + playerName + "' levels '" + levels + "'.", ex);
+            return;
+        }
+        
         OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
         if (player.isOnline()) {
-            
-            try {
-                player.getPlayer().giveExpLevels(Integer.parseInt(levels));
-            } catch(NumberFormatException ex) {
-                Module.sendMessage(module.getName(), sender, "Failed to purchase xp for player '" + playerName + "' levels '" + levels + "'.");
-                bFundamentals.log(Level.WARNING, "Failed to purchase xp for player '" + playerName + "' levels '" + levels + "'.", ex);
-                return;
-            }
-            
+            player.getPlayer().giveExpLevels(levels);
         } else {
-            
             // Store to database and give on login.
-            // TODO:
-            
+            this.databasemanager.logXPPurchase(playerName, levels);
         }
         
         logPurchase(playerName, "XP", levels + " Levels");
         
         Module.sendMessage(module.getName(), sender, "[Sucess] XP Purchase - '" + playerName + "' levels '" + levels + "'.");
+        
+        broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased " + ChatColor.YELLOW + userFriendlyXPLevels + ChatColor.GOLD + "!");
         
     }
 
@@ -233,8 +245,11 @@ public class CommandStore extends ModuleCommand {
             return;
         }
         
+        String userFriendlyMoneyAmount;
         try {
-            bFundamentals.getEconomy().depositPlayer(playerName, Double.parseDouble(amount));
+            Double dAmount = Double.parseDouble(amount);
+            bFundamentals.getEconomy().depositPlayer(playerName, dAmount);
+            userFriendlyMoneyAmount = "£" + dAmount;
         } catch(NumberFormatException ex) {
             Module.sendMessage(module.getName(), sender, "Failed to purchase money for player '" + playerName + "' amount '" + amount + "'.");
             bFundamentals.log(Level.WARNING, "Failed to purchase money for player '" + playerName + "' amount '" + amount + "'.", ex);
@@ -244,6 +259,8 @@ public class CommandStore extends ModuleCommand {
         logPurchase(playerName, "Money", "£" + amount);
         
         Module.sendMessage(module.getName(), sender, "[Sucess] Money Purchase - '" + playerName + "' amount '" + amount + "'.");
+        
+        broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased " + ChatColor.YELLOW + userFriendlyMoneyAmount + ChatColor.GOLD + "!");
     }
 
     /**
@@ -259,7 +276,33 @@ public class CommandStore extends ModuleCommand {
             return;
         }
         
+        Permission perms = bFundamentals.getPermissions();
+        String[] ranks = perms.getGroups();
+        
+        String userFriendlyMobPackage = "";
+        boolean foundPackage = false;
+        for (String rank : ranks) {
+            if (rank.equalsIgnoreCase(type)) {
+                foundPackage = true;
+                userFriendlyMobPackage = type.substring("mob_".length());
+                userFriendlyMobPackage = userFriendlyMobPackage.substring(0, 1).toUpperCase() + userFriendlyMobPackage.substring(1);
+                userFriendlyMobPackage = userFriendlyMobPackage.replace('_', ' ') + " MobDisguise Package";
+                break;
+            }
+        }
+        
+        if (foundPackage == false) {
+            Module.sendMessage(module.getName(), sender, "Failed to purchase mobdisguise for player '" + playerName + "' type '" + type + "'.");
+            bFundamentals.log(Level.WARNING, "Failed to purchase mobdisguise for player '" + playerName + "' type '" + type + "'.");
+            return;
+        }
+        
+        perms.playerAddGroup((World)null, playerName, type);        
         logPurchase(playerName, "MobPackage", type);
+        
+        Module.sendMessage(module.getName(), sender, "[Sucess] MobPackage Purchase - '" + playerName + "' type '" + type + "'.");
+        
+        broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased the " + ChatColor.YELLOW + userFriendlyMobPackage + ChatColor.GOLD + "!");
         
     }
 
@@ -271,6 +314,16 @@ public class CommandStore extends ModuleCommand {
      */
     private void logPurchase(String playerName, String type, String item) {
         this.databasemanager.logPurchase(playerName, type, item);
+    }
+    
+    /**
+     * 
+     * @param message 
+     */
+    private void broadcast(String message) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Module.sendMessage(m_module.getName(), player, ChatColor.GOLD + message);
+        }
     }
 
 }

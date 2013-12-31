@@ -15,6 +15,7 @@ import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bstore.database.DatabaseManager;
 import uk.codingbadgers.bstore.database.InvestorData;
+import uk.codingbadgers.bstore.database.XPPurchaseData;
 
 public class bStore extends Module implements Listener {
 
@@ -81,7 +82,14 @@ public class bStore extends Module implements Listener {
                 }, 5 * 20L);
             }
         }
-
+        
+        // Give xp for offline purchases
+        List<XPPurchaseData> xpData = this.databaseManager.getXPPurchases(playerName);
+        for (XPPurchaseData data : xpData) {
+            player.giveExpLevels(data.levels);
+        }
+        this.databaseManager.removeXPPurchases(playerName);
+        
     }
     
     /**

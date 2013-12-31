@@ -3,6 +3,8 @@ package uk.codingbadgers.bstore.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 
@@ -25,6 +27,11 @@ public class DatabaseManager {
      * The investor table
      */
     private DatabaseTable investorTable;
+    
+    /**
+     * The xp purchase table
+     */
+    private DatabaseTable xpTable;
 
     /**
      * Class constructor
@@ -47,6 +54,11 @@ public class DatabaseManager {
         investorTable = database.createTable("Store-Investors", InvestorData.class);
         if (investorTable == null) {
             bFundamentals.log(Level.SEVERE, "Failed to setup investors table!");
+        }
+        
+        xpTable = database.createTable("Store-XP", XPPurchaseData.class);
+        if (xpTable == null) {
+            bFundamentals.log(Level.SEVERE, "Failed to setup xp table!");
         }
     }
 
@@ -143,6 +155,57 @@ public class DatabaseManager {
      */
     public void removeInvestor(String playerName) {
         this.database.query("DELETE FROM `Store-Investors` WHERE `playerName`='" + playerName + "'");
+    }
+    
+    /**
+     * 
+     * @param playerName
+     * @param levels 
+     */
+    public void logXPPurchase(String playerName, int levels) {
+        
+        XPPurchaseData data = new XPPurchaseData();
+        data.playerName = playerName;
+        data.levels = levels;
+        
+        this.xpTable.insert(data, XPPurchaseData.class, true);
+        
+    }
+    
+    /**
+     * 
+     * @param playerName
+     * @return 
+     */
+    public List<XPPurchaseData> getXPPurchases(String playerName) {
+        
+        List<XPPurchaseData> data = new ArrayList<XPPurchaseData>();
+        
+        ResultSet result = this.database.queryResult("SELECT * FROM `Store-XP` WHERE `playerName`='" + playerName + "'");
+        if (result == null) {
+            return data;
+        }
+        
+        try {
+            while(result.next()) {
+                XPPurchaseData newData = new XPPurchaseData();
+                newData.playerName = result.getString("playerName");
+                newData.levels = result.getInt("levels");
+                data.add(newData);
+            }
+        } catch(SQLException ex) {
+            return data;
+        }
+            
+        return data;
+    }
+    
+    /**
+     * 
+     * @param playerName 
+     */
+    public void removeXPPurchases(String playerName) {
+        this.database.queryResult("DELETE FROM `Store-XP` WHERE `playerName`= '" + playerName + "'");
     }
 
 }
