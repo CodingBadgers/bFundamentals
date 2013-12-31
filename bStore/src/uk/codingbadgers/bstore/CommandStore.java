@@ -1,5 +1,6 @@
 package uk.codingbadgers.bstore;
 
+import java.text.DecimalFormat;
 import java.util.logging.Level;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -129,15 +130,20 @@ public class CommandStore extends ModuleCommand {
         String userFriendlyInvestorLength;
         long investorLength = 0;
         final long oneDay = 1000 * 60 * 60 * 24;
+        int money = 0;
+        
         if (length.equalsIgnoreCase("1week")) {
             investorLength = oneDay * 7;
             userFriendlyInvestorLength = "One Week Investor";
+            money = 125000;
         } else if (length.equalsIgnoreCase("1month")) {
             investorLength = oneDay * 30;
             userFriendlyInvestorLength = "One Month Investor";
+            money = 500000;
         } else if (length.equalsIgnoreCase("3month")) {
             investorLength = oneDay * 90;
             userFriendlyInvestorLength = "Three Months Investor";
+            money = 500000;
         } else {
             try {
                 investorLength = Integer.parseInt(length) * 1000 * 60; // if it isnt a string, presume length in minutes
@@ -169,6 +175,9 @@ public class CommandStore extends ModuleCommand {
             }
             perms.playerAddGroup((World)null, playerName, group);
         }
+        
+        // Give the investor their money
+        bFundamentals.getEconomy().depositPlayer(playerName, money);
                 
         // Log the end time of the investor
         long from = System.currentTimeMillis();
@@ -189,6 +198,12 @@ public class CommandStore extends ModuleCommand {
         Module.sendMessage(module.getName(), sender, "[Sucess] Investor Purchase - '" + playerName + "' length '" + length + "' old rank '" + oldRank + "' .");
         
         broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased " + ChatColor.YELLOW + userFriendlyInvestorLength + ChatColor.GOLD + "!");
+        
+        Player player = Bukkit.getPlayer(playerName);
+        if (player != null) {
+            Module.sendMessage(module.getName(), player, ChatColor.GOLD + "Thankyou for investing. You have been paid your investor money of '£" + formatMoney(money) + "'.");
+        }
+        
         
     }
 
@@ -249,7 +264,7 @@ public class CommandStore extends ModuleCommand {
         try {
             Double dAmount = Double.parseDouble(amount);
             bFundamentals.getEconomy().depositPlayer(playerName, dAmount);
-            userFriendlyMoneyAmount = "£" + dAmount;
+            userFriendlyMoneyAmount = "£" + formatMoney(dAmount);
         } catch(NumberFormatException ex) {
             Module.sendMessage(module.getName(), sender, "Failed to purchase money for player '" + playerName + "' amount '" + amount + "'.");
             bFundamentals.log(Level.WARNING, "Failed to purchase money for player '" + playerName + "' amount '" + amount + "'.", ex);
@@ -325,5 +340,22 @@ public class CommandStore extends ModuleCommand {
             Module.sendMessage(m_module.getName(), player, ChatColor.GOLD + message);
         }
     }
+    
+    /**
+    * Format a number to a usable string.
+    *
+    * @param amount the amount
+    * @return the string
+    */
+    private String formatMoney(double amount) {
+        DecimalFormat format = new DecimalFormat("@##0.00");
+        String formatted = format.format(amount);
+
+        if (formatted.endsWith(".")) {
+            formatted = formatted.substring(0, formatted.length() - 1);
+        }
+        
+        return formatted;
+   }
 
 }
