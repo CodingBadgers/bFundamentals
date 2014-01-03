@@ -59,8 +59,13 @@ public class NpcStoreTrait extends Trait {
         ItemStack item = player.getItemInHand();
         if (item != null && item.getType() == Material.NAME_TAG) {
             if (player.hasPermission("bNpcStore.ChangeShop")) {
-                this.storeName = item.getItemMeta().getDisplayName();
-                this.module.output(player, "Changed " + this.npc.getName() + "'s store to " + this.storeName);
+                final String requestedName = item.getItemMeta().getDisplayName();
+                if (module.getInventory(requestedName) != null) {
+                    this.storeName = requestedName;
+                    this.module.output(player, "Changed " + this.npc.getName() + "'s store to " + this.storeName);
+                } else {
+                    this.module.output(player, "There is no store with the name '" + requestedName + "'.");
+                }
             }            
             return;
         }
@@ -69,8 +74,7 @@ public class NpcStoreTrait extends Trait {
         if (tokenShopInventory != null) {
             tokenShopInventory.open(player);
         }
-        
-        //tokenShopInventory.addSubMenuItem("Money", Material.GOLD_INGOT, new GuiInventorySubMenu(tokenShopInventory, "Money", 3));
+
     }
 
 }

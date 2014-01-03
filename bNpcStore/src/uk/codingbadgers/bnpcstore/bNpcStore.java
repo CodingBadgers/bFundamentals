@@ -141,8 +141,8 @@ public class bNpcStore extends Module implements Listener {
         }
         
         // Setup the items
-        String[] items = new String[] {"Apple", "Potato", "Carrot", "Example Item"};
-        Material[] icons = new Material[] {Material.APPLE, Material.POTATO, Material.CARROT, Material.DIAMOND};
+        String[] items = new String[] {"Apple", "Potato", "Carrot", "TestItem"};
+        Material[] icons = new Material[] {Material.APPLE, Material.POTATO_ITEM, Material.CARROT_ITEM, Material.DIAMOND};
         for (int exampleIndex = 0; exampleIndex < 4; ++exampleIndex) {
             String nodePath = "item." + items[exampleIndex];
             itemConfig.set(nodePath + ".name", items[exampleIndex]);

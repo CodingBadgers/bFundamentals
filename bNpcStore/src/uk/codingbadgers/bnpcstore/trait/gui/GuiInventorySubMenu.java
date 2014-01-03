@@ -7,7 +7,7 @@ public class GuiInventorySubMenu extends GuiSubInventory {
 
     public GuiInventorySubMenu(GuiInventory ownerMenu, String title, int rowCount) {
         super(ownerMenu, title, rowCount);
-        this.addMenuItem("Back", Material.NETHER_STAR, new String[]{"Return to", "main menu"}, (rowCount - 1) * 9, new GuiReturnCallback(ownerMenu));
+        this.addMenuItem("Back", Material.NETHER_STAR, new String[]{"Return to", ownerMenu.getTitle()}, (rowCount - 1) * 9, new GuiReturnCallback(ownerMenu));
     }
 
 }

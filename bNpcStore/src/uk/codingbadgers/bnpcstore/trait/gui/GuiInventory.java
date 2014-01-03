@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,10 +28,11 @@ public class GuiInventory implements Listener {
     private int m_rowCount;
 
     private Map<String, GuiSubInventory> m_subMenus;
+    private Map<String, ItemStack> m_items;
     private Map<Integer, GuiCallback> m_callbacks;
     
-    private List<String> m_subMenuNames;
-    private List<String> m_itemNames;
+    protected List<String> m_subMenuNames;
+    protected List<String> m_itemNames;
 
     private Inventory m_inventory;
 
@@ -50,7 +52,11 @@ public class GuiInventory implements Listener {
         m_plugin.getServer().getPluginManager().registerEvents(this, m_plugin);
 
         m_subMenus = new HashMap<String, GuiSubInventory>();
+        m_items = new HashMap<String, ItemStack>();
         m_callbacks = new HashMap<Integer, GuiCallback>();
+        
+        m_subMenuNames = new ArrayList<String>();
+        m_itemNames = new ArrayList<String>();
 
         m_inventory = Bukkit.createInventory(m_owner, m_rowCount * 9, m_title);
     }
@@ -69,6 +75,7 @@ public class GuiInventory implements Listener {
         m_plugin.getServer().getPluginManager().registerEvents(this, m_plugin);
 
         m_subMenus = new HashMap<String, GuiSubInventory>();
+        m_items = new HashMap<String, ItemStack>();
         m_callbacks = new HashMap<Integer, GuiCallback>();
         
         m_subMenuNames = new ArrayList<String>();
@@ -77,8 +84,7 @@ public class GuiInventory implements Listener {
         loadStoreConfig(storeConfig);
         m_inventory = Bukkit.createInventory(null, m_rowCount * 9, m_title);
         
-        loadSubMenuConfig(subMenuConfig);
-        //TODO: load items
+        loadSubMenuConfig(subMenuConfig, itemConfig);
     }
 
     /**
@@ -202,7 +208,8 @@ public class GuiInventory implements Listener {
         if (callback != null) {
             m_callbacks.put(slot, callback);
         }
-
+        
+        m_items.put(name, item);
     }
 
     /**
@@ -218,18 +225,24 @@ public class GuiInventory implements Listener {
         if (!inventory.getName().equalsIgnoreCase(m_inventory.getName())) {
             return;
         }
-
+        
         // Do we care about this player?
         Player player = (Player) event.getWhoClicked();
         if (m_owner != null && !player.getName().equalsIgnoreCase(m_owner.getName())) {
             return;
         }
 
+        // If they havn't clicked an item, quit
+        final ItemStack clickedItem = event.getCurrentItem();
+        if (clickedItem == null || clickedItem.getItemMeta() == null || clickedItem.getItemMeta().getDisplayName() == null) {
+            return;
+        }
+        
         // Always cancel the event
         event.setCancelled(true);
-
+        
         // Get the name of the item
-        final String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+        final String itemName = clickedItem.getItemMeta().getDisplayName();
 
         // If the item is a submenu, close this and open the submenu
         if (m_subMenus.containsKey(itemName)) {
@@ -257,7 +270,7 @@ public class GuiInventory implements Listener {
         
         m_title = storeConfig.getString("store.name");
         m_rowCount = storeConfig.getInt("store.rows");
-        
+
         List<String> submenus = storeConfig.getStringList("store.submenus");
         for (String submenu : submenus) {
             m_subMenuNames.add(submenu);
@@ -273,12 +286,13 @@ public class GuiInventory implements Listener {
      * Load the sub menu config
      * @param subMenuConfig The sub menu config to load
      */
-    private void loadSubMenuConfig(FileConfiguration subMenuConfig) {
+    protected void loadSubMenuConfig(FileConfiguration subMenuConfig, FileConfiguration itemConfig) {
         
         if (this.m_subMenuNames.isEmpty()) {
+            loadItemConfig(itemConfig);
             return;
         }
-        
+
         int subMenuIndex = 0;
         String subMenu = this.m_subMenuNames.get(subMenuIndex);
         while (this.m_subMenus.get(subMenu) == null) {
@@ -289,10 +303,16 @@ public class GuiInventory implements Listener {
             Material icon = Material.valueOf(subMenuConfig.getString(nodePath + ".icon"));
             int rows = subMenuConfig.getInt(nodePath + ".rows");
             List<String> details = subMenuConfig.getStringList(nodePath + ".details");
-            this.m_subMenuNames.addAll(subMenuConfig.getStringList(nodePath + ".submenus"));
-            this.m_itemNames.addAll(subMenuConfig.getStringList(nodePath + ".items"));
+            
+            List<String> submenus = subMenuConfig.getStringList(nodePath + ".submenus");
+            List<String> items = subMenuConfig.getStringList(nodePath + ".items");
 
-            this.addSubMenuItem(name, icon, details, new GuiInventorySubMenu(this, name, rows));
+            GuiInventorySubMenu subMenuInventory = new GuiInventorySubMenu(this, m_title + " - " + name, rows);
+            subMenuInventory.addSubmenus(submenus);
+            subMenuInventory.addItems(items);
+            subMenuInventory.loadSubMenuConfig(subMenuConfig, itemConfig);
+            
+            this.addSubMenuItem(name, icon, details, subMenuInventory);
 
             subMenuIndex++;
             if (subMenuIndex >= this.m_subMenuNames.size()) {
@@ -301,6 +321,59 @@ public class GuiInventory implements Listener {
             subMenu = this.m_subMenuNames.get(subMenuIndex);
         }
         
+        loadItemConfig(itemConfig);
+        
+    }
+
+    private void loadItemConfig(FileConfiguration itemConfig) {
+        
+        if (this.m_itemNames.isEmpty()) {
+            return;
+        }
+
+        int itemIndex = 0;
+        String item = this.m_itemNames.get(itemIndex);
+        while (this.m_items.get(item) == null) {
+            
+            String nodePath = "item." + item;
+            
+            try {
+                String name = itemConfig.getString(nodePath + ".name");
+                Material icon = Material.valueOf(itemConfig.getString(nodePath + ".icon"));
+                int row = itemConfig.getInt(nodePath + ".row");
+                int column = itemConfig.getInt(nodePath + ".column");
+                List<String> details = itemConfig.getStringList(nodePath + ".details");
+                String[] detailsArray = new String[details.size()];
+                details.toArray(detailsArray);
+                
+                this.addMenuItem(name, icon, detailsArray, (row * 9) + column, null);
+            } catch(Exception ex) {
+                Bukkit.getLogger().log(Level.WARNING, "Failed to load item - " + item, ex);
+            }
+            
+            itemIndex++;
+            if (itemIndex >= this.m_itemNames.size()) {
+                break;
+            }
+            item = this.m_itemNames.get(itemIndex);
+        }
+        
+    }
+    
+    /**
+     * 
+     * @param subMenus 
+     */
+    protected void addSubmenus(List<String> subMenus) {
+        this.m_subMenuNames.addAll(subMenus);
+    }
+    
+    /**
+     * 
+     * @param items 
+     */
+    protected void addItems(List<String> items) {
+        this.m_itemNames.addAll(items);
     }
 
 }
