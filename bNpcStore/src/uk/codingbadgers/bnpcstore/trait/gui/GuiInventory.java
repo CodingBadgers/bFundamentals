@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import uk.codingbadgers.bnpcstore.trait.gui.callbacks.GuiBuySellCallback;
 
 public class GuiInventory implements Listener {
 
@@ -174,14 +175,14 @@ public class GuiInventory implements Listener {
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
-    public void addMenuItem(String name, Material icon, String[] details, GuiCallback callback) {
+    public ItemStack addMenuItem(String name, Material icon, String[] details, GuiCallback callback) {
 
         int slot = 0;
         while (m_inventory.getItem(slot) != null) {
             slot++;
         }
 
-        addMenuItem(name, icon, details, slot, callback);
+        return addMenuItem(name, icon, details, slot, callback);
 
     }
 
@@ -196,13 +197,54 @@ public class GuiInventory implements Listener {
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
-    public void addMenuItem(String name, Material icon, String[] details, int slot, GuiCallback callback) {
+    public ItemStack addMenuItem(String name, Material icon, String[] details, int slot, GuiCallback callback) {
+
+        return addMenuItem(name, icon, details, slot, 1, callback);
+    }
+    
+    /**
+     * Add a menu item to the inventory. When the item is click an GuiCallback
+     * onClick method will be called
+     *
+     * @param name The name of the item
+     * @param icon The icon to use for the item
+     * @param details Some details about the item
+     * @param slot The slot in the inventory to position the item
+     * @param amount The amount of items in the itemstack
+     * @param callback A callback that is called when the item is clicked
+     * @throws Exception
+     */
+    public ItemStack addMenuItem(String name, Material icon, String[] details, int slot, int amount, GuiCallback callback) {
+
+        return addMenuItem(name, icon, details, slot, amount, false, callback);
+    }
+    
+        /**
+     * Add a menu item to the inventory. When the item is click an GuiCallback
+     * onClick method will be called
+     *
+     * @param name The name of the item
+     * @param icon The icon to use for the item
+     * @param details Some details about the item
+     * @param slot The slot in the inventory to position the item
+     * @param amount The amount of items in the itemstack
+     * @param glow Should the item glow (enchantment glow)
+     * @param callback A callback that is called when the item is clicked
+     * @throws Exception
+     */
+    public ItemStack addMenuItem(String name, Material icon, String[] details, int slot, int amount, boolean glow, GuiCallback callback) {
 
         ItemStack item = new ItemStack(icon);
+        item.setAmount(amount);
+        
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(details));
         item.setItemMeta(meta);
+        
+        if (glow) {
+            item.addUnsafeEnchantment(Enchantment.LUCK, 1);
+        }
 
         m_inventory.setItem(slot, item);
         if (callback != null) {
@@ -210,6 +252,8 @@ public class GuiInventory implements Listener {
         }
         
         m_items.put(name, item);
+        
+        return item;
     }
 
     /**
@@ -346,7 +390,7 @@ public class GuiInventory implements Listener {
                 String[] detailsArray = new String[details.size()];
                 details.toArray(detailsArray);
                 
-                this.addMenuItem(name, icon, detailsArray, (row * 9) + column, null);
+                this.addMenuItem(name, icon, detailsArray, (row * 9) + column, new GuiBuySellCallback(this, name, icon, 20, 10));
             } catch(Exception ex) {
                 Bukkit.getLogger().log(Level.WARNING, "Failed to load item - " + item, ex);
             }
