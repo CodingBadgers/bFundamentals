@@ -1,5 +1,6 @@
 package uk.codingbadgers.bnpcstore.trait.gui;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import uk.codingbadgers.bnpcstore.trait.gui.callbacks.GuiBuySellCallback;
+import uk.codingbadgers.bnpcstore.trait.gui.misc.GuiEnchantment;
 
 public class GuiInventory implements Listener {
 
@@ -34,6 +36,7 @@ public class GuiInventory implements Listener {
     
     protected List<String> m_subMenuNames;
     protected List<String> m_itemNames;
+    private Enchantment m_highlight;
 
     private Inventory m_inventory;
 
@@ -58,6 +61,7 @@ public class GuiInventory implements Listener {
         
         m_subMenuNames = new ArrayList<String>();
         m_itemNames = new ArrayList<String>();
+        createHighlightEnchantment();
 
         m_inventory = Bukkit.createInventory(m_owner, m_rowCount * 9, m_title);
     }
@@ -81,11 +85,33 @@ public class GuiInventory implements Listener {
         
         m_subMenuNames = new ArrayList<String>();
         m_itemNames = new ArrayList<String>();
+        createHighlightEnchantment();
         
         loadStoreConfig(storeConfig);
         m_inventory = Bukkit.createInventory(null, m_rowCount * 9, m_title);
         
         loadSubMenuConfig(subMenuConfig, itemConfig);
+    }
+    
+    /**
+     * 
+     */
+    private void createHighlightEnchantment() {
+        m_highlight = new GuiEnchantment();
+        
+        try {
+            Field f = Enchantment.class.getDeclaredField("acceptingNew");
+            f.setAccessible(true);
+            f.set(null, true);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        
+        try {
+            Enchantment.registerEnchantment(m_highlight);
+        } catch (IllegalArgumentException e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -219,7 +245,7 @@ public class GuiInventory implements Listener {
         return addMenuItem(name, icon, details, slot, amount, false, callback);
     }
     
-        /**
+    /**
      * Add a menu item to the inventory. When the item is click an GuiCallback
      * onClick method will be called
      *
@@ -243,7 +269,7 @@ public class GuiInventory implements Listener {
         item.setItemMeta(meta);
         
         if (glow) {
-            item.addUnsafeEnchantment(Enchantment.LUCK, 1);
+            item.addUnsafeEnchantment(m_highlight, 1);
         }
 
         m_inventory.setItem(slot, item);

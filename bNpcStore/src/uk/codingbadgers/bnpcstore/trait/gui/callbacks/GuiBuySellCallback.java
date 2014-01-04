@@ -33,7 +33,7 @@ public class GuiBuySellCallback implements GuiCallback {
         }
 
         // Sell
-        row = 3;
+        row = 2;
         amount = 64;
         for (int column = 1; column < 8; ++column) {
             m_buySellMenu.addMenuItem(name, item, new String[] {"Sell x" + amount + " " + name, "Price: £" + (sellPrice * amount)}, (row * 9) + column, amount, null);
