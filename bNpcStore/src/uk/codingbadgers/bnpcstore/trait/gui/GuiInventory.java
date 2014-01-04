@@ -402,10 +402,30 @@ public class GuiInventory implements Listener {
                 int row = itemConfig.getInt(nodePath + ".row");
                 int column = itemConfig.getInt(nodePath + ".column");
                 List<String> details = itemConfig.getStringList(nodePath + ".details");
+                
+                
+                GuiCallback onClickCallback = null;
+                if (itemConfig.contains(nodePath + ".onclick")) {
+                    
+                    // BuySellCallback
+                    if (itemConfig.contains(nodePath + ".onclick.buysell")) {
+                        double buyPrice = itemConfig.getDouble(nodePath + ".onclick.buysell.buyprice", 100.0);
+                        double sellPrice = itemConfig.getDouble(nodePath + ".onclick.buysell.sellprice", 100.0);
+                        
+                        details.add(" ");
+                        details.add("Buy for £" + buyPrice + " each.");
+                        details.add("Sell for £" + sellPrice + " each.");
+                        
+                        onClickCallback = new GuiBuySellCallback(this, name, icon, buyPrice, sellPrice);
+                    }
+                    // Other standard callbacks? Message? Back? Teleport?
+                    // else if () { 
+                }
+                
                 String[] detailsArray = new String[details.size()];
                 details.toArray(detailsArray);
+                this.addMenuItem(name, icon, detailsArray, (row * 9) + column, onClickCallback);
                 
-                this.addMenuItem(name, icon, detailsArray, (row * 9) + column, new GuiBuySellCallback(this, name, icon, 20, 10));
             } catch(Exception ex) {
                 Bukkit.getLogger().log(Level.WARNING, "Failed to load item - " + item, ex);
             }

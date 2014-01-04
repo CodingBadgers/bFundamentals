@@ -47,6 +47,9 @@ public class bNpcStore extends Module implements Listener {
     @Override
     public void onDisable() {
 
+        stores.clear();
+        bNpcStore.instance = null;
+        
     }
 
     /**
@@ -60,7 +63,7 @@ public class bNpcStore extends Module implements Listener {
         
         // Register trait
         TraitFactory factory = net.citizensnpcs.api.CitizensAPI.getTraitFactory();
-        if (factory.getTrait(NpcStoreTrait.class) == null) {
+        if (factory.getTrait("npcstore") == null) {
             factory.registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NpcStoreTrait.class).withName("npcstore"));
         }
         
