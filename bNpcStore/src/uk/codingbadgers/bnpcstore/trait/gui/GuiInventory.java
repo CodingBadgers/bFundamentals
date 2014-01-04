@@ -27,7 +27,6 @@ public class GuiInventory implements Listener {
 
     private Plugin m_plugin;
     private String m_title;
-    private Player m_owner;
     private int m_rowCount;
 
     private Map<String, GuiSubInventory> m_subMenus;
@@ -39,6 +38,8 @@ public class GuiInventory implements Listener {
     private Enchantment m_highlight;
 
     private Inventory m_inventory;
+    
+    private static Map<String, GuiInventory> m_viewers = new HashMap<String, GuiInventory>();
 
     /**
      * Class constructor
@@ -47,10 +48,9 @@ public class GuiInventory implements Listener {
      * @param owner The owner of the inventory
      * @param rowCount The number of rows in the inventory
      */
-    public GuiInventory(Plugin plugin, String title, Player owner, int rowCount) {
+    public GuiInventory(Plugin plugin, String title, int rowCount) {
         m_plugin = plugin;
         m_title = title;
-        m_owner = owner;
         m_rowCount = rowCount;
 
         m_plugin.getServer().getPluginManager().registerEvents(this, m_plugin);
@@ -63,7 +63,7 @@ public class GuiInventory implements Listener {
         m_itemNames = new ArrayList<String>();
         createHighlightEnchantment();
 
-        m_inventory = Bukkit.createInventory(m_owner, m_rowCount * 9, m_title);
+        m_inventory = Bukkit.createInventory(null, m_rowCount * 9, m_title);
     }
 
     /**
@@ -75,7 +75,6 @@ public class GuiInventory implements Listener {
      */
     public GuiInventory(Plugin plugin, FileConfiguration storeConfig, FileConfiguration subMenuConfig, FileConfiguration itemConfig) {
         m_plugin = plugin;
-        m_owner = null;
         
         m_plugin.getServer().getPluginManager().registerEvents(this, m_plugin);
 
@@ -97,28 +96,24 @@ public class GuiInventory implements Listener {
      * 
      */
     private void createHighlightEnchantment() {
-        m_highlight = new GuiEnchantment();
+        m_highlight = Enchantment.getByName("GuiEnchantment"); 
         
-        try {
-            Field f = Enchantment.class.getDeclaredField("acceptingNew");
-            f.setAccessible(true);
-            f.set(null, true);
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        
-        try {
-            Enchantment.registerEnchantment(m_highlight);
-        } catch (IllegalArgumentException e){
-            e.printStackTrace();
-        }
-    }
+        if (m_highlight == null) {
+            m_highlight = new GuiEnchantment();      
+            try {
+                Field f = Enchantment.class.getDeclaredField("acceptingNew");
+                f.setAccessible(true);
+                f.set(null, true);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
 
-    /**
-     * Open the inventory to the owner
-     */
-    public void open() {
-        m_owner.openInventory(m_inventory);
+            try {
+                Enchantment.registerEnchantment(m_highlight);
+            } catch (IllegalArgumentException e){
+                e.printStackTrace();
+            }
+        }
     }
     
     /**
@@ -127,24 +122,16 @@ public class GuiInventory implements Listener {
      */
     public void open(Player player) {
         player.openInventory(m_inventory);
+        m_viewers.put(player.getName(), this);
     }
 
     /**
-     * Open the inventory to the owner
+     * Close a players inventory
      */
-    public void close() {
-        if (m_owner.getInventory() == m_inventory) {
-            m_owner.closeInventory();
+    public void close(Player player) {
+        if (player.getInventory() == m_inventory) {
+            player.closeInventory();
         }
-    }
-
-    /**
-     * Get the owner of this gui inventory
-     *
-     * @return
-     */
-    public Player getOwner() {
-        return m_owner;
     }
 
     /**
@@ -298,8 +285,10 @@ public class GuiInventory implements Listener {
         
         // Do we care about this player?
         Player player = (Player) event.getWhoClicked();
-        if (m_owner != null && !player.getName().equalsIgnoreCase(m_owner.getName())) {
-            return;
+        if (GuiInventory.m_viewers.containsKey(player.getName())) {
+            if (GuiInventory.m_viewers.get(player.getName()) != this) {
+                return;
+            }
         }
 
         // If they havn't clicked an item, quit
