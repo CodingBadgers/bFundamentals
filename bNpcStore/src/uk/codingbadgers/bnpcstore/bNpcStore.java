@@ -59,8 +59,10 @@ public class bNpcStore extends Module implements Listener {
         register(this);
         
         // Register trait
-	TraitFactory factory = net.citizensnpcs.api.CitizensAPI.getTraitFactory();
-	factory.registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NpcStoreTrait.class).withName("npcstore"));
+        TraitFactory factory = net.citizensnpcs.api.CitizensAPI.getTraitFactory();
+        if (factory.getTrait(NpcStoreTrait.class) == null) {
+            factory.registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NpcStoreTrait.class).withName("npcstore"));
+        }
         
         // Load store guis
         loadStoreGuis();
