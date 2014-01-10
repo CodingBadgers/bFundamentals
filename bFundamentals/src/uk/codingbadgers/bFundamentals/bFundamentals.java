@@ -42,6 +42,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
@@ -49,6 +52,9 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import uk.codingbadgers.bFundamentals.bungee.BungeeMessenger;
 import uk.codingbadgers.bFundamentals.bungee.SimpleBungeeMessenger;
+import uk.codingbadgers.bFundamentals.message.ClickEventType;
+import uk.codingbadgers.bFundamentals.message.HoverEventType;
+import uk.codingbadgers.bFundamentals.message.Message;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleLoader;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
@@ -59,14 +65,16 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 public class bFundamentals extends JavaPlugin implements Listener {
 	
+	private static Gson m_gson = null;
 	private static Logger m_log = null;
 	private static bFundamentals m_instance = null;
-	private static BukkitDatabase m_database = null;
+	
 	
 	private static Permission m_permissions = null;
 	private static Chat m_chat = null;
 	private static Economy m_economy = null;
-	
+
+	private static BukkitDatabase m_database = null;
 	private static ModuleLoader m_moduleLoader = null;
 	private static ConfigManager m_configuration = null;
 	private static BungeeMessenger m_messenger = null;
@@ -81,6 +89,12 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	public void onLoad() {
 		setInstance(this);
 		m_log = getLogger();
+		
+		m_gson = new GsonBuilder()
+						.registerTypeAdapter(Message.class, new Message.MessageSerializer())
+						.registerTypeAdapter(ClickEventType.class, new ClickEventType.ClickEventSerializer())
+						.registerTypeAdapter(HoverEventType.class, new HoverEventType.HoverEventSerializer())
+						.create();
 		
 		log(Level.INFO, "bFundamentals Loading");
 	}
@@ -157,6 +171,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		m_instance = null;
 		m_configuration = null;
 		m_messenger = null;
+		m_gson = null;
 	}
 	
 	/**
@@ -222,6 +237,16 @@ public class bFundamentals extends JavaPlugin implements Listener {
      */
     public static BungeeMessenger getBungeeMessenger() {
         return m_messenger;
+    }
+    
+    /**
+     * Get the bFundamentals gson instance, has custom serializers for bukkit
+     * and minecraft classes
+     * 
+     * @return the gson instance
+     */
+    public static Gson getGsonInstance() {
+    	return m_gson;
     }
     
 	/**

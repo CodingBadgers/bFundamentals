@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,9 +30,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.messaging.Messenger;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.backup.BackupFactory;
 import uk.codingbadgers.bFundamentals.backup.PlayerBackup;
+import uk.codingbadgers.bFundamentals.message.Message;
 
 /**
  * The Basic Player class for all modules.
@@ -244,6 +250,24 @@ public class FundamentalPlayer {
 			inventory.setChestplate(null);
 			inventory.setLeggings(null);
 			inventory.setBoots(null);
+		}
+	}
+	
+	/**
+	 * Send a custom formated message to a player
+	 * 
+	 * @param message the messge to send
+	 */
+	public void sendMessage(Message message) {
+		String json = bFundamentals.getGsonInstance().toJson(message);
+		bFundamentals.log(Level.INFO, json);
+		
+		try {
+			PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CHAT);
+			packet.getStrings().write(1, json);
+			ProtocolLibrary.getProtocolManager().sendServerPacket(this.m_player, packet);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 }
