@@ -1,6 +1,8 @@
 package uk.codingbadgers.bFundamentals.message;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -15,6 +17,14 @@ public enum HoverEventType {
 	SHOW_ITEM("show_item"),
 	SHOW_ACHIEVEMENT("show_achievement"),
 	;
+
+	private static final Map<String, HoverEventType> BY_ID = new HashMap<String, HoverEventType>();
+	
+	static {
+		for (HoverEventType type : values()) {
+			BY_ID.put(type.id, type);
+		}
+	}
 	
 	private String id;
 
@@ -34,7 +44,7 @@ public enum HoverEventType {
 				return null;
 			}
 			
-			return valueOf(json.getAsString().toUpperCase());
+			return BY_ID.get(json.getAsString());
 		}
 
 		@Override

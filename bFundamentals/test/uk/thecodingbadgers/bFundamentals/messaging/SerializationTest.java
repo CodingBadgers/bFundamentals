@@ -14,6 +14,8 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.message.ClickEventType;
+import uk.codingbadgers.bFundamentals.message.HoverEventType;
 import uk.codingbadgers.bFundamentals.message.Message;
 import uk.thecodingbadgers.bFundamentals.TestContainer;
 
@@ -66,6 +68,36 @@ public class SerializationTest extends TestContainer {
 	public void testAchievementDeserialize() {
 		assertEquals(Achievement.BUILD_WORKBENCH, GSON.fromJson("\"achievement.buildWorkBench\"", Achievement.class));
 		assertEquals(Achievement.BAKE_CAKE,  GSON.fromJson("\"achievement.bakeCake\"", Achievement.class));
+	}
+	
+	@Test
+	public void testHoverEventTypeSerialize() {
+		assertEquals("\"show_text\"", GSON.toJson(HoverEventType.SHOW_TOOLTIP));
+		assertEquals("\"show_item\"", GSON.toJson(HoverEventType.SHOW_ITEM));
+		assertEquals("\"show_achievement\"", GSON.toJson(HoverEventType.SHOW_ACHIEVEMENT));
+	}
+
+	@Test
+	public void testHoverEventTypeDeserialize() {
+		assertEquals(HoverEventType.SHOW_TOOLTIP, GSON.fromJson("\"show_text\"", HoverEventType.class));
+		assertEquals(HoverEventType.SHOW_ITEM, GSON.fromJson("\"show_item\"", HoverEventType.class));
+		assertEquals(HoverEventType.SHOW_ACHIEVEMENT, GSON.fromJson("\"show_achievement\"", HoverEventType.class));
+	}
+
+	@Test
+	public void testClickEventTypeSerialize() {
+		assertEquals("\"open_file\"", GSON.toJson(ClickEventType.OPEN_FILE));
+		assertEquals("\"open_url\"", GSON.toJson(ClickEventType.OPEN_URL));
+		assertEquals("\"run_command\"", GSON.toJson(ClickEventType.RUN_COMMAND));
+		assertEquals("\"suggest_command\"", GSON.toJson(ClickEventType.SUGGEST_COMMAND));
+	}
+
+	@Test
+	public void testClickEventTypeDeserialize() {
+		assertEquals(ClickEventType.OPEN_FILE, GSON.fromJson("\"open_file\"", ClickEventType.class));
+		assertEquals(ClickEventType.OPEN_URL, GSON.fromJson("\"open_url\"", ClickEventType.class));
+		assertEquals(ClickEventType.RUN_COMMAND, GSON.fromJson("\"run_command\"", ClickEventType.class));
+		assertEquals(ClickEventType.SUGGEST_COMMAND, GSON.fromJson("\"suggest_command\"", ClickEventType.class));
 	}
 	
 	@Test

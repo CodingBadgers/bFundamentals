@@ -1,6 +1,8 @@
 package uk.codingbadgers.bFundamentals.message;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -18,6 +20,14 @@ public enum ClickEventType {
 	OPEN_FILE("open_file"),
 	;
 
+	private static final Map<String, ClickEventType> BY_ID = new HashMap<String, ClickEventType>();
+	
+	static {
+		for (ClickEventType type : values()) {
+			BY_ID.put(type.id, type);
+		}
+	}
+	
 	private String id;
 
 	private ClickEventType(String id) {
@@ -36,7 +46,7 @@ public enum ClickEventType {
 				return null;
 			}
 			
-			return valueOf(json.getAsString().toUpperCase());
+			return BY_ID.get(json.getAsString());
 		}
 
 		@Override
