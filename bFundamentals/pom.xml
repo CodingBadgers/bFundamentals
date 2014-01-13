@@ -30,6 +30,12 @@
 			<version>1.1</version>
 			<scope>compile</scope>
 		</dependency>
+        <dependency> <!-- give us access to CraftBukkit to test our code effectively -->
+			<groupId>org.bukkit</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>${bukkit.version}</version>
+			<scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>

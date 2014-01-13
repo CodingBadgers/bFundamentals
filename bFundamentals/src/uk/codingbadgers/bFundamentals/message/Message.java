@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Achievement;
 import org.bukkit.ChatColor;
@@ -43,17 +42,26 @@ public class Message {
 		Validate.isTrue(color.isColor(), "Cannot set color to a non color");
 		this.color = color;
 	}
+
+	public ChatColor getColor() {
+		return this.color;
+	}
 	
 	public void addStyle(ChatColor color) {
-		Validate.isTrue(color.isFormat(), "Cannot add a color as a style");
+		Validate.isTrue(color.isFormat() || color == ChatColor.RESET, "Cannot add a color as a style");
 		
 		if (color == ChatColor.RESET) {
 			styles.clear();
-			color = ChatColor.WHITE;
+			this.color = ChatColor.WHITE;
 			return;
 		}
 		
 		styles.add(color);
+	}
+
+	public boolean hasStyle(ChatColor style) {
+		Validate.isTrue(style.isFormat(), "A format is needed not a color");
+		return styles.contains(style);
 	}
 	
 	public void addClickEvent(ClickEventType type, String value) {
@@ -65,11 +73,12 @@ public class Message {
 	}
 	
 	public void addItemTooltip(ItemStack stack) {
-		throw new NotImplementedException("We do not currently support item tooltips"); // TODO
+		addHoverEvent(new HoverEvent(HoverEventType.SHOW_ITEM, stack));
 	}
 
+
 	public void addAchivementTooltip(Achievement achivement) {
-		throw new NotImplementedException("We do not currently support item tooltips"); // TODO
+		addHoverEvent(new HoverEvent(HoverEventType.SHOW_ACHIEVEMENT, achivement));
 	}
 
 	public void addHoverEvent(HoverEventType type, String value) {
@@ -82,6 +91,29 @@ public class Message {
 
 	public void addExtra(Message message) {
 		this.extra.add(message);
+	}
+
+	@Override
+	public String toString() {
+		return "Message [text=" + text + ", color=" + color + ", styles=" + styles + ", extra=" + extra + ", clickevent=" + clickevent + ", hoverevent=" + hoverevent + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((clickevent == null) ? 0 : clickevent.hashCode());
+		result = prime * result + ((color == null) ? 0 : color.hashCode());
+		result = prime * result + ((extra == null) ? 0 : extra.hashCode());
+		result = prime * result + ((hoverevent == null) ? 0 : hoverevent.hashCode());
+		result = prime * result + ((styles == null) ? 0 : styles.hashCode());
+		result = prime * result + ((text == null) ? 0 : text.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Message && obj.hashCode() == hashCode();
 	}
 	
 	public static class MessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
