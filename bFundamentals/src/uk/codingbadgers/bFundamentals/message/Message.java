@@ -33,7 +33,7 @@ public class Message {
 	public Message(String text) {
 		this.text = text;
 		
-		this.color = ChatColor.WHITE;
+		this.color = null;
 		this.styles = new ArrayList<ChatColor>();
 		this.extra = new ArrayList<Message>();
 	}
@@ -90,6 +90,10 @@ public class Message {
 	}
 
 	public void addExtra(Message message) {
+		if (message.getColor() == null) {
+			message.setColor(this.getColor());
+		}
+		
 		this.extra.add(message);
 	}
 
@@ -169,7 +173,7 @@ public class Message {
 			
 			json.addProperty("text", msg.text);
 			
-			json.addProperty("color", msg.color.name().toLowerCase());
+			if (msg.color != null) { json.addProperty("color", msg.color.name().toLowerCase()); }
 			
 			if (msg.styles.contains(ChatColor.BOLD)) { json.addProperty("bold", true); }
 			if (msg.styles.contains(ChatColor.ITALIC)) { json.addProperty("italic", true); }
