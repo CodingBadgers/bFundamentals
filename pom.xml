@@ -72,7 +72,7 @@
 		<repository>
 			<id>comphenix-rep</id>
 			<name>Comphenix Repository</name>
-			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
+			<url>http://repo.comphenix.net/content/repositories/releases/</url>
 		</repository>
     </repositories>
    

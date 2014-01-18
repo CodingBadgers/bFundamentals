@@ -82,7 +82,7 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	protected static ConfigManager m_configuration = null;
 	protected static BungeeMessenger m_messenger = null;
 	
-	protected static FundamentalPlayerArray Players = new FundamentalPlayerArray(); 
+	public static FundamentalPlayerArray Players = new FundamentalPlayerArray(); 
 	
 	/**
 	 * Called on loading. This is called before onEnable.
