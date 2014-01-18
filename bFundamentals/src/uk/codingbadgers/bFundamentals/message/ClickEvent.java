@@ -5,13 +5,9 @@ public class ClickEvent implements Cloneable {
 	private final ClickEventType action;
 	private final String value;
 	
-	private int hashcode;
-	
 	public ClickEvent(ClickEventType type, String value) {
 		this.action = type;
 		this.value = value;
-		
-		generateHashCode();
 	}
 	
 	public ClickEventType getAction() {
@@ -21,18 +17,14 @@ public class ClickEvent implements Cloneable {
 	public String getValue() {
 		return value;
 	}
-
-	public void generateHashCode() {
+	
+	@Override
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((action == null) ? 0 : action.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		hashcode = result;
-	}
-	
-	@Override
-	public int hashCode() {
-		return hashcode;
+		return result;
 	}
 
 	@Override

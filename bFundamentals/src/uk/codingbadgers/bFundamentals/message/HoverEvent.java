@@ -7,7 +7,6 @@ public class HoverEvent implements Cloneable {
 
 	private final HoverEventType action;
 	private final Object value;
-	private int hashcode;
 	
 	public HoverEvent(HoverEventType type, Object value) {
 		if (type == HoverEventType.SHOW_TOOLTIP && !(value instanceof String)) {
@@ -20,8 +19,6 @@ public class HoverEvent implements Cloneable {
 		
 		this.action = type;
 		this.value = value;
-		
-		generateHashCode();
 	}
 	
 	public HoverEventType getAction() {
@@ -32,17 +29,13 @@ public class HoverEvent implements Cloneable {
 		return value;
 	}
 
-	public void generateHashCode() {
+	@Override
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((action == null) ? 0 : action.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		hashcode = result;
-	}
-	
-	@Override
-	public int hashCode() {
-		return hashcode;
+		return result;
 	}
 
 	@Override
