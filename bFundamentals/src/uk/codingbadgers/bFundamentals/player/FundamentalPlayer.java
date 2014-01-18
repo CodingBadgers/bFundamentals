@@ -33,6 +33,7 @@ import org.bukkit.plugin.messaging.Messenger;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.backup.BackupFactory;
@@ -260,11 +261,11 @@ public class FundamentalPlayer {
 	 */
 	public void sendMessage(Message message) {
 		String json = bFundamentals.getGsonInstance().toJson(message);
-		bFundamentals.log(Level.INFO, json);
+		if (bFundamentals.getConfigurationManager().isDebugEnabled()) { bFundamentals.log(Level.INFO, json); }
 		
 		try {
 			PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CHAT);
-			packet.getStrings().write(1, json);
+			packet.getChatComponents().write(0, WrappedChatComponent.fromJson(json));
 			ProtocolLibrary.getProtocolManager().sendServerPacket(this.m_player, packet);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
