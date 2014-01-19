@@ -150,7 +150,7 @@ public class Message {
 			
 			if (object.has("bold") && object.get("bold").getAsBoolean()) { message.styles.add(ChatColor.BOLD); }
 			if (object.has("italic") && object.get("italic").getAsBoolean()) { message.styles.add(ChatColor.ITALIC); }
-			if (object.has("underline") && object.get("underline").getAsBoolean()) { message.styles.add(ChatColor.UNDERLINE); }
+			if (object.has("underlined") && object.get("underlined").getAsBoolean()) { message.styles.add(ChatColor.UNDERLINE); }
 			if (object.has("strikethrough") && object.get("strikethrough").getAsBoolean()) { message.styles.add(ChatColor.STRIKETHROUGH); }
 			if (object.has("obfuscated") && object.get("obfuscated").getAsBoolean()) { message.styles.add(ChatColor.MAGIC); }
 			
@@ -177,7 +177,7 @@ public class Message {
 			
 			if (msg.styles.contains(ChatColor.BOLD)) { json.addProperty("bold", true); }
 			if (msg.styles.contains(ChatColor.ITALIC)) { json.addProperty("italic", true); }
-			if (msg.styles.contains(ChatColor.UNDERLINE)) { json.addProperty("underline", true); }
+			if (msg.styles.contains(ChatColor.UNDERLINE)) { json.addProperty("underlined", true); }
 			if (msg.styles.contains(ChatColor.STRIKETHROUGH)) { json.addProperty("strikethrough", true); }
 			if (msg.styles.contains(ChatColor.MAGIC)) { json.addProperty("obfuscated", true); }
 			
