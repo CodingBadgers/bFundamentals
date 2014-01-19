@@ -17,6 +17,9 @@
  */
 package uk.codingbadgers.bsign.sign;
 
+import java.util.Random;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -49,5 +52,18 @@ public abstract class Sign {
 	}
 
 	public abstract String getType();
+	
+	public String replaceMacros(Player player, String input) {
+		Random rand = new Random();
+		Player random = Bukkit.getOnlinePlayers()[rand.nextInt(Bukkit.getOnlinePlayers().length)];
+		
+		// replace macros
+		String output = m_context.replaceAll("<<player>>", player.getName());
+		output = m_context.replaceAll("<<random>>", random.getName());
+		output = m_context.replaceAll("@p", player.getName());
+		output = m_context.replaceAll("@r", random.getName());
+
+		return output;
+	}
 	
 }

@@ -26,6 +26,11 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.message.ClickEventType;
+import uk.codingbadgers.bFundamentals.message.HoverEventType;
+import uk.codingbadgers.bFundamentals.message.Message;
+import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
 import uk.codingbadgers.bsign.bSignModule;
 
 
@@ -61,7 +66,23 @@ public class WebSign extends Sign {
 		if (!bSignModule.hasPermission(player, "bfundamental.bsign.use.web"))
 			return;
 		
-		bSignModule.sendMessage("bSign", player, "Please click " + ChatColor.AQUA + m_context);
+		Message message = new Message("[bSign] ");
+		message.setColor(ChatColor.DARK_PURPLE);
+		
+		Message main = new Message("Please click ");
+		main.setColor(ChatColor.WHITE);
+		
+		Message url = new Message("here");
+		url.setColor(ChatColor.AQUA);
+		url.addStyle(ChatColor.UNDERLINE);
+		url.addHoverEvent(HoverEventType.SHOW_TOOLTIP, m_context);
+		url.addClickEvent(ClickEventType.OPEN_URL, m_context);
+		
+		message.addExtra(main);
+		message.addExtra(url);
+		
+		FundamentalPlayer fplayer = bFundamentals.Players.getPlayer(player);
+		fplayer.sendMessage(message);
 	}
 
 	@Override

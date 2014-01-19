@@ -17,6 +17,8 @@
  */
 package uk.codingbadgers.bsign.listener;
 
+import me.cybermaxke.inputgui.api.InputPlayer;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -27,6 +29,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
+import uk.codingbadgers.bsign.SignInputGui;
 import uk.codingbadgers.bsign.bSignModule;
 import uk.codingbadgers.bsign.sign.CommandSign;
 import uk.codingbadgers.bsign.sign.InfoSign;
@@ -51,6 +54,7 @@ public class BlockListener implements Listener {
 	public void onSignChange(SignChangeEvent event) {
 		
 		final Player creator = (Player)event.getPlayer();
+		final InputPlayer iplayer = bSignModule.GUI_API.getPlayer(creator);
 		final Location signLocation = event.getBlock().getLocation();
 		
 		Sign newSign = null;
@@ -62,7 +66,7 @@ public class BlockListener implements Listener {
 				return;
 			
 			newSign = new WebSign(creator, signLocation);
-			bSignModule.sendMessage("bSign", creator, bSignModule.MODULE.getLanguageValue("WEBSIGN-SETUP"));
+			iplayer.openGui(new SignInputGui(newSign, "Enter the web link to link to"));
 		}
 		else if (event.getLine(0).equalsIgnoreCase("--command--")) {
 			
@@ -71,7 +75,7 @@ public class BlockListener implements Listener {
 				return;
 			
 			newSign = new CommandSign(creator, signLocation);
-			bSignModule.sendMessage("bSign", creator, bSignModule.MODULE.getLanguageValue("COMMANDSIGN-SETUP"));
+			iplayer.openGui(new SignInputGui(newSign, "Enter the command for this sign to execute"));
 		}
 		else if (event.getLine(0).equalsIgnoreCase("--info--")) {
 			
@@ -80,7 +84,7 @@ public class BlockListener implements Listener {
 				return;
 			
 			newSign = new InfoSign(creator, signLocation);
-			bSignModule.sendMessage("bSign", creator, bSignModule.MODULE.getLanguageValue("INFOSIGN-SETUP"));
+			iplayer.openGui(new SignInputGui(newSign, "Enter the info message for this sign"));
 		}
 		
 		bSignModule.SIGNS.add(newSign);

@@ -11,11 +11,23 @@
 
     <artifactId>bSigns</artifactId>
 
+	<repositories>
+		<repository>
+		    <id>cybermaxkes-repo</id>
+		    <url>http://dl.dropbox.com/u/104060836/mvn-repo</url>
+		</repository>
+	</repositories>
+	
     <dependencies>
         <dependency>
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+		    <groupId>cybermaxke</groupId>
+		    <artifactId>inputgui</artifactId>
+		    <version>dev-SNAPSHOT</version>
+		</dependency>
     </dependencies>
 </project>
