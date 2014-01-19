@@ -22,6 +22,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import me.cybermaxke.inputgui.api.InputGuiAPI;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -68,6 +71,9 @@ public class bSignModule extends Module {
 	/** Access to the bFundamental database. */
 	public static String DBPREFIX = "";
 	
+	/** Access to the input gui api*/
+	public static InputGuiAPI GUI_API = null;
+	
 
 	/**
 	 * This is called when the module is unloaded
@@ -113,6 +119,8 @@ public class bSignModule extends Module {
 		register(m_worldListener);
 		
 		log(Level.INFO,  getName() + " version " + getVersion() + " disabled.");
+		
+		GUI_API = (InputGuiAPI) Bukkit.getPluginManager().getPlugin("InputGui");
 	}
 
 	public static void LoadSignsFromDatabase(String worldName) {

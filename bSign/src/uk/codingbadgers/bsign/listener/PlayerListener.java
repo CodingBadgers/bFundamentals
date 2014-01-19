@@ -486,78 +486,78 @@ public class PlayerListener implements Listener {
 		return false;
 	}
 
-	/**
-	 * On chat interact. Used to intercept the next chat message a bSign creator
-	 * says, so that we can set the context of a bSign.
-	 *
-	 * @param event the event
-	 */
-	@EventHandler(priority = EventPriority.LOW)
-	public void onChatInteract(AsyncPlayerChatEvent event) {
-		
-		if (bSignModule.SIGNS == null)
-			return;
-		
-		// get the person that is speaking
-		Player chatter = (Player)event.getPlayer();
-		if (chatter == null)
-			return;
-		
-		// spin through all signs, to find a sign that does not have a context
-		// and the creator is the person who is talking
-		Sign contextSign = null;
-		for (Sign sign : bSignModule.SIGNS) {
-			if (sign == null)
-				continue;
-				
-			if (sign.getContext() != null)
-				continue;
-			
-			if (sign.getCreator() == null)
-				continue;
-			
-			if (!sign.getCreator().getName().equalsIgnoreCase(chatter.getName()))
-				continue;
-			
-			contextSign = sign;
-			break;
-		}
-		
-		// if we didn't find a sign, leave now, and let the chat event continue
-		if (contextSign == null)
-			return;
-		
-		// found a sign, so get the message, and cancel the event.
-		String context = event.getMessage();
-		event.setCancelled(true);
-		
-		// if it is a cancel command, destroy the bsign and break the actual sign
-		if (context.equalsIgnoreCase("bsigncancel"))
-		{
-			contextSign.getLocation().getBlock().breakNaturally();
-			bSignModule.SIGNS.remove(contextSign);
-			return;
-		}
-		
-		// Attempt to initialize the sign based upon the message.
-		if (contextSign.init(event.getMessage())) {
-			bSignModule.sendMessage("bSign", chatter, bSignModule.MODULE.getLanguageValue("SIGN-CONTEXT-SET"));
-			
-			String type = contextSign.getType(); 
-			String location = contextSign.getLocation().getX() + "," + contextSign.getLocation().getY() + "," + contextSign.getLocation().getZ() + "," + contextSign.getLocation().getWorld().getName();
-			
-			String addSign = "INSERT INTO " + bSignModule.DBPREFIX + "bSign " +
-					"VALUES ('" +
-					type + "', '" +
-					contextSign.getContext() + "', '" +
-					contextSign.getCreator().getName() + "', '" +
-					location +
-					"')";
-			bSignModule.DATABASE.query(addSign);
-			return;
-		}
-		
-		bSignModule.sendMessage("bSign", chatter, bSignModule.MODULE.getLanguageValue("INVALID-SIGN-CONTEXT"));
-		
-	}
+//	/**
+//	 * On chat interact. Used to intercept the next chat message a bSign creator
+//	 * says, so that we can set the context of a bSign.
+//	 *
+//	 * @param event the event
+//	 */
+//	@EventHandler(priority = EventPriority.LOW)
+//	public void onChatInteract(AsyncPlayerChatEvent event) {
+//		
+//		if (bSignModule.SIGNS == null)
+//			return;
+//		
+//		// get the person that is speaking
+//		Player chatter = (Player)event.getPlayer();
+//		if (chatter == null)
+//			return;
+//		
+//		// spin through all signs, to find a sign that does not have a context
+//		// and the creator is the person who is talking
+//		Sign contextSign = null;
+//		for (Sign sign : bSignModule.SIGNS) {
+//			if (sign == null)
+//				continue;
+//				
+//			if (sign.getContext() != null)
+//				continue;
+//			
+//			if (sign.getCreator() == null)
+//				continue;
+//			
+//			if (!sign.getCreator().getName().equalsIgnoreCase(chatter.getName()))
+//				continue;
+//			
+//			contextSign = sign;
+//			break;
+//		}
+//		
+//		// if we didn't find a sign, leave now, and let the chat event continue
+//		if (contextSign == null)
+//			return;
+//		
+//		// found a sign, so get the message, and cancel the event.
+//		String context = event.getMessage();
+//		event.setCancelled(true);
+//		
+//		// if it is a cancel command, destroy the bsign and break the actual sign
+//		if (context.equalsIgnoreCase("bsigncancel"))
+//		{
+//			contextSign.getLocation().getBlock().breakNaturally();
+//			bSignModule.SIGNS.remove(contextSign);
+//			return;
+//		}
+//		
+//		// Attempt to initialize the sign based upon the message.
+//		if (contextSign.init(event.getMessage())) {
+//			bSignModule.sendMessage("bSign", chatter, bSignModule.MODULE.getLanguageValue("SIGN-CONTEXT-SET"));
+//			
+//			String type = contextSign.getType(); 
+//			String location = contextSign.getLocation().getX() + "," + contextSign.getLocation().getY() + "," + contextSign.getLocation().getZ() + "," + contextSign.getLocation().getWorld().getName();
+//			
+//			String addSign = "INSERT INTO " + bSignModule.DBPREFIX + "bSign " +
+//					"VALUES ('" +
+//					type + "', '" +
+//					contextSign.getContext() + "', '" +
+//					contextSign.getCreator().getName() + "', '" +
+//					location +
+//					"')";
+//			bSignModule.DATABASE.query(addSign);
+//			return;
+//		}
+//		
+//		bSignModule.sendMessage("bSign", chatter, bSignModule.MODULE.getLanguageValue("INVALID-SIGN-CONTEXT"));
+//		
+//	}
 }

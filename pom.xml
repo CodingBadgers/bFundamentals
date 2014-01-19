@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkit.version>1.7.2-R0.1-SNAPSHOT</bukkit.version>
+		<bukkit.version>1.7.2-R0.3-SNAPSHOT</bukkit.version>
         <buildNumber>Unknown</buildNumber>
         <license.header>header.txt</license.header>
     </properties>
@@ -48,6 +48,11 @@
 	</licenses>
 
     <repositories>
+		<repository> <!-- Overrides worldedit spout repo, should stop it breaking so often if we handle it -->
+			<id>spout-repo</id>
+			<name>Spout Repository</name>
+			<url>http://nexus.spout.org/content/groups/public/</url>
+		</repository>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
@@ -64,6 +69,11 @@
 			<id>sk89q-repo</id>
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
+		<repository>
+			<id>comphenix-rep</id>
+			<name>Comphenix Repository</name>
+			<url>http://repo.comphenix.net/content/repositories/releases/</url>
+		</repository>
     </repositories>
    
     <dependencies>
@@ -73,6 +83,12 @@
             <version>${bukkit.version}</version>
             <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<scope>compile</scope>
+		</dependency>
         <dependency>
             <groupId>uk.thecodingbadgers</groupId>
             <artifactId>bDatabaseManager</artifactId>
@@ -109,6 +125,18 @@
             <version>5.5.8</version>
             <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
     
     <build>
@@ -148,6 +176,15 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
@@ -160,15 +197,6 @@
                             <Implementation-Title>${project.artifactId}</Implementation-Title>
                         </manifestEntries>
                       </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
                 </configuration>
             </plugin>
             <plugin>

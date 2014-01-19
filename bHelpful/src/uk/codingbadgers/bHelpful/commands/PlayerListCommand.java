@@ -100,6 +100,10 @@ public class PlayerListCommand extends ConfigCommand {
         for (String player : players) {
             String group = bFundamentals.getPermissions().getPrimaryGroup(Bukkit.getWorlds().get(0), player);
             
+            if (group == null) {
+                continue;
+            }
+            
             if (groups.containsKey(group)) {
                 groups.get(group).add(player);
             } else {

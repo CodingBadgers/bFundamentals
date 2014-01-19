@@ -17,15 +17,36 @@
  */
 package uk.thecodingbadgers.bFundamentals;
 
+import net.minecraft.server.v1_7_R1.DispenserRegistry;
+
 import org.junit.BeforeClass;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.thecodingbadgers.bFundamentals.support.DummyEnchantments;
+import uk.thecodingbadgers.bFundamentals.support.DummyPotions;
+import uk.thecodingbadgers.bFundamentals.support.DummyServer;
+import uk.thecodingbadgers.bFundamentals.support.TestConfigManager;
 
 public class TestContainer {
 
+	private static boolean setup = false;
+	
 	@BeforeClass
 	public static void setup() {
-		bFundamentals.setInstance(new TestPlugin());
-		bFundamentals.getInstance().setConfigManager(new TestConfigManager());
+		if (setup) {
+			return;
+		}
+		
+		// Setup craftbukkit, copied from AbstractTestingBase
+        DispenserRegistry.b();
+        DummyServer.setup();
+        DummyPotions.setup();
+        DummyEnchantments.setup();
+        
+        // Setup bFundamentals
+        bFundamentals.setupGson();
+        TestConfigManager.setup();
+		
+		setup = true;
 	}
 }

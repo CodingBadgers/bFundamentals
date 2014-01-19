@@ -29,6 +29,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -39,8 +40,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
@@ -49,27 +54,33 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import uk.codingbadgers.bFundamentals.bungee.BungeeMessenger;
 import uk.codingbadgers.bFundamentals.bungee.SimpleBungeeMessenger;
+import uk.codingbadgers.bFundamentals.message.ClickEventType;
+import uk.codingbadgers.bFundamentals.message.HoverEventType;
+import uk.codingbadgers.bFundamentals.message.Message;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bFundamentals.module.ModuleLoader;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayer;
 import uk.codingbadgers.bFundamentals.player.FundamentalPlayerArray;
+import uk.codingbadgers.bFundamentals.serialization.AchievementSerializer;
+import uk.codingbadgers.bFundamentals.serialization.ItemStackSerializer;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 public class bFundamentals extends JavaPlugin implements Listener {
 	
-	private static Logger m_log = null;
-	private static bFundamentals m_instance = null;
-	private static BukkitDatabase m_database = null;
+	protected static Gson m_gson = null;
+	protected static Logger m_log = null;
+	protected static bFundamentals m_instance = null;
 	
-	private static Permission m_permissions = null;
-	private static Chat m_chat = null;
-	private static Economy m_economy = null;
-	
-	private static ModuleLoader m_moduleLoader = null;
-	private static ConfigManager m_configuration = null;
-	private static BungeeMessenger m_messenger = null;
+	protected static Permission m_permissions = null;
+	protected static Chat m_chat = null;
+	protected static Economy m_economy = null;
+
+	protected static BukkitDatabase m_database = null;
+	protected static ModuleLoader m_moduleLoader = null;
+	protected static ConfigManager m_configuration = null;
+	protected static BungeeMessenger m_messenger = null;
 	
 	public static FundamentalPlayerArray Players = new FundamentalPlayerArray(); 
 	
@@ -80,8 +91,8 @@ public class bFundamentals extends JavaPlugin implements Listener {
 	@Override
 	public void onLoad() {
 		setInstance(this);
+		setupGson();
 		m_log = getLogger();
-		
 		log(Level.INFO, "bFundamentals Loading");
 	}
 	
@@ -122,27 +133,6 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		bFundamentals.log(Level.INFO, "bFundamentals Loaded.");
 	}
 
-	public static void setInstance(bFundamentals plugin) {
-		if (m_instance != null) {
-			throw new RuntimeException("Plugin instance already set, cannot redeclare");
-		}
-		m_instance = plugin;
-	}
-	
-	public void setConfigManager(ConfigManager manager) {
-		if (m_configuration != null) {
-			throw new RuntimeException("Configuration manager already set, cannot redeclare");
-		}
-		m_configuration = manager;
-	}
-
-    public void setBungeeMessenger(BungeeMessenger manager) {
-        if (m_messenger != null) {
-            throw new RuntimeException("Bungee messenger already set, cannot redeclare");
-        }
-        m_messenger = manager;
-    }
-
 	/**
 	 * Called when the plugin is being disabled
 	 * Here we disable the module and thus all modules
@@ -157,46 +147,44 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		m_instance = null;
 		m_configuration = null;
 		m_messenger = null;
+		m_gson = null;
 	}
 	
-	/**
-	 * Handle commands in the modules or plugin.
-	 * @return True if the command was handled, False otherwise
-	 */
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		
-		if (label.equalsIgnoreCase("modules")) {
-			handleModulesCommand(sender);
-			return true;
+	public static void setupGson() {
+
+		if (m_gson != null) {
+			throw new RuntimeException("Gson already setup, cannot resetup instance");
 		}
 		
-		return false;
+		m_gson = new GsonBuilder()
+					.registerTypeAdapter(Message.class, new Message.MessageSerializer())
+					.registerTypeAdapter(ClickEventType.class, new ClickEventType.ClickEventSerializer())
+					.registerTypeAdapter(HoverEventType.class, new HoverEventType.HoverEventSerializer())
+					.registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
+					.registerTypeAdapter(Achievement.class, new AchievementSerializer())
+					.create();
 	}
 	
-
-	/**
-	 * Disable a specific module
-	 * 
-	 * @param module the module to disable
-	 */
-	public void disableModule(Module module) {
-		Validate.notNull(module, "Moudule cannot be null");
-		
-		m_moduleLoader.unload(module);
+	public static void setInstance(bFundamentals plugin) {
+		if (m_instance != null) {
+			throw new RuntimeException("Plugin instance already set, cannot redeclare");
+		}
+		m_instance = plugin;
+	}
+	
+	public static void setConfigManager(ConfigManager manager) {
+		if (m_configuration != null) {
+			throw new RuntimeException("Configuration manager already set, cannot redeclare");
+		}
+		m_configuration = manager;
 	}
 
-	/**
-	 * Reloads a specific module
-	 * 
-	 * @param module the module to reload
-	 */
-	public void reloadModule(Module module) {
-		Validate.notNull(module, "Moudule cannot be null");
-		
-		m_moduleLoader.unload(module);
-		m_moduleLoader.load(module.getFile());
-		m_moduleLoader.getModule(module.getName()).onEnable();
-	}
+    public static void setBungeeMessenger(BungeeMessenger manager) {
+        if (m_messenger != null) {
+            throw new RuntimeException("Bungee messenger already set, cannot redeclare");
+        }
+        m_messenger = manager;
+    }
 
 	/**
 	 * Get the bFundamentals plugin instance.
@@ -224,34 +212,16 @@ public class bFundamentals extends JavaPlugin implements Listener {
         return m_messenger;
     }
     
-	/**
-	 * Static access to log as bFundamentals
-	 * 
-	 * @param level the log level
-	 * @param msg the message to log
-	 */
-	public static void log(Level level, String msg) {
-		Validate.notNull(level, "Log level cannot be null");
-		Validate.notNull(msg, "Message cannot be null");
-		
-		m_log.log(level, msg);
-	}
+    /**
+     * Get the bFundamentals gson instance, has custom serializers for bukkit
+     * and minecraft classes
+     * 
+     * @return the gson instance
+     */
+    public static Gson getGsonInstance() {
+    	return m_gson;
+    }
 
-	/**
-	 * Static access to log as bFundamentals
-	 * 
-	 * @param level the log level
-	 * @param msg the message to log
-	 * @param e the exception to log
-	 */
-	public static void log(Level level, String msg, Throwable e) {
-		Validate.notNull(level, "Log level cannot be null");
-		Validate.notNull(msg, "Message cannot be null");
-		Validate.notNull(e, "The exception to log cannot be null");
-		
-		m_log.log(level, msg, e);
-	}
-	
 	/**
 	 * Access to the bukkit database
 	 * 
@@ -325,6 +295,72 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		return m_moduleLoader;
 	}
 
+	/**
+	 * Handle commands in the modules or plugin.
+	 * @return True if the command was handled, False otherwise
+	 */
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		
+		if (label.equalsIgnoreCase("modules")) {
+			handleModulesCommand(sender);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Disable a specific module
+	 * 
+	 * @param module the module to disable
+	 */
+	public void disableModule(Module module) {
+		Validate.notNull(module, "Moudule cannot be null");
+		
+		m_moduleLoader.unload(module);
+	}
+
+	/**
+	 * Reloads a specific module
+	 * 
+	 * @param module the module to reload
+	 */
+	public void reloadModule(Module module) {
+		Validate.notNull(module, "Moudule cannot be null");
+		
+		m_moduleLoader.unload(module);
+		m_moduleLoader.load(module.getFile());
+		m_moduleLoader.getModule(module.getName()).onEnable();
+	}
+
+	/**
+	 * Static access to log as bFundamentals
+	 * 
+	 * @param level the log level
+	 * @param msg the message to log
+	 */
+	public static void log(Level level, String msg) {
+		Validate.notNull(level, "Log level cannot be null");
+		Validate.notNull(msg, "Message cannot be null");
+		
+		m_log.log(level, msg);
+	}
+
+	/**
+	 * Static access to log as bFundamentals
+	 * 
+	 * @param level the log level
+	 * @param msg the message to log
+	 * @param e the exception to log
+	 */
+	public static void log(Level level, String msg, Throwable e) {
+		Validate.notNull(level, "Log level cannot be null");
+		Validate.notNull(msg, "Message cannot be null");
+		Validate.notNull(e, "The exception to log cannot be null");
+		
+		m_log.log(level, msg, e);
+	}
+	
 	private void handleModulesCommand(CommandSender sender) {
 		List<Module> modules = m_moduleLoader.getModules();
 		String moduleString = ChatColor.GREEN + "Modules(" + modules.size() + "): ";
@@ -394,5 +430,5 @@ public class bFundamentals extends JavaPlugin implements Listener {
 		
 		return players;		
 	}
-	
+
 }

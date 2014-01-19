@@ -12,3 +12,5 @@ bin/
 /bItems
 
 bTemplate
+*.orig
+*.log

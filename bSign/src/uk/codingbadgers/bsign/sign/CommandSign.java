@@ -46,7 +46,7 @@ public class CommandSign extends Sign {
 			return;
 		
 		// replace macros
-		String command = m_context.replaceAll("<<player>>", player.getName());
+		String command = replaceMacros(player, getContext());
 		
 		bSignModule.MODULE.debugConsole("Running command " + command + " for " + player.getName());
 		
