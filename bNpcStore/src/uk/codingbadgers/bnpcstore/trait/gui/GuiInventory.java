@@ -12,10 +12,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,8 +41,6 @@ public class GuiInventory implements Listener {
     private Enchantment m_highlight;
 
     private Inventory m_inventory;
-    
-    private static Map<String, GuiInventory> m_viewers = new HashMap<String, GuiInventory>();
 
     /**
      * Class constructor
@@ -122,7 +123,6 @@ public class GuiInventory implements Listener {
      */
     public void open(Player player) {
         player.openInventory(m_inventory);
-        m_viewers.put(player.getName(), this);
     }
 
     /**
@@ -149,6 +149,14 @@ public class GuiInventory implements Listener {
      * @return 
      */
     public String getTitle() {
+        return m_title;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public String getOwnerTitle() {
         return m_title;
     }
 
@@ -276,7 +284,7 @@ public class GuiInventory implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-
+        
         // Do we care about this inventory?
         Inventory inventory = event.getInventory();
         if (!inventory.getName().equalsIgnoreCase(m_inventory.getName())) {
@@ -285,21 +293,30 @@ public class GuiInventory implements Listener {
         
         // Do we care about this player?
         Player player = (Player) event.getWhoClicked();
-        if (GuiInventory.m_viewers.containsKey(player.getName())) {
-            if (GuiInventory.m_viewers.get(player.getName()) != this) {
-                return;
+
+        boolean isViewer = false;
+        for (HumanEntity entity : m_inventory.getViewers()) {
+            if (entity.getName().equalsIgnoreCase(player.getName())) {
+                isViewer = true;
+                break;
             }
         }
+        
+        if (!isViewer) {
+            return;
+        }
+        
+        // Always cancel the event
+        event.setCancelled(true);
+        event.setResult(Event.Result.DENY);
+        player.updateInventory();
 
         // If they havn't clicked an item, quit
         final ItemStack clickedItem = event.getCurrentItem();
         if (clickedItem == null || clickedItem.getItemMeta() == null || clickedItem.getItemMeta().getDisplayName() == null) {
             return;
         }
-        
-        // Always cancel the event
-        event.setCancelled(true);
-        
+                
         // Get the name of the item
         final String itemName = clickedItem.getItemMeta().getDisplayName();
 

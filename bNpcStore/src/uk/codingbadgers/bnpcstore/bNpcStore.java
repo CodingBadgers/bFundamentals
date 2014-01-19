@@ -23,12 +23,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import net.citizensnpcs.api.trait.TraitFactory;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import static org.bukkit.Bukkit.getServer;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bnpcstore.trait.NpcStoreTrait;
 import uk.codingbadgers.bnpcstore.trait.gui.GuiInventory;
@@ -40,6 +44,9 @@ public class bNpcStore extends Module implements Listener {
     
     /** A map of inventories and there names */
     private Map<String, GuiInventory> stores;
+    
+    /** The vault economy item */
+    public Economy economy; 
     
     /**
      * Called when the module is disabled.
@@ -63,12 +70,22 @@ public class bNpcStore extends Module implements Listener {
         
         // Register trait
         TraitFactory factory = net.citizensnpcs.api.CitizensAPI.getTraitFactory();
-        if (factory.getTrait("npcstore") == null) {
+        if (factory.getTrait(NpcStoreTrait.class) == null) {
             factory.registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NpcStoreTrait.class).withName("npcstore"));
         }
         
         // Load store guis
         loadStoreGuis();
+
+        // Get the economy instance
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            this.economy = economyProvider.getProvider();
+        }
+        
+        if (this.economy == null) {
+            bFundamentals.log(Level.SEVERE, "Failed to find an economy plugin to use!");
+        }
     }
     
     /**
@@ -86,6 +103,14 @@ public class bNpcStore extends Module implements Listener {
      */
     public static bNpcStore getInstance() {
         return bNpcStore.instance;
+    }
+    
+    /**
+     * Access to the vault economy
+     * @return The vault economy
+     */
+    public Economy getEconomy() {
+        return this.economy;
     }
 
     /**
