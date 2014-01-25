@@ -81,18 +81,7 @@ public class bNpcStore extends Module {
         loadStoreGuis();
         
         // Load store npcs
-        loadStoreNPCs();
-
-        // Get the economy instance
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            this.economy = economyProvider.getProvider();
-        }
-        
-        if (this.economy == null) {
-            bFundamentals.log(Level.SEVERE, "Failed to find an economy plugin to use!");
-        }
-        
+        loadStoreNPCs();       
         
     }
     
@@ -118,6 +107,19 @@ public class bNpcStore extends Module {
      * @return The vault economy
      */
     public Economy getEconomy() {
+        
+        if (this.economy == null) {
+            // Get the economy instance
+            RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+            if (economyProvider != null) {
+                this.economy = economyProvider.getProvider();
+            }
+
+            if (this.economy == null) {
+                bFundamentals.log(Level.SEVERE, "Failed to find an economy plugin to use!");
+            }
+        }
+        
         return this.economy;
     }
 

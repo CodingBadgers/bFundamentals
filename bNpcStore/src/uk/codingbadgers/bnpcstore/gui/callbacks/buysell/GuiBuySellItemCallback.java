@@ -6,11 +6,15 @@
 
 package uk.codingbadgers.bnpcstore.gui.callbacks.buysell;
 
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.codingbadgers.bnpcstore.bNpcStore;
 import uk.codingbadgers.bnpcstore.gui.GuiCallback;
 import uk.codingbadgers.bnpcstore.gui.GuiInventory;
 
@@ -47,7 +51,32 @@ public class GuiBuySellItemCallback implements GuiCallback {
     }
 
     private void buyItem(String title, Player player) {
-        Module.sendMessage(title, player, "Buy x" + amount + " of " + item.name());
+        
+        bNpcStore module = bNpcStore.getInstance();
+        Economy eco = module.getEconomy();
+        
+        final Double totalPrice = this.amount * this.buyPrice;
+        
+        if (!eco.has(player.getName(), totalPrice)) {
+            Module.sendMessage(title, player, "You cant afford " + amount + " " + item.name() + (amount != 1 ? "'s" : ""));
+            return;
+        }
+        
+        PlayerInventory invent = player.getInventory();
+        if (invent.firstEmpty() == -1) {
+            Module.sendMessage(title, player, "Your inventory is full. Please try again when you have some room.");
+            return;
+        }
+        
+        // Take the money first, i'd rather have a pissed off player than an exploit
+        eco.withdrawPlayer(player.getName(), totalPrice);
+        
+        // give the items to the player
+        ItemStack boughtItem = new ItemStack(this.item, amount);
+        player.getInventory().addItem(boughtItem);
+        player.updateInventory();
+        
+        // Log the purchase (TODO)
     }
 
     private void sellItem(String title, Player player) {
