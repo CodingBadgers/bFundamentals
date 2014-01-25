@@ -34,10 +34,10 @@ public class GuiBuySellCallback implements GuiCallback {
         int row = 0;
         int amount = 64;
         for (int column = 1; column < 8; ++column) {
-            GuiBuySellItemCallback callback = new GuiBuySellItemCallback(item, amount, buyPrice, sellPrice);
+            GuiBuySellItemCallback callback = new GuiBuySellItemCallback(name, item, amount, buyPrice, sellPrice);
             String[] details = new String[] 
             {
-                ChatColor.DARK_GREEN + "Quantity: " + ChatColor.GREEN + ChatColor.BOLD + amount + " " + name + (amount != 1 ? "'s" : ""), 
+                ChatColor.DARK_GREEN + "Quantity: " + ChatColor.GREEN + ChatColor.BOLD + amount + " " + name + (amount != 1 ? "s" : ""), 
                 ChatColor.GOLD + "Buy Price: " + ChatColor.YELLOW + ChatColor.BOLD + eco.format(buyPrice * amount), 
                 ChatColor.GOLD + "Sell Price: " + ChatColor.YELLOW + ChatColor.BOLD + eco.format(sellPrice * amount),
                 ChatColor.RED + "" + ChatColor.UNDERLINE + "Left Click Buy. Right Click Sell."
