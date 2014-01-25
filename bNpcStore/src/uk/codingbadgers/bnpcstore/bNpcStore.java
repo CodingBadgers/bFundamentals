@@ -19,10 +19,12 @@ package uk.codingbadgers.bnpcstore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import net.citizensnpcs.api.trait.TraitFactory;
+import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getServer;
@@ -30,33 +32,35 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.bnpcstore.trait.NpcStoreTrait;
-import uk.codingbadgers.bnpcstore.trait.gui.GuiInventory;
+import uk.codingbadgers.bnpcstore.commands.NpcStoreCommand;
+import uk.codingbadgers.bnpcstore.npc.NpcStoreListener;
+import uk.codingbadgers.bnpcstore.gui.GuiInventory;
+import uk.codingbadgers.bnpcstore.npc.StoreNPC;
 
-public class bNpcStore extends Module implements Listener {
+public class bNpcStore extends Module {
 
     /** Static plugin module instance */
     static bNpcStore instance;
     
-    /** A map of inventories and there names */
+    /** A map of inventories and their names */
     private Map<String, GuiInventory> stores;
     
+    /** A map of npcs and their stores */
+    private Map<NPC, StoreNPC> npcStores;
+    
     /** The vault economy item */
-    public Economy economy; 
+    private Economy economy; 
     
     /**
      * Called when the module is disabled.
      */
     @Override
     public void onDisable() {
-
         stores.clear();
         bNpcStore.instance = null;
-        
     }
 
     /**
@@ -66,16 +70,18 @@ public class bNpcStore extends Module implements Listener {
     public void onEnable() {
         
         bNpcStore.instance = this;
-        register(this);
         
-        // Register trait
-        TraitFactory factory = net.citizensnpcs.api.CitizensAPI.getTraitFactory();
-        if (factory.getTrait(NpcStoreTrait.class) == null) {
-            factory.registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(NpcStoreTrait.class).withName("npcstore"));
-        }
+        // listeners
+        register(new NpcStoreListener());
         
+        // commands
+        registerCommand(new NpcStoreCommand());
+                
         // Load store guis
         loadStoreGuis();
+        
+        // Load store npcs
+        loadStoreNPCs();
 
         // Get the economy instance
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
@@ -86,6 +92,8 @@ public class bNpcStore extends Module implements Listener {
         if (this.economy == null) {
             bFundamentals.log(Level.SEVERE, "Failed to find an economy plugin to use!");
         }
+        
+        
     }
     
     /**
@@ -138,7 +146,21 @@ public class bNpcStore extends Module implements Listener {
             
             GuiInventory inventory = new GuiInventory(m_plugin, storeConfig, subMenuConfig, itemConfig);
             this.stores.put(inventory.getTitle(), inventory);
+            
+            bFundamentals.log(Level.INFO, "Loaded store - " + inventory.getTitle());
         }
+        
+    }
+    
+    /**
+     * 
+     */
+    private void loadStoreNPCs() {
+        
+        this.npcStores = new HashMap<NPC, StoreNPC>();
+        
+        
+        
         
     }
 
@@ -213,6 +235,11 @@ public class bNpcStore extends Module implements Listener {
         return YamlConfiguration.loadConfiguration(file);
     }
 
+    /**
+     * 
+     * @param storeName
+     * @return 
+     */
     public GuiInventory getInventory(String storeName) {
         
         if (!this.stores.containsKey(storeName)) {
@@ -221,6 +248,71 @@ public class bNpcStore extends Module implements Listener {
         }
         
         return this.stores.get(storeName);
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public List<String> getStoreNames() {
+        
+        List<String> names = new ArrayList<String>();
+        
+        for (String name : this.stores.keySet()) {
+            names.add(name);
+        }
+        
+        return names;
+        
+    }
+    
+    /**
+     * 
+     * @param npc
+     * @return 
+     */
+    public StoreNPC findStoreNPC(NPC npc) {
+        
+        if (!this.npcStores.containsKey(npc)) {
+            return null;
+        }
+        
+        return this.npcStores.get(npc);
+    }
+
+    /**
+     * 
+     * @param storeNPC
+     * @param npc 
+     */
+    public void registerNewNPC(StoreNPC storeNPC, NPC npc) {
+        
+        if (this.npcStores.containsKey(npc)) {
+            return;
+        }
+        
+        this.npcStores.put(npc, storeNPC);
+        
+    }
+
+    /**
+     * 
+     * @param npc
+     * @param storeName 
+     */
+    public void updateNpcStore(NPC npc, String storeName) {
+        
+        if (!this.npcStores.containsKey(npc)) {
+            return;
+        }
+        
+        StoreNPC storeNPC = this.npcStores.get(npc);
+        this.npcStores.remove(npc);
+        
+        npc.setName(storeName);
+        
+        this.registerNewNPC(storeNPC, npc);
+        
     }
     
 }

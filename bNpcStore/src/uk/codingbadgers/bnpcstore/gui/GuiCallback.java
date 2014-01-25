@@ -1,4 +1,4 @@
-package uk.codingbadgers.bnpcstore.trait.gui;
+package uk.codingbadgers.bnpcstore.gui;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 

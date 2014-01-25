@@ -1,4 +1,4 @@
-package uk.codingbadgers.bnpcstore.trait.gui;
+package uk.codingbadgers.bnpcstore.gui;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import uk.codingbadgers.bnpcstore.trait.gui.callbacks.GuiBuySellCallback;
-import uk.codingbadgers.bnpcstore.trait.gui.misc.GuiEnchantment;
+import uk.codingbadgers.bnpcstore.gui.callbacks.GuiBuySellCallback;
+import uk.codingbadgers.bnpcstore.gui.misc.GuiEnchantment;
 
 public class GuiInventory implements Listener {
 

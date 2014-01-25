@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package uk.codingbadgers.bnpcstore.trait.gui.misc;
+package uk.codingbadgers.bnpcstore.gui.misc;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
