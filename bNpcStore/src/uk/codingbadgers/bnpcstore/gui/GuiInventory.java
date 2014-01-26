@@ -20,7 +20,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
@@ -308,17 +311,26 @@ public class GuiInventory implements Listener {
             return;
         }
         
-        // Always cancel the event
-        event.setCancelled(true);
-        event.setResult(Event.Result.DENY);
-        player.updateInventory();
-
+        if (event.getSlotType() != SlotType.CONTAINER) {
+            return;
+        }
+        
+        InventoryView iv = event.getView();
+        if (event.getRawSlot() >= iv.getTopInventory().getSize()) {
+            return;
+        }
+        
         // If they havn't clicked an item, quit
         final ItemStack clickedItem = event.getCurrentItem();
         if (clickedItem == null || clickedItem.getItemMeta() == null || clickedItem.getItemMeta().getDisplayName() == null) {
             return;
         }
                 
+        // Always cancel the event
+        event.setCancelled(true);
+        event.setResult(Event.Result.DENY);
+        player.updateInventory();
+        
         // Get the name of the item
         final String itemName = clickedItem.getItemMeta().getDisplayName();
 
