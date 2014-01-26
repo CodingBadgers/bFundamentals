@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.material.MaterialData;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bnpcstore.bNpcStore;
 import uk.codingbadgers.bnpcstore.gui.GuiCallback;
@@ -25,12 +26,12 @@ import uk.codingbadgers.bnpcstore.gui.GuiInventory;
 public class GuiBuySellItemCallback implements GuiCallback {
     
     String name;
-    Material item;
+    ItemStack item;
     int amount;
     double buyPrice;
     double sellPrice;
 
-    public GuiBuySellItemCallback(String name, Material item, int amount, double buyPrice, double sellPrice) {
+    public GuiBuySellItemCallback(String name, ItemStack item, int amount, double buyPrice, double sellPrice) {
         this.name = name;
         this.item = item;
         this.amount = amount;
@@ -74,7 +75,8 @@ public class GuiBuySellItemCallback implements GuiCallback {
         eco.withdrawPlayer(player.getName(), totalPrice);
         
         // give the items to the player
-        ItemStack boughtItem = new ItemStack(this.item, amount);
+        ItemStack boughtItem = this.item.clone();
+        boughtItem.setAmount(this.amount);        
         player.getInventory().addItem(boughtItem);
         player.updateInventory();
         
@@ -97,8 +99,20 @@ public class GuiBuySellItemCallback implements GuiCallback {
         
         for (ItemStack item : contents) {
             
-            if (item == null || item.getType() != this.item) {
+            if (item == null) {
                 continue;
+            }
+            
+            if (item.getType() != this.item.getType()) {
+                continue;
+            }
+            
+            MaterialData data = item.getData();
+            MaterialData iData = this.item.getData();
+            if (data != null && iData != null) {
+                if (data.getData() != iData.getData()) {
+                    continue;
+                }
             }
             
             playerItemCount += item.getAmount();
@@ -114,8 +128,23 @@ public class GuiBuySellItemCallback implements GuiCallback {
         
         for (ItemStack item : contents) {
             
-            if (item == null || item.getType() != this.item) {
+            if (item == null) {
                 continue;
+            }
+            
+            if (item.getType() != this.item.getType()) {
+                continue;
+            }
+            
+            MaterialData iData = this.item.getData();
+            if (iData != null) {
+                MaterialData data = item.getData();
+                if (data == null) {
+                    continue;
+                }                
+                if (data.getData() != iData.getData()) {
+                    continue;
+                }
             }
             
             int stackSize = item.getAmount();

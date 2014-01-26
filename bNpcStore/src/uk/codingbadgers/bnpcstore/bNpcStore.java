@@ -364,6 +364,10 @@ public class bNpcStore extends Module {
         
     }
 
+    /**
+     * 
+     * @param npc 
+     */
     public void removeNPCStore(NPC npc) {
         
         if (!this.npcStores.containsKey(npc)) {

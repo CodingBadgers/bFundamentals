@@ -8,7 +8,6 @@ package uk.codingbadgers.bnpcstore.gui.callbacks;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +22,7 @@ public class GuiBuySellCallback implements GuiCallback {
     private final GuiInventory m_previousMenu;
     private final GuiInventorySubMenu m_buySellMenu;
     
-    public GuiBuySellCallback(GuiInventory previousMenu, String name, Material item, double buyPrice, double sellPrice) {
+    public GuiBuySellCallback(GuiInventory previousMenu, String name, ItemStack item, double buyPrice, double sellPrice) {
         m_previousMenu = previousMenu;
         m_buySellMenu = new GuiInventorySubMenu(m_previousMenu, "Buy/Sell " + name, 2);
      

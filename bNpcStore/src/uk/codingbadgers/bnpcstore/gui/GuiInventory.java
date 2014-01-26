@@ -22,6 +22,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import uk.codingbadgers.bnpcstore.gui.callbacks.GuiBuySellCallback;
 import uk.codingbadgers.bnpcstore.gui.misc.GuiEnchantment;
@@ -196,7 +197,7 @@ public class GuiInventory implements Listener {
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
-    public ItemStack addMenuItem(String name, Material icon, String[] details, GuiCallback callback) {
+    public ItemStack addMenuItem(String name, ItemStack icon, String[] details, GuiCallback callback) {
 
         int slot = 0;
         while (m_inventory.getItem(slot) != null) {
@@ -218,7 +219,7 @@ public class GuiInventory implements Listener {
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
-    public ItemStack addMenuItem(String name, Material icon, String[] details, int slot, GuiCallback callback) {
+    public ItemStack addMenuItem(String name, ItemStack icon, String[] details, int slot, GuiCallback callback) {
 
         return addMenuItem(name, icon, details, slot, 1, callback);
     }
@@ -235,7 +236,7 @@ public class GuiInventory implements Listener {
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
-    public ItemStack addMenuItem(String name, Material icon, String[] details, int slot, int amount, GuiCallback callback) {
+    public ItemStack addMenuItem(String name, ItemStack icon, String[] details, int slot, int amount, GuiCallback callback) {
 
         return addMenuItem(name, icon, details, slot, amount, false, callback);
     }
@@ -253,9 +254,9 @@ public class GuiInventory implements Listener {
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
-    public ItemStack addMenuItem(String name, Material icon, String[] details, int slot, int amount, boolean glow, GuiCallback callback) {
+    public ItemStack addMenuItem(String name, ItemStack icon, String[] details, int slot, int amount, boolean glow, GuiCallback callback) {
 
-        ItemStack item = new ItemStack(icon);
+        ItemStack item = icon.clone();
         item.setAmount(amount);
         
         ItemMeta meta = item.getItemMeta();
@@ -415,11 +416,29 @@ public class GuiInventory implements Listener {
             
             try {
                 String name = itemConfig.getString(nodePath + ".name");
-                Material icon = Material.valueOf(itemConfig.getString(nodePath + ".icon"));
                 int row = itemConfig.getInt(nodePath + ".row");
                 int column = itemConfig.getInt(nodePath + ".column");
                 List<String> details = itemConfig.getStringList(nodePath + ".details");
                 
+                String rawIcon = itemConfig.getString(nodePath + ".icon");
+                String iconName = rawIcon;
+                Byte dataValue = -1;
+                
+                if (rawIcon.contains(":")) {
+                    String[] iconParts = rawIcon.split(":");
+                    iconName = iconParts[0];
+                    dataValue = Byte.parseByte(iconParts[1]);
+                    
+                    System.out.println("## iconName: " + iconName + ", dataValue:" + dataValue);
+                }
+                
+                ItemStack itemStack = null;
+                if (dataValue != -1) {
+                    itemStack = new ItemStack(Material.valueOf(iconName), 1, dataValue);
+                }      
+                else {
+                    itemStack = new ItemStack(Material.valueOf(iconName));
+                }
                 
                 GuiCallback onClickCallback = null;
                 if (itemConfig.contains(nodePath + ".onclick")) {
@@ -433,7 +452,7 @@ public class GuiInventory implements Listener {
                         details.add("Buy for £" + buyPrice + " each.");
                         details.add("Sell for £" + sellPrice + " each.");
                         
-                        onClickCallback = new GuiBuySellCallback(this, name, icon, buyPrice, sellPrice);
+                        onClickCallback = new GuiBuySellCallback(this, name, itemStack, buyPrice, sellPrice);
                     }
                     // Other standard callbacks? Message? Back? Teleport?
                     // else if () { 
@@ -441,7 +460,7 @@ public class GuiInventory implements Listener {
                 
                 String[] detailsArray = new String[details.size()];
                 details.toArray(detailsArray);
-                this.addMenuItem(name, icon, detailsArray, (row * 9) + column, onClickCallback);
+                this.addMenuItem(name, itemStack, detailsArray, (row * 9) + column, onClickCallback);
                 
             } catch(Exception ex) {
                 Bukkit.getLogger().log(Level.WARNING, "Failed to load item - " + item, ex);
