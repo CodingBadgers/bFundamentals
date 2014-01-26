@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -380,6 +381,7 @@ public class GuiInventory implements Listener {
             Material icon = Material.valueOf(subMenuConfig.getString(nodePath + ".icon"));
             int rows = subMenuConfig.getInt(nodePath + ".rows");
             List<String> details = subMenuConfig.getStringList(nodePath + ".details");
+            details = parseColorCodes(details);
             
             List<String> submenus = subMenuConfig.getStringList(nodePath + ".submenus");
             List<String> items = subMenuConfig.getStringList(nodePath + ".items");
@@ -419,6 +421,7 @@ public class GuiInventory implements Listener {
                 int row = itemConfig.getInt(nodePath + ".row");
                 int column = itemConfig.getInt(nodePath + ".column");
                 List<String> details = itemConfig.getStringList(nodePath + ".details");
+                details = parseColorCodes(details);
                 
                 String rawIcon = itemConfig.getString(nodePath + ".icon");
                 String iconName = rawIcon;
@@ -428,8 +431,6 @@ public class GuiInventory implements Listener {
                     String[] iconParts = rawIcon.split(":");
                     iconName = iconParts[0];
                     dataValue = Byte.parseByte(iconParts[1]);
-                    
-                    System.out.println("## iconName: " + iconName + ", dataValue:" + dataValue);
                 }
                 
                 ItemStack itemStack = null;
@@ -489,6 +490,23 @@ public class GuiInventory implements Listener {
      */
     protected void addItems(List<String> items) {
         this.m_itemNames.addAll(items);
+    }
+
+    /**
+     * 
+     * @param details
+     * @return 
+     */
+    private List<String> parseColorCodes(List<String> details) {
+        
+        List<String> parsedDetails = new ArrayList<String>();
+        
+        for (String line : details) {
+            parsedDetails.add(ChatColor.translateAlternateColorCodes('&', line));
+        }
+        
+        return parsedDetails;
+        
     }
 
 }
