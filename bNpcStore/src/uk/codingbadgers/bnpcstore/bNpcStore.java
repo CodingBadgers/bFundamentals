@@ -17,13 +17,17 @@
  */
 package uk.codingbadgers.bnpcstore;
 
+import uk.codingbadgers.bnpcstore.database.DatabaseManager;
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -39,6 +43,8 @@ import uk.codingbadgers.bnpcstore.commands.NpcStoreCommand;
 import uk.codingbadgers.bnpcstore.npc.NpcStoreListener;
 import uk.codingbadgers.bnpcstore.gui.GuiInventory;
 import uk.codingbadgers.bnpcstore.npc.StoreNPC;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
+import uk.thecodingbadgers.bDatabaseManager.DatabaseTable.DatabaseTable;
 
 public class bNpcStore extends Module {
 
@@ -53,6 +59,9 @@ public class bNpcStore extends Module {
     
     /** The vault economy item */
     private Economy economy; 
+    
+    /** The database manager **/
+    private DatabaseManager databasemanager;
     
     /**
      * Called when the module is disabled.
@@ -70,6 +79,8 @@ public class bNpcStore extends Module {
     public void onEnable() {
         
         bNpcStore.instance = this;
+        
+        this.databasemanager = new DatabaseManager(this.m_plugin);
         
         // listeners
         register(new NpcStoreListener());
@@ -160,10 +171,46 @@ public class bNpcStore extends Module {
     private void loadStoreNPCs() {
         
         this.npcStores = new HashMap<NPC, StoreNPC>();
+        DatabaseTable storeNpcTable = this.databasemanager.getNpcStoreTable();
         
-        
-        
-        
+        ResultSet result = this.databasemanager.getDatabase().queryResult("SELECT * FROM `bNpcStore-Npcs`");
+		try {
+			while(result.next()) {
+                
+                int ID = result.getInt("npcID");
+                String storeName = result.getString("storeName");
+                
+                Bukkit.getLogger().log(Level.INFO, "Loading: " + ID + ", " + storeName);
+                
+                for (NPC npc : CitizensAPI.getNPCRegistry()) {
+                    
+                    if (npc.getId() == ID) {
+                        
+                        Bukkit.getLogger().log(Level.INFO, "Found NPC for " + ID);
+                        
+                        StoreNPC storeNPC = new StoreNPC(npc, false);
+                        storeNPC.setStore(storeName);
+                        this.registerNewNPC(storeNPC, npc);
+                        break;
+                    }
+                    
+                }
+                
+            }
+            
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public DatabaseManager getDatabaseManager() {
+        return this.databasemanager;
     }
 
     /**
@@ -315,6 +362,18 @@ public class bNpcStore extends Module {
         
         this.registerNewNPC(storeNPC, npc);
         
+    }
+
+    public void removeNPCStore(NPC npc) {
+        
+        if (!this.npcStores.containsKey(npc)) {
+            return;
+        }
+        
+        final String query = "DELETE FROM `bNpcStore-Npcs` WHERE `npcID`=" + npc.getId();
+        this.databasemanager.getDatabase().query(query, true);
+        
+        this.npcStores.remove(npc);        
     }
     
 }

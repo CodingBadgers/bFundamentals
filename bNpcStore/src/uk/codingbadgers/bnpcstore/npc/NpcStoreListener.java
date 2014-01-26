@@ -6,6 +6,7 @@
 package uk.codingbadgers.bnpcstore.npc;
 
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.NPCRemoveEvent;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -63,12 +64,21 @@ public class NpcStoreListener implements Listener {
         NPC npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "Default Store");
         npc.spawn(player.getLocation());
   
-        StoreNPC storeNPC = new StoreNPC(npc);
-        storeNPC.save();
+        StoreNPC storeNPC = new StoreNPC(npc, true);
         
         bNpcStore module = bNpcStore.getInstance();
         module.registerNewNPC(storeNPC, npc);
         
+        storeNPC.save();
+        
     }
+    
+    @EventHandler
+    public void onNPCRemove(NPCRemoveEvent event) {
+
+        bNpcStore module = bNpcStore.getInstance();
+        module.removeNPCStore(event.getNPC());       
+        
+    }  
     
 }
