@@ -80,6 +80,7 @@ public class CommandStore extends ModuleCommand {
             Module.sendMessage(module.getName(), sender, "/store purchase <playername> xp <number of levels>");
             Module.sendMessage(module.getName(), sender, "/store purchase <playername> money <amount>");
             Module.sendMessage(module.getName(), sender, "/store purchase <playername> mobpackage <name>");
+            Module.sendMessage(module.getName(), sender, "/store purchase <playername> itempackage <name>");
             return;
         }
         
@@ -94,6 +95,8 @@ public class CommandStore extends ModuleCommand {
             handlePurchaseMoney(sender, playerName, args[3]);
         } else if (itemName.equalsIgnoreCase("mobpackage")) {
             handlePurchaseMobPackage(sender, playerName, args[3]);
+        } else if (itemName.equalsIgnoreCase("itempackage")) {
+            handlePurchaseItemPackage(sender, playerName, args[3]);
         }
         
     }
@@ -318,6 +321,29 @@ public class CommandStore extends ModuleCommand {
         Module.sendMessage(module.getName(), sender, "[Sucess] MobPackage Purchase - '" + playerName + "' type '" + type + "'.");
         
         broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased the " + ChatColor.YELLOW + userFriendlyMobPackage + ChatColor.GOLD + "!");
+        
+    }
+    
+    /**
+     * 
+     * @param sender
+     * @param playerName
+     * @param type 
+     */
+    private void handlePurchaseItemPackage(CommandSender sender, String playerName, String type) {
+        
+        if (!sender.hasPermission("bStore.purchase.itempackage")) {
+            Module.sendMessage(module.getName(), sender, "You do not have the required permission 'bStore.purchase.itempackage'.");
+            return;
+        }
+        
+        ItemPackage itemPackage = this.module.getItemPackage(type);
+        if (itemPackage == null) {
+            Module.sendMessage(module.getName(), sender, "There is no item package with the name '" + type + "'.");
+            return;
+        }
+        
+        
         
     }
 

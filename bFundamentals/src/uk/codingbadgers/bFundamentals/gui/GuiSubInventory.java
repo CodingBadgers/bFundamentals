@@ -1,4 +1,4 @@
-package uk.codingbadgers.bnpcstore.gui;
+package uk.codingbadgers.bFundamentals.gui;
 
 public abstract class GuiSubInventory extends GuiInventory {
 

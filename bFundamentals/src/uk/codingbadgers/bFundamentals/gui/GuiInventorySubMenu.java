@@ -1,8 +1,8 @@
-package uk.codingbadgers.bnpcstore.gui;
+package uk.codingbadgers.bFundamentals.gui;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import uk.codingbadgers.bnpcstore.gui.callbacks.GuiReturnCallback;
+import uk.codingbadgers.bFundamentals.gui.callbacks.GuiReturnCallback;
 
 public class GuiInventorySubMenu extends GuiSubInventory {
 

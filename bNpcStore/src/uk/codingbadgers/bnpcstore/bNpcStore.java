@@ -32,18 +32,22 @@ import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getServer;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import uk.codingbadgers.bFundamentals.bFundamentals;
+import uk.codingbadgers.bFundamentals.gui.GuiCallback;
+import uk.codingbadgers.bFundamentals.gui.GuiInventory;
+import uk.codingbadgers.bFundamentals.gui.GuiInventorySubMenu;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bnpcstore.commands.NpcStoreCommand;
+import uk.codingbadgers.bnpcstore.gui.callbacks.GuiBuySellCallback;
 import uk.codingbadgers.bnpcstore.npc.NpcStoreListener;
-import uk.codingbadgers.bnpcstore.gui.GuiInventory;
 import uk.codingbadgers.bnpcstore.npc.StoreNPC;
-import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 import uk.thecodingbadgers.bDatabaseManager.DatabaseTable.DatabaseTable;
 
 public class bNpcStore extends Module {
@@ -63,6 +67,9 @@ public class bNpcStore extends Module {
     /** The database manager **/
     private DatabaseManager databasemanager;
     
+    private Map<GuiInventory, List<String>> m_subMenuNames;
+    private Map<GuiInventory, List<String>> m_itemNames;
+    
     /**
      * Called when the module is disabled.
      */
@@ -79,6 +86,8 @@ public class bNpcStore extends Module {
     public void onEnable() {
         
         bNpcStore.instance = this;
+        m_subMenuNames = new HashMap<GuiInventory, List<String>>();
+        m_itemNames = new HashMap<GuiInventory, List<String>>();
         
         this.databasemanager = new DatabaseManager(this.m_plugin);
         
@@ -157,7 +166,10 @@ public class bNpcStore extends Module {
             FileConfiguration subMenuConfig = createConfigFile(folder + File.separator + "submenus.yml");
             FileConfiguration itemConfig = createConfigFile(folder + File.separator + "items.yml");
             
-            GuiInventory inventory = new GuiInventory(m_plugin, storeConfig, subMenuConfig, itemConfig);
+            GuiInventory inventory = new GuiInventory(m_plugin);
+            loadStoreConfig(storeConfig, inventory);
+            loadSubMenuConfig(subMenuConfig, itemConfig, inventory);
+            
             this.stores.put(inventory.getTitle(), inventory);
             
             bFundamentals.log(Level.INFO, "Loaded store - " + inventory.getTitle());
@@ -380,4 +392,172 @@ public class bNpcStore extends Module {
         this.npcStores.remove(npc);        
     }
     
+    /**
+    * Load the main store config
+    * @param storeConfig Config to load from
+    */
+   private void loadStoreConfig(FileConfiguration storeConfig, GuiInventory inventory) {
+
+       String title = storeConfig.getString("store.name");
+       int rowCount = storeConfig.getInt("store.rows");
+
+       List<String> submenus = storeConfig.getStringList("store.submenus");
+       m_subMenuNames.put(inventory, submenus);
+
+       List<String> items = storeConfig.getStringList("store.items");
+       m_itemNames.put(inventory, items);
+       
+       inventory.createInventory(title, rowCount);
+   }
+
+   /**
+    * Load the sub menu config
+    * @param subMenuConfig The sub menu config to load
+    */
+   protected void loadSubMenuConfig(FileConfiguration subMenuConfig, FileConfiguration itemConfig, GuiInventory inventory) {
+
+       if (this.m_subMenuNames.isEmpty()) {
+           loadItemConfig(itemConfig, inventory);
+           return;
+       }
+       
+       List<String> subMenuNames = m_subMenuNames.get(inventory);
+
+       int subMenuIndex = 0;
+       String subMenu = subMenuNames.get(subMenuIndex);
+       while (inventory.getSubMenu(subMenu) == null) {
+
+           String nodePath = "submenu." + subMenu;
+
+           String name = subMenuConfig.getString(nodePath + ".name");
+           Material icon = Material.valueOf(subMenuConfig.getString(nodePath + ".icon"));
+           int rows = subMenuConfig.getInt(nodePath + ".rows");
+           List<String> details = subMenuConfig.getStringList(nodePath + ".details");
+           details = parseColorCodes(details);
+
+           List<String> submenus = subMenuConfig.getStringList(nodePath + ".submenus");
+           List<String> items = subMenuConfig.getStringList(nodePath + ".items");
+
+           GuiInventorySubMenu subMenuInventory = new GuiInventorySubMenu(inventory, inventory.getTitle() + " - " + name, rows);
+           addSubmenus(subMenuInventory, submenus);
+           addItems(subMenuInventory, items);
+           loadSubMenuConfig(subMenuConfig, itemConfig, subMenuInventory);
+
+           inventory.addSubMenuItem(name, icon, details, subMenuInventory);
+
+           subMenuIndex++;
+           if (subMenuIndex >= subMenuNames.size()) {
+               break;
+           }
+           subMenu = subMenuNames.get(subMenuIndex);
+       }
+
+       loadItemConfig(itemConfig, inventory);
+
+   }
+
+   private void loadItemConfig(FileConfiguration itemConfig, GuiInventory inventory) {
+
+       if (this.m_itemNames.isEmpty()) {
+           return;
+       }
+       
+       List<String> items = m_itemNames.get(inventory);
+
+       int itemIndex = 0;
+       String item = items.get(itemIndex);
+       while (inventory.getItem(item) == null) {
+
+           String nodePath = "item." + item;
+
+           try {
+               String name = itemConfig.getString(nodePath + ".name");
+               int row = itemConfig.getInt(nodePath + ".row");
+               int column = itemConfig.getInt(nodePath + ".column");
+               List<String> details = itemConfig.getStringList(nodePath + ".details");
+               details = parseColorCodes(details);
+
+               String rawIcon = itemConfig.getString(nodePath + ".icon");
+               String iconName = rawIcon;
+               Byte dataValue = -1;
+
+               if (rawIcon.contains(":")) {
+                   String[] iconParts = rawIcon.split(":");
+                   iconName = iconParts[0];
+                   dataValue = Byte.parseByte(iconParts[1]);
+               }
+
+               ItemStack itemStack = null;
+               if (dataValue != -1) {
+                   itemStack = new ItemStack(Material.valueOf(iconName), 1, dataValue);
+               }      
+               else {
+                   itemStack = new ItemStack(Material.valueOf(iconName));
+               }
+
+               GuiCallback onClickCallback = null;
+               if (itemConfig.contains(nodePath + ".onclick")) {
+
+                   // BuySellCallback
+                   if (itemConfig.contains(nodePath + ".onclick.buysell")) {
+                       double buyPrice = itemConfig.getDouble(nodePath + ".onclick.buysell.buyprice", 100.0);
+                       double sellPrice = itemConfig.getDouble(nodePath + ".onclick.buysell.sellprice", 100.0);
+
+                       details.add(" ");
+                       details.add("Buy for £" + buyPrice + " each.");
+                       details.add("Sell for £" + sellPrice + " each.");
+
+                       onClickCallback = new GuiBuySellCallback(inventory, name, itemStack, buyPrice, sellPrice);
+                   }
+               }
+
+               String[] detailsArray = new String[details.size()];
+               details.toArray(detailsArray);
+               inventory.addMenuItem(name, itemStack, detailsArray, (row * 9) + column, onClickCallback);
+
+           } catch(Exception ex) {
+               Bukkit.getLogger().log(Level.WARNING, "Failed to load item - " + item, ex);
+           }
+
+           itemIndex++;
+           if (itemIndex >= items.size()) {
+               break;
+           }
+           item = items.get(itemIndex);
+       }
+
+   }
+
+   /**
+    * 
+    * @param details
+    * @return 
+    */
+   private List<String> parseColorCodes(List<String> details) {
+
+       List<String> parsedDetails = new ArrayList<String>();
+
+       for (String line : details) {
+           parsedDetails.add(ChatColor.translateAlternateColorCodes('&', line));
+       }
+
+       return parsedDetails;
+
+   }
+   
+    /**
+     * 
+     * @param subMenus 
+     */
+    private void addSubmenus(GuiInventory subMenuInventory, List<String> subMenus) {
+        m_subMenuNames.put(subMenuInventory, subMenus);
+    }
+    
+    /**
+     * 
+     * @param items 
+     */
+    private void addItems(GuiInventory subMenuInventory, List<String> items) {
+        m_itemNames.put(subMenuInventory, items);
+    }
 }

@@ -11,10 +11,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import uk.codingbadgers.bFundamentals.gui.GuiCallback;
+import uk.codingbadgers.bFundamentals.gui.GuiInventory;
+import uk.codingbadgers.bFundamentals.gui.GuiInventorySubMenu;
 import uk.codingbadgers.bnpcstore.bNpcStore;
-import uk.codingbadgers.bnpcstore.gui.GuiCallback;
-import uk.codingbadgers.bnpcstore.gui.GuiInventory;
-import uk.codingbadgers.bnpcstore.gui.GuiInventorySubMenu;
 import uk.codingbadgers.bnpcstore.gui.callbacks.buysell.GuiBuySellItemCallback;
 
 public class GuiBuySellCallback implements GuiCallback {
@@ -42,7 +42,7 @@ public class GuiBuySellCallback implements GuiCallback {
                 ChatColor.RED + "" + ChatColor.UNDERLINE + "Left Click Buy. Right Click Sell."
             };
             
-            m_buySellMenu.addMenuItem(name, item, details, (row * 9) + column, amount, false, callback);
+            m_buySellMenu.addMenuItem(name, item, details, (row * 9) + column, amount, callback);
             amount = (amount >> 1);
         }
     }

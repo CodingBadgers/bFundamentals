@@ -202,4 +202,16 @@ public class bStore extends Module implements Listener {
         
     }
 
+    /**
+     * 
+     * @param type
+     * @return 
+     */
+    ItemPackage getItemPackage(String type) {
+        
+        
+        
+        return null;
+    }
+
 }

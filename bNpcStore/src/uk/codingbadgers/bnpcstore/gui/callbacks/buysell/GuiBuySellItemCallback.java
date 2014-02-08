@@ -7,7 +7,6 @@
 package uk.codingbadgers.bnpcstore.gui.callbacks.buysell;
 
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,8 +15,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 import uk.codingbadgers.bFundamentals.module.Module;
 import uk.codingbadgers.bnpcstore.bNpcStore;
-import uk.codingbadgers.bnpcstore.gui.GuiCallback;
-import uk.codingbadgers.bnpcstore.gui.GuiInventory;
+import uk.codingbadgers.bFundamentals.gui.GuiCallback;
+import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 
 /**
  *

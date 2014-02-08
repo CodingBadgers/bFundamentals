@@ -1,9 +1,9 @@
-package uk.codingbadgers.bnpcstore.gui.callbacks;
+package uk.codingbadgers.bFundamentals.gui.callbacks;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import uk.codingbadgers.bnpcstore.gui.GuiCallback;
-import uk.codingbadgers.bnpcstore.gui.GuiInventory;
+import uk.codingbadgers.bFundamentals.gui.GuiCallback;
+import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 
 public class GuiReturnCallback implements GuiCallback {
 

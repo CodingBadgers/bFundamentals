@@ -6,15 +6,13 @@
 
 package uk.codingbadgers.bnpcstore.npc;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import uk.codingbadgers.bnpcstore.bNpcStore;
 import uk.codingbadgers.bnpcstore.database.NPCData;
-import uk.codingbadgers.bnpcstore.gui.GuiInventory;
+import uk.codingbadgers.bFundamentals.gui.GuiInventory;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 import uk.thecodingbadgers.bDatabaseManager.DatabaseTable.DatabaseTable;
 
