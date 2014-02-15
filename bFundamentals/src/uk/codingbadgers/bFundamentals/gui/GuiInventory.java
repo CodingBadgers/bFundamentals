@@ -17,6 +17,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -34,34 +35,11 @@ public class GuiInventory implements Listener {
     private final Map<String, ItemStack> m_items;
     private final Map<Integer, GuiCallback> m_callbacks;
     private Inventory m_inventory;
-
-    /**
-     * Class constructor
-     *
-     * @param title The title of the inventory
-     * @param plugin The owner of the inventory
-     * @param rowCount The number of rows in the inventory
-     */
-    public GuiInventory(Plugin plugin, String title, int rowCount) {
-        m_plugin = plugin;
-        m_title = title;
-        m_rowCount = rowCount;
-
-        m_plugin.getServer().getPluginManager().registerEvents(this, m_plugin);
-
-        m_subMenus = new HashMap<String, GuiSubInventory>();
-        m_items = new HashMap<String, ItemStack>();
-        m_callbacks = new HashMap<Integer, GuiCallback>();
-
-        m_inventory = Bukkit.createInventory(null, m_rowCount * 9, m_title);
-    }
     
     /**
      * Class constructor
      *
-     * @param title The title of the inventory
      * @param plugin The owner of the inventory
-     * @param rowCount The number of rows in the inventory
      */
     public GuiInventory(Plugin plugin) {
         m_plugin = plugin;
@@ -78,6 +56,11 @@ public class GuiInventory implements Listener {
         m_rowCount = rowCount;
         
         m_inventory = Bukkit.createInventory(null, m_rowCount * 9, m_title);
+    }
+    
+    public void createInventory(String title, InventoryType type) {
+        m_title = title;        
+        m_inventory = Bukkit.createInventory(null, type);
     }
     
     /**
