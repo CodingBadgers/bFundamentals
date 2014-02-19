@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>org.jnbt</groupId>
 			<artifactId>jNBT</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
         <dependency> <!-- give us access to CraftBukkit to test our code effectively -->
