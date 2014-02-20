@@ -26,15 +26,17 @@ import org.bukkit.event.Listener;
 
 import uk.codingbadgers.bsocks.bSocksModule;
 
+/*
 import com.btbb.figadmin.events.BanEvent;
 import com.btbb.figadmin.events.IpBanEvent;
 import com.btbb.figadmin.events.TempBanEvent;
 import com.btbb.figadmin.events.UnbanEvent;
 import com.btbb.figadmin.events.WarnEvent;
+*/
 
 @SuppressWarnings("unused")
 public class AdminListener implements Listener {
-
+/*
 	private static final String BAN = "0";
 	private static final String BAN_IP = "1";
 	private static final String WARNING = "2";
@@ -126,4 +128,5 @@ public class AdminListener implements Listener {
 			ex.printStackTrace();
 		}
 	}
+*/
 }

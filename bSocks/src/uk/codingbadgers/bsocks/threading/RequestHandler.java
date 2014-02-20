@@ -188,6 +188,8 @@ public class RequestHandler extends Thread {
 		
 		JSONArray players = new JSONArray();
 		
+                bSocksModule module = bSocksModule.getInstance();
+                
 		for (Player player : onlinePlayers) {
 			JSONObject jplayer = new JSONObject();
 			jplayer.put("player-name", player.getName());
@@ -195,10 +197,19 @@ public class RequestHandler extends Thread {
 			
 			JSONArray groups = new JSONArray();
 			for (String group : m_module.getPermissions().getPlayerGroups(player)) {
+                            if (module.isValidRank(group)) {
 				JSONObject jgroup = new JSONObject();
 				jgroup.put("group", group);
 				groups.add(jgroup);
+                            }
 			}
+                        
+                        if (groups.isEmpty()) {
+                            JSONObject jgroup = new JSONObject();
+                            jgroup.put("group", module.getDefaultRank());
+                            groups.add(jgroup);
+                        }
+                        
 			jplayer.put("rank-name", groups);
 			players.add(jplayer);
 		}

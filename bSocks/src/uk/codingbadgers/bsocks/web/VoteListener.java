@@ -42,7 +42,7 @@ public class VoteListener implements Listener{
 		params.put("service", vote.getServiceName());
 		
 		try {
-			WebHandler postHandler = bSocksModule.getPostHandler("vote.php");
+			WebHandler postHandler = bSocksModule.getInstance().getPostHandler("vote.php");
 			postHandler.put(params);
 			postHandler.start();
 		} catch (MalformedURLException ex) {

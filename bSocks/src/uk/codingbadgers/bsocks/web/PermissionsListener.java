@@ -70,7 +70,7 @@ public class PermissionsListener implements Listener {
 		PermissionGroup group = user.getGroups()[0];
 		
 		try {
-			WebHandler ph = bSocksModule.getPostHandler("promote.php");
+			WebHandler ph = bSocksModule.getInstance().getPostHandler("promote.php");
 			
 			Map<String, String> data = new HashMap<String, String>();
 			data.put("user", user.getName());
