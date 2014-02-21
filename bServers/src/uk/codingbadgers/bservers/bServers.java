@@ -34,38 +34,21 @@ public class bServers extends Module implements PluginMessageListener {
 
     @Override
     public void onEnable() {
-        Bukkit.getMessenger().registerIncomingPluginChannel(bFundamentals.getInstance(), "BungeeCord", this);
-        bFundamentals.getBungeeMessenger().sendBungeeCommand("GetServers"); // get all servers to register commands for
+        String[] serverNames = { "craft", "games", "build" };        
+        for (String serverName : serverNames) {
+            ModuleCommand cmd = new ServerCommand(serverName, getConfig().getStringList("servers." + serverName));
+            registerCommand(cmd);
+        }
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(bFundamentals.getInstance(), "BungeeCord", this);
+       
     }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals("BungeeCord")) {
-            return;
-        }
         
-        try {
-            DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-            String subchannel = in.readUTF();
-            
-            if (subchannel.equals("GetServers")) {
-                String[] serverList = in.readUTF().split(", ");
-                
-                for (String string : serverList) {
-                    log(Level.INFO, "Registering command for " + string);
-                    
-                    ModuleCommand cmd = new ServerCommand(string, getConfig().getStringList("servers." + string));
-                    registerCommand(cmd);
-                }
-            } 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }
