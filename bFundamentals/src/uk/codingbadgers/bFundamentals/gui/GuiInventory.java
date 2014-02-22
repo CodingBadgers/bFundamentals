@@ -73,11 +73,22 @@ public class GuiInventory implements Listener {
 
     /**
      * Close a players inventory
+     * @param player The player to close on
+     * @param force Force close the inventory
+     */
+    public void close(Player player, boolean force) {
+        if (player.getInventory() == m_inventory || force) {
+            player.closeInventory();
+            player.updateInventory();
+        }
+    }
+    
+    /**
+     * Closes a players inventory
+     * @param player The player to close the inventory on
      */
     public void close(Player player) {
-        if (player.getInventory() == m_inventory) {
-            player.closeInventory();
-        }
+        close(player, false);
     }
 
     /**
