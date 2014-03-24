@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -172,7 +171,7 @@ public class PlayerListener implements Listener {
 			shorturl = url;
 		}
         
-		return Global.URLCOLOUR + shorturl + ChatColor.RESET;
+		return Global.URLCOLOUR + shorturl + " " + ChatColor.RESET;
 	}
 	
 	/**
