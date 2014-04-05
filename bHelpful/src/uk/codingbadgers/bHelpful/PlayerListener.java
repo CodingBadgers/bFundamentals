@@ -17,13 +17,14 @@
  */
 package uk.codingbadgers.bHelpful;
 
+import java.io.File;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-
 import uk.codingbadgers.bHelpful.commands.MaintenanceCommand;
 import uk.codingbadgers.bHelpful.commands.MotdCommand;
 import uk.codingbadgers.bHelpful.commands.NewsCommand;
@@ -70,7 +71,7 @@ public class PlayerListener implements Listener {
 		}
 
 		if (!hasPlayedBefore(player)) {
-			Output.server("[bHelpful]", "Please welcome " + player.getName() + " to the server");
+			Output.server("[bHelpful]", "Please welcome " + player.getName() + " to " + Bukkit.getServerName());
 		}
 	
 		PlayerListCommand.displayList(player);
@@ -83,7 +84,11 @@ public class PlayerListener implements Listener {
 	 * @return true, if they have
 	 */
 	private boolean hasPlayedBefore(Player player) {
-		return player.hasPlayedBefore();
+		
+		final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".dat";
+		File tpPlayerDat = new File(tpPlayerDatPath);
+		return tpPlayerDat.exists();
+		
 	}
 
 	/**
