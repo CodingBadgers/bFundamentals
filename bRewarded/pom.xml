@@ -8,14 +8,39 @@
         <version>1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+	
+	<properties>
+		<bukkit.version>1.7.2-R0.3-SNAPSHOT</bukkit.version>
+    </properties>
 
     <artifactId>bRewarded</artifactId>
-
+	
+	<repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <dependency>
             <artifactId>bFundamentals</artifactId>
             <groupId>uk.thecodingbadgers</groupId>
             <version>1.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>${bukkit.version}</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+            <groupId>Votifier</groupId>
+            <artifactId>Votifier</artifactId>
+            <version>1.9</version>
+            <scope>system</scope>
+            <optional>true</optional>
+            <systemPath>${project.basedir}/lib/Votifier.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
