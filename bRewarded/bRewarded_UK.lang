@@ -1,0 +1,144 @@
+#CANCEL-TELEPORT-NONSAFE
+You are trying to teleport to a none safe place. Teleport cancelled.
+
+#CANCEL-TELEPORT-FALL-DISTANCE
+Teleporting to this location would result in fall damage. Teleport cancelled.
+
+#CANCEL-TELEPORT-DANGEROUS
+The block you are teleporting to is dangerous. Teleport cancelled.
+
+#CANCEL-TELEPORT-TYPE-BLACKLISTED
+That type of teleportation is blacklisted in this world.
+
+#COMMAND-TP-USAGE
+To use /tp please specify either a space separated list of coordinates (tp <x> <y> <z> [world]), or a players name (tp <playername>). 
+
+#COMMAND-TP-PLAYER-NOT-FOUND
+We could not find a player by that name, please try again.
+
+#COMMAND-TP-PLAYER-SUCCESS
+You have been teleported to the location of %playername%. 
+
+#COMMAND-TP-ERROR-UNKOWN
+An unknown error occurred whilst trying to teleport you, please try again later.
+
+#COMMAND-TP-COORD-INVALID
+You specified an invalid teleport coordinate. /tp <x> <y> <z> [world]
+
+#COMMAND-TP-COORD-INVALID-WORLDNAME
+You specified an invalid world name teleport destination. /tp <x> <y> <z> [world]
+
+#COMMAND-TP-SUCCESS
+You have been teleported to %location%.
+
+#COMMAND-TP-NO-PERMISSION
+You do not have the required teleport permission (%permission%).
+
+#COMMAND-WARP-USAGE
+To use /warp please specify the warp name you wish to travel too (/warp <name>).
+
+#COMMAND-WARP-ADD-USAGE
+To create a warp use "/warp add" which will create a warp at your current location.
+
+#COMMAND-WARP-DELETE-USAGE
+To delete a warp use "/warp delete name" which will delete the warp with the given name.
+
+#COMMAND-WARP-LIST-USAGE
+To list all warps use "/warp list" which will list all known warp locations.
+
+#COMMAND-WARP-LIST
+The following warps are available to you... 
+
+#COMMAND-WARP-NOT-FOUND
+A warp with the name %warpname% could not be found.
+
+#COMMAND-WARP-COMPLETE
+You have been warped to %warpname%.
+
+#COMMAND-WARP-OTHER-PLAYER-NOT-FOUND
+Could not find a player with the name %playername%. Warp cancelled.
+
+#COMMAND-WARP-NAME-RESERVED
+The name you entered for the warp name is reserved, please use another.
+
+#COMMAND-WARP-NAME-USED
+The name you entered for the warp name is currently in use, please use another.
+
+#COMMAND-WARP-CREATED
+The warp with the name %warpname% has been created.
+
+#COMMAND-WARP-DELETED
+The warp with the name %warpname% has been deleted.
+
+#COMMAND-WARP-NO-PERMISSION
+You do not have the required warp permission (%permission%).
+
+#COMMAND-SPAWN-NO-PERMISSION
+You do not have the required spawn permission (%permission%).
+
+#COMMAND-SPAWN-USAGE
+The /spawn command can take no parameters which will teleport you to your current worlds spawn.
+
+#COMMAND-SPAWN-ONE-PARAM-USAGE
+Using /spawn <world_name> will teleport you to the given worlds name spawn, /spawn <player_name> teleports the given player to your current world spawn.
+
+#COMMAND-SPAWN-TWO-PARAM-USAGE
+Using /spawn <player_name> <world_name> will teleport the given player to the given world spawn.
+
+#COMMAND-SPAWN-PLAYER-NOT-FOUND
+A player with the name %playername% could not be found.
+
+#COMMAND-SPAWN-WORLD-NOT-FOUND
+A world with the name %worldname% could not be found.
+
+#COMMAND-SPAWN-PLAYER-WORLD-NOT-FOUND
+A world or player with the name %name% could not be found.
+
+#COMMAND-SPAWN-COMPLETE
+You have been teleported to the spawn of %worldname%.
+
+#COMMAND-SPAWN-COMPLETE-OTHER
+%playername% has been teleported to the spawn of %worldname%.
+
+#COMMAND-SPAWN-WORLD-ALREADY-EXISTS
+A world spawn for world %worldname% already exists, please delete the old opne before setting a new one.
+
+#COMMAND-SPAWN-WORLD-DOESNT-EXIST
+A world spawn for the world %worldname% does not exists.
+
+#COMMAND-SPAWN-ADDED
+A spawn for the world %worldname% has been added.
+
+#COMMAND-SPAWN-DELETED
+The spawn for the world %worldname% has been delete.
+
+#COMMAND-SPAWN-FAILED
+The spawn command failed to teleport the player to spawn.
+
+#COMMAND-TPR-REQUEST-SENT
+A teleport request has been sent to %playername%.
+
+#COMMAND-TPR-RECEIVED-REQUEST
+You have received a teleport request from %playername%.
+
+#COMMAND-TPR-REQUEST-EXISTS
+A teleport request already exists from you for the player %playername%.
+
+#COMMAND-TPR-USAGE
+To send a teleport request to a player, simply use the command /tpr <player name>.
+
+#COMMAND-TPR-PLAYER-NOT-FOUND
+A teleport request could not be sent to the player %playername%, is the player online?
+
+#COMMAND-TPA-ACCEPTED-REQUEST
+You have accepted a teleport request from %playername%.
+
+#COMMAND-TPA-REQUEST-ACCEPTED
+Your teleport request to %playername% has been accepted.
+
+#COMMAND-TPA-USAGE
+To accept a teleport request use the command /tpa [playername]. Not specifying a name will accept the latest received request.
+
+#COMMAND-TPA-NO-REQUESTS
+You have no teleport requests to accept.
+

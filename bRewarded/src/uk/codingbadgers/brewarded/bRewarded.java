@@ -1,381 +1,564 @@
-/**
- * bFundamentalsBuild 1.2-SNAPSHOT
- * Copyright (C) 2013  CodingBadgers <plugins@mcbadgercraft.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package uk.codingbadgers.brewarded;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
+import com.vexsoftware.votifier.model.Vote;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import uk.codingbadgers.bFundamentals.commands.ModuleCommand;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
+import uk.codingbadgers.bFundamentals.DatabaseSettings;
+import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
+import uk.thecodingbadgers.bDatabaseManager.DatabaseTable.DatabaseTable;
+import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
+import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
 
+/**
+ * The Class bRewarded.
+ * Main entry point to the module
+ */
 public class bRewarded extends Module {
-
-	private ArrayList<PlayerWallet>	m_playerWallets = new ArrayList<PlayerWallet>();
-	
-	private ArrayList<TradableItem>	m_tradableItems = new ArrayList<TradableItem>();
 	
 	/**
-	 * Called when the module is disabled.
+	 * The economy instance
 	 */
+	private Economy economy = null;
+	
+	/**
+	 * The amount to reward players every time they vote
+	 */
+	private double voteRewardAmount = 10000.0f;
+	
+	/**
+	 * The amount to reward players for voting on 10 different services in a day
+	 */
+	private double voteRewardBonusAmount = 100000.0f;
+	
+	/**
+	 * 
+	 */
+	private List<Integer> voteRewardBonusLevels = new ArrayList<Integer>();
+	
+	/**
+	 * 
+	 */
+	private List<ItemStack> rewardItemsCommon = new ArrayList<ItemStack>();
+	
+	/**
+	 * 
+	 */
+	private List<ItemStack> rewardItemsRare = new ArrayList<ItemStack>();
+	
+	/**
+	 * 
+	 */
+	private List<ItemStack> rewardItemsSuperRare = new ArrayList<ItemStack>();
+	
+	/**
+	 * 
+	 */
+	private Double rewardItemsCommonChance = 0.9;
+	
+	/**
+	 * 
+	 */
+	private Double rewardItemsRareChance = 0.09;
+	
+	/**
+	 * 
+	 */
+	private Double rewardItemsSuperRareChance = 0.01;
+	
+	/**
+	 * 
+	 */
+	private BukkitDatabase database = null;
+	
+	/**
+	 * 
+	 */
+	private DatabaseTable voteTable = null;
+	
+	/**
+	 * 
+	 */
+	final private OutputMessages message = new OutputMessages();
+	
+	/**
+	 * This is called when the module is unloaded
+	 */
+	@Override
 	public void onDisable() {
-
+		log(Level.INFO,  getName() + " version " + getVersion() + " disabled.");
 	}
 
 	/**
 	 * Called when the module is loaded.
+	 * Allowing us to register the player and block listeners
 	 */
+	@Override
 	public void onEnable() {
 		
-		reloadTradbaleItems();
-		registerCommand(new ModuleCommand("reward", "/reward").setHelp("Shows bRewarded Help."));
+		loadLanguageFile();
+		loadConfig();
+		
+		this.economy = bFundamentals.getEconomy();
+		this.database = bDatabaseManager.createDatabase("BadgerNetwork", bFundamentals.getInstance(), DatabaseType.SQL);
+		
+		DatabaseSettings settings = bFundamentals.getConfigurationManager().getDatabaseSettings();		
+		if (!this.database.login(settings.host, settings.user, settings.password, settings.port)) {
+			// disable logging
+			this.database = null;
+			this.voteTable = null;
+		}
+		else {
+			this.voteTable = this.database.createTable("bRewarded-Votes", VoteTableData.class);
+		}
+		
+		register(new RewardedVotifierListener(this));
+		
+		this.message.messageAnnounceOther = this.getLanguageValue("ANNOUNCE-VOTE-OTHERS");
+		this.message.messageAnnounce = this.getLanguageValue("ANNOUNCE-VOTE-TO-PLAYER");
+		this.message.messageAnnounceOtherRewardAmount = this.getLanguageValue("ANNOUNCE-VOTE-REWARD-AMOUNT-OTHERS");
+		this.message.messageAnnounceRewardAmount = this.getLanguageValue("ANNOUNCE-VOTE-REWARD-AMOUNT");
+		this.message.messageAnnounceOtherRewardBonus = this.getLanguageValue("ANNOUNCE-VOTE-REWARD-BONUS-OTHERS");
+		this.message.messageAnnounceRewardBonus = this.getLanguageValue("ANNOUNCE-VOTE-REWARD-BONUS");
+		this.message.messageAnnounceRandomReward = this.getLanguageValue("ANNOUNCE-REWARD-REWARD");
+		
+		log(Level.INFO,  getName() + " version " + getVersion() + " enabled.");
+	}
+	
+	/**
+	 * 
+	 */
+	public void loadConfig() {
+		
+		File confFile = new File(getDataFolder(), "config.yml");
+		if (!confFile.exists()) {
+			createDefaultConfig(confFile);
+		}
+		
+		FileConfiguration config = this.getConfig();
+		this.voteRewardAmount = config.getDouble("vote.reward.amount");
+		this.voteRewardBonusAmount = config.getDouble("vote.reward.bonus.amount");
+		this.voteRewardBonusLevels = config.getIntegerList("vote.reward.bonus.levels");
+		
+		List<String> commonRewards = config.getStringList("vote.bonus.items.common.items");		
+		List<String> rareRewards = config.getStringList("vote.bonus.items.rare.items");
+		List<String> superRareRewards = config.getStringList("vote.bonus.items.superrare.items");
+		
+		for (String reward : commonRewards) {
+			ItemStack material = parseMaterial(reward);
+			if (material != null) {
+				this.rewardItemsCommon.add(material);
+				this.log(Level.INFO, "Loaded: " + reward);
+			}
+		}
+		
+		for (String reward : rareRewards) {
+			ItemStack material = parseMaterial(reward);
+			if (material != null) {
+				this.rewardItemsRare.add(material);
+				this.log(Level.INFO, "Loaded: " + reward);
+			}
+		}
+		
+		for (String reward : superRareRewards) {
+			ItemStack material = parseMaterial(reward);
+			if (material != null) {
+				this.rewardItemsSuperRare.add(material);
+				this.log(Level.INFO, "Loaded: " + reward);
+			}
+		}	
+		
+		this.rewardItemsCommonChance = config.getDouble("vote.bonus.items.common.chance");
+		this.rewardItemsRareChance = config.getDouble("vote.bonus.items.rare.chance");
+		this.rewardItemsSuperRareChance = config.getDouble("vote.bonus.items.superrare.chance");
+	}
+	
+	/**
+	 * 
+	 */
+	private void createDefaultConfig(File file) {
+		
+		FileConfiguration config = this.getConfig();
+
+		config.set("vote.reward.amount", 25000);
+		config.set("vote.reward.bonus.amount", 50000);
+		
+		List<Integer> bonusLevels = new ArrayList<Integer>();
+		bonusLevels.add(4);	bonusLevels.add(8); bonusLevels.add(12);
+		config.set("vote.reward.bonus.levels", bonusLevels);
+		
+		// common items
+		List<String> commonRewards = new ArrayList<String>();
+		commonRewards.add(Material.IRON_CHESTPLATE.name());
+		commonRewards.add(Material.IRON_INGOT.name() + ":" + 16);		
+		commonRewards.add(Material.COAL.name() + ":" + 64);	
+		config.set("vote.bonus.items.common.items", commonRewards);
+		config.set("vote.bonus.items.common.chance", 0.9);
+		
+		// rare items
+		List<String> rareRewards = new ArrayList<String>();
+		rareRewards.add(Material.DIAMOND.name());	
+		rareRewards.add(Material.GOLD_INGOT.name() + ":" + 64);	
+		config.set("vote.bonus.items.rare.items", rareRewards);
+		config.set("vote.bonus.items.rare.chance", 0.09);
+		
+		// superrare items
+		List<String> superRareRewards = new ArrayList<String>();	
+		superRareRewards.add(Material.DIAMOND_CHESTPLATE.name());		
+		config.set("vote.bonus.items.superrare.items", superRareRewards);
+		config.set("vote.bonus.items.superrare.chance", 0.01);
+		
+		try {
+			config.save(file);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		
 	}
 	
-	private void reloadTradbaleItems() {
+	/**
+	 * 
+	 * @param materialName
+	 * @return 
+	 */
+	private ItemStack parseMaterial(String materialName) {
 		
-		m_tradableItems.clear();
+		// Format: <id>
+		// Format: <id>:<quantity>
+		// Format: <id>:<quantity>:<data>
+		// Format: <id>:<quantity>:<data>:<name>
 		
-		File itemsConfig = new File(getDataFolder() + File.separator + "items.cfg");
+		String[] parts = materialName.split(":");
 		
-		// Make a default config
-		if (!itemsConfig.exists())
-		{
+		Material material = null;
+		
+		try {
+			material = Material.getMaterial(parts[0]);
+		} catch (Exception ex) {
 			try {
-				itemsConfig.createNewFile();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-				return;
+				material = Material.valueOf(parts[0]);
+			} catch (Exception ex2) {
+				return null;
 			}
-			
-			try {
-				
-				BufferedWriter out = new BufferedWriter(new FileWriter(itemsConfig));
-				
-				out.write("name: 'Cow Egg'\n");
-				out.write("\tid: '383:92'\n");
-				out.write("\tquantity: '1'\n");
-				out.write("\tprice: '10'\n");
-
-				out.close();
-				
-			}	catch (Exception e) {
-				System.err.println("Error: " + e.getMessage());
-				return;
-			}
-			
 		}
 		
-		// Load in the config
+		if (parts.length == 1) {
+			return new ItemStack(material);
+		}
+		
+		int quantity = 1;
 		try {
+			quantity = Integer.parseInt(parts[1]);
+		}
+		catch (Exception ex) {
+			return null;
+		}
+		
+		if (parts.length == 2) {
+			ItemStack item = new ItemStack(material);
+			item.setAmount(quantity);
+			return item;
+		}
+		
+		byte data = 0;
+		try {
+			data = Byte.parseByte(parts[2]);
+		}
+		catch (Exception ex) {
+			return null;
+		}
+		
+		if (parts.length == 3) {
+			ItemStack item = new ItemStack(material);
+			item.setAmount(quantity);
+			MaterialData matData = item.getData();
+			matData.setData(data);
+			item.setData(matData);
+			return item;
+		}
+		
+		String name = parts[3];
+		if (parts.length == 4) {
+			ItemStack item = new ItemStack(material);
+			item.setAmount(quantity);
+			MaterialData matData = item.getData();
+			matData.setData(data);
+			item.setData(matData);
+			ItemMeta itemMeta = item.getItemMeta();
+			itemMeta.setDisplayName(name);
+			item.setItemMeta(itemMeta);			
+			return item;
+		}
+		
+		return null;
+		
+	}
+	
+	/**
+	 * Log a vote to a database
+	 * @param vote The vote to log
+	 */
+	public void logVote(final Vote vote) {
+		
+		if (this.voteTable != null) {
+			VoteTableData newVote = new VoteTableData();
+			newVote.server = Bukkit.getServerName();
+			newVote.service = vote.getServiceName();
+			newVote.username = vote.getUsername();
+			newVote.timestamp = System.currentTimeMillis();
+			this.voteTable.insert(newVote, VoteTableData.class, true);
+		}
+		
+	}
+	
+	/**
+	 * Pay the person who voted
+	 * @param vote The vote to process
+	 */
+	public void payVotee(final Vote vote) {
+
+		if (this.economy != null) {
+			final String user = vote.getUsername();
+			this.economy.depositPlayer(user, this.voteRewardAmount);
+			output(
+				vote, 
+				formatMessage(this.message.messageAnnounceOtherRewardAmount, vote, this.voteRewardAmount), 
+				formatMessage(this.message.messageAnnounceRewardAmount, vote, this.voteRewardAmount)
+			);
 			
-			int id = 1;
+			int votesToday = getNumberOfServicesToday(user);
 			
-			// Get the object of DataInputStream
-			DataInputStream in = new DataInputStream(new FileInputStream(itemsConfig));
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			final OfflinePlayer player = Bukkit.getOfflinePlayer(user);
+			if (player.isOnline()) {
+				String site = votesToday == 1 ? "site" : "sites";
+				Module.sendMessage(this.getName(), player.getPlayer(), "You have voted on " + votesToday + " " + site + " in the past 24 hours...");
+			}
 			
-			String strLine;
-			while ((strLine = br.readLine()) != null) {
-				if (strLine.startsWith("name:")) {
-					
-					String name = strLine.replace("name:", "").replaceAll("'", "").trim();
-					String itemId = "";
-					int quantity = 1;
-					int price = 1;
-					
-					while ((strLine = br.readLine()) != null) {
-						
-						if (strLine.startsWith("id:")) {
-							itemId = strLine.replace("id:", "").replaceAll("'", "").trim();
-						}
-						else if (strLine.startsWith("quantity:")) {
-							String strQuantity = strLine.replace("quantity:", "").replaceAll("'", "").trim();
-							quantity = Integer.parseInt(strQuantity);
-						}
-						else if (strLine.startsWith("price:")) {
-							String strPrice = strLine.replace("price:", "").replaceAll("'", "").trim();
-							price = Integer.parseInt(strPrice);
-							break;
-						}
-						else {
-							break;
-						}
-						
-					}
-					
-					TradableItem tradableItem = new TradableItem(id, name, itemId, quantity, price);
-					m_tradableItems.add(tradableItem);					
-					id++;
+			for (int bonusLevel : voteRewardBonusLevels) {
+				if (votesToday == bonusLevel) {
+					this.economy.depositPlayer(user, this.voteRewardBonusAmount);
+					output(
+						vote, 
+						formatMessage(this.message.messageAnnounceOtherRewardBonus, vote, this.voteRewardBonusAmount), 
+						formatMessage(this.message.messageAnnounceRewardBonus, vote, this.voteRewardBonusAmount)
+					);
+					break;
 				}
 			}
-
-			in.close();
-			
-		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
 		}
+		
+	}
 	
+	/**
+	 * Give the person who voted a random reward
+	 * @param vote The vote to process
+	 */
+	public void rewardVotee(final Vote vote) {
+		
+		Double[] tiers = new Double[] 
+		{
+			this.rewardItemsCommonChance, 
+			this.rewardItemsRareChance, 
+			this.rewardItemsSuperRareChance
+		};
+		
+		Double totalChance = 0.0;
+		for (Double tier : tiers) {
+			totalChance += tier;
+		}
+		
+		Random random = new Random();
+		
+		Double randomTier = random.nextDouble() * totalChance;
+		Double currentTierLevel = 0.0;
+		int tierIndex = 0;
+		
+		for (Double tier : tiers) {
+			if (randomTier < tier) {
+				break;
+			}
+			currentTierLevel += tier;
+			tierIndex++;
+		}
+		
+		List<ItemStack> items = null;
+		
+		// Common
+		if (tierIndex == 0) {
+			items = this.rewardItemsCommon;
+		}
+		// Rare
+		else if (tierIndex == 1) {
+			items = this.rewardItemsRare;
+		}
+		// Super Rare
+		else if (tierIndex == 2) {
+			items = this.rewardItemsSuperRare;
+		}
+		
+		if (items == null) {
+			items = this.rewardItemsCommon;
+		}
+		
+		if (items.isEmpty()) {
+			return;
+		}
+		
+		int itemIndex = random.nextInt(items.size());
+		
+		ItemStack item = items.get(itemIndex).clone();
+		
+		OfflinePlayer player = Bukkit.getOfflinePlayer(vote.getUsername());
+		if (player.isOnline()) {
+			Player onlinePlayer = player.getPlayer();
+			onlinePlayer.getInventory().addItem(item);
+			onlinePlayer.updateInventory();
+			
+			Module.sendMessage(this.getName(), player.getPlayer(), formatRandomReward(item, vote));
+		}
+		
+	}
+	
+	/**
+	 * Announce a vote to the server network
+	 * @param vote The vote to process
+	 */
+	public void announceVote(final Vote vote) {
+		
+		output(vote, formatMessage(this.message.messageAnnounceOther, vote, 0.0), formatMessage(this.message.messageAnnounce, vote, 0.0));
+		
+	}
+	
+	/**
+	 * 
+	 * @param vote
+	 * @param othersMessage
+	 * @param playerMessage 
+	 */
+	private void output(final Vote vote, String othersMessage, String playerMessage) {
+		
+		final OfflinePlayer player = Bukkit.getOfflinePlayer(vote.getUsername());
+		
+		// Tell the server
+		for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+			if (otherPlayer.getName().equalsIgnoreCase(player.getName())) {
+				continue;
+			}
+			Module.sendMessage(this.getName(), otherPlayer, othersMessage);
+		}
+
+		// Tell the player if they are online
+		if (player.isOnline()) {
+			Module.sendMessage(this.getName(), player.getPlayer(), playerMessage);
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param playerName
+	 * @return 
+	 */
+	private int getNumberOfServicesToday(String playerName) {
+		
+		if (this.voteTable != null) {
+			
+			final long time24h = 86400000;
+			final long minTime = System.currentTimeMillis() - time24h;
+			
+			ResultSet result = this.database.queryResult(
+				"SELECT * FROM `bRewarded-Votes` WHERE `username`='" 
+				+ playerName + "' AND `server`='" 
+				+ Bukkit.getServerName() 
+				+ "' AND `timestamp`>=" + minTime
+			);
+			
+			if (result != null) {
+				
+				int votesToday = 0;
+				try {
+					while (result.next()) {
+						votesToday++;
+					}
+				}
+				catch (SQLException ex) {
+					bFundamentals.log(Level.WARNING, "Failed to count todays votes for '" + playerName + "'.", ex);
+				}
+				return votesToday;				
+			}			
+		}
+		
+		return 0;
+		
 	}
 
 	/**
-	 * Handle the command /reward
+	 * 
+	 * @param item
+	 * @return 
 	 */
-	public boolean onCommand(CommandSender sender, String label, String[] args) {		
+	private String formatRandomReward(ItemStack item, Vote vote) {
+		String message = formatMessage(this.message.messageAnnounceRandomReward, vote, 0.0);
 		
-		if (!label.equalsIgnoreCase("reward"))
-			return false;
-		
-		if (!(sender instanceof Player))
-			return true;
-		
-		final Player player = (Player)sender;
-		
-		if (args.length == 0 || args[0].equalsIgnoreCase("help"))
-		{
-			//CommandHelp(player, args);
-			return true;
+		String itemName = item.getAmount() + "x ";
+		if (item.getItemMeta().hasDisplayName()) {
+			itemName += item.getItemMeta().getDisplayName();
+		}
+		else {
+			itemName += item.getType().name();
 		}
 		
-		if (args.length == 1 || args[0].equalsIgnoreCase("wallet"))
-		{
-			commandWallet(player, args);
-			return true;
-		}
-		
-		if (args.length == 1 || args[0].equalsIgnoreCase("give"))
-		{
-			commandGive(player, args);
-			return true;
-		}
-		
-		if (args.length == 1 || args[0].equalsIgnoreCase("remove"))
-		{
-			commandRemove(player, args);
-			return true;
-		}
-		
-		if (args.length == 1 || args[0].equalsIgnoreCase("items"))
-		{
-			commandItems(player, args);
-			return true;
-		}
-		
-		if (args.length == 1 || args[0].equalsIgnoreCase("trade"))
-		{
-			commandTrade(player, args);
-			return true;
-		}
-		
-		return true;
+		message = message.replaceAll("<<item>>", itemName);
+		return message;
 	}
 	
-	private void commandTrade(Player player, String[] args) {
+	/**
+	 * 
+	 * @param message
+	 * @param vote
+	 * @param amount
+	 * @return 
+	 */
+	private String formatMessage(String message, Vote vote, Double amount) {
 		
-		if (!Module.hasPermission(player, "brewarded.trade"))
-		{
-			Module.sendMessage(getName(), player, "You do not have the required permission to do this (brewarded.trade)");
-			return;
-		}
+		message = message.replaceAll("<<player>>", vote.getUsername());
+		message = message.replaceAll("<<servername>>", Bukkit.getServerName());
+		message = message.replaceAll("<<service>>", vote.getServiceName());
+		message = message.replaceAll("<<amount>>", formatAmount(amount));
 		
-		if (args.length != 2)
-		{
-			Module.sendMessage(getName(), player, "Incorrect usage, /reward trade <id>");
-			return;
-		}
-		
-		int id = -1;
-		try {
-			id = Integer.parseInt(args[1]);
-		} catch(Exception ex)
-		{
-			Module.sendMessage(getName(), player, "The id '" + args[1] + "' is invalid");
-			return;
-		}
-		
-		TradableItem item = findTradableItem(id);
-		if (item == null)
-		{
-			Module.sendMessage(getName(), player, "Could not find an item with the id " + id);
-			return;
-		}
-		
-		ItemStack itemStack = new ItemStack(item.getItemId(), item.getQuantity(), (short)item.getItemData());
-		
-		final PlayerWallet wallet = findWallet(player);
-		if (wallet == null)
-			return;
-		
-		wallet.giveAmount(-item.getPrice());
-		player.getInventory().addItem(itemStack);
-	}
-
-	private void commandItems(Player player, String[] args) {
-
-		if (!Module.hasPermission(player, "brewarded.items"))
-		{
-			Module.sendMessage(getName(), player, "You do not have the required permission to do this (brewarded.items)");
-			return;
-		}
-		
-		Module.sendMessage(getName(), player, "-- Tradable Items --");
-		Module.sendMessage(getName(), player, "-- ID :: Name :: Price --");
-		for (TradableItem item : m_tradableItems)
-		{
-			Module.sendMessage(getName(), player, item.getID() + " :: " + item.getName() + " :: " + item.getPrice());
-		}
-		
-	}
-
-	private void commandRemove(Player player, String[] args) {
-		
-		if (!Module.hasPermission(player, "brewarded.admin.remove"))
-		{
-			Module.sendMessage(getName(), player, "You do not have the required permission to do this (brewarded.admin.remove)");
-			return;
-		}
-		
-		if (args.length != 3)
-		{
-			Module.sendMessage(getName(), player, "Incorrect usage, /reward remove <username> <amount>");
-			return;
-		}
-		
-		OfflinePlayer otherPlayer = m_plugin.getServer().getOfflinePlayer(args[1]);
-		if (otherPlayer == null)
-		{
-			Module.sendMessage(getName(), player, "Could not find the player '" + args[1] + "'");
-			return;
-		}
-		
-		int amount = 0;
-		try {
-			amount = Integer.parseInt(args[2]);
-		} catch(Exception ex)
-		{
-			Module.sendMessage(getName(), player, "The amount '" + args[2] + "' is invalid");
-			return;
-		}
-		
-		final PlayerWallet wallet = findWallet(otherPlayer);
-		if (wallet == null)
-			return;
-		
-		wallet.giveAmount(-amount);
-		
-		Module.sendMessage(getName(), player, "You withdrew from the account '" + otherPlayer.getName() + "' " + amount + " tickets");
-		
-		if (otherPlayer.isOnline())
-			Module.sendMessage(getName(), otherPlayer.getPlayer(), "You have been deducted " + amount + " tickets");
-		
-	}
-
-	private void commandGive(Player player, String[] args) {
-		
-		if (!Module.hasPermission(player, "brewarded.admin.give"))
-		{
-			Module.sendMessage(getName(), player, "You do not have the required permission to do this (brewarded.admin.give)");
-			return;
-		}
-		
-		if (args.length != 3)
-		{
-			Module.sendMessage(getName(), player, "Incorrect usage, /reward give <username> <amount>");
-			return;
-		}
-		
-		OfflinePlayer otherPlayer = m_plugin.getServer().getOfflinePlayer(args[1]);
-		if (otherPlayer == null)
-		{
-			Module.sendMessage(getName(), player, "Could not find the player '" + args[1] + "'");
-			return;
-		}
-		
-		int amount = 0;
-		try {
-			amount = Integer.parseInt(args[2]);
-		} catch(Exception ex)
-		{
-			Module.sendMessage(getName(), player, "The amount '" + args[2] + "' is invalid");
-			return;
-		}
-		
-		final PlayerWallet wallet = findWallet(otherPlayer);
-		if (wallet == null)
-			return;
-		
-		wallet.giveAmount(amount);
-		
-		Module.sendMessage(getName(), player, "You gave the account '" + otherPlayer.getName() + "' " + amount + " tickets");
-		
-		if (otherPlayer.isOnline())
-			Module.sendMessage(getName(), otherPlayer.getPlayer(), "You have been given " + amount + " tickets");
-		
-	}
-
-	private void commandWallet(Player player, String[] args) {
-		
-		if (!Module.hasPermission(player, "brewarded.wallet"))
-		{
-			Module.sendMessage(getName(), player, "You do not have the required permission to do this (brewarded.wallet)");
-			return;
-		}
-		
-		final PlayerWallet wallet = findWallet(player);
-		if (wallet == null)
-			return;
-		
-		Module.sendMessage(getName(), player, "Your wallet contains " + wallet.getAmount() + " tickets");		
-	}
-
-	private PlayerWallet findWallet(OfflinePlayer player)
-	{
-		final String playerName = player.getName();
-		
-		for (PlayerWallet wallet : m_playerWallets)
-		{
-			if (wallet.getOwner().equalsIgnoreCase(playerName))
-				return wallet;
-		}
-		
-		return null;
+		return message;
 	}
 	
-	private TradableItem findTradableItem(int id)
-	{
-		for (TradableItem item : m_tradableItems)
-		{
-			if (item.getID() == id)
-				return item;
+	/**
+	 * 
+	 * @param amount
+	 * @return 
+	 */
+	private String formatAmount(double amount) {
+		DecimalFormat format = new DecimalFormat("##0.00");
+		String formatted = format.format(amount);
+
+		if (formatted.endsWith(".")) {
+			formatted = formatted.substring(0, formatted.length() - 1);
 		}
 		
-		return null;
+		return formatted;
 	}
-	
 }
