@@ -151,12 +151,27 @@ public class CommandStore extends ModuleCommand {
             try {
                 investorLength = Integer.parseInt(length) * 1000 * 60; // if it isnt a string, presume length in minutes
                 userFriendlyInvestorLength = investorLength + " Minutes Investor";
+				money = (int)Math.ceil(investorLength * 12.4f);
             } catch (NumberFormatException ex) {
                 Module.sendMessage(module.getName(), sender, "Invalid investment length. Valid: 1week, 1month, 3month, [x] in minutes");
                 bFundamentals.log(Level.WARNING, "Invalid length of investment specified.", ex);
                 return;
             }
         }
+		
+		// Give the investor their money
+		try {
+			bFundamentals.getEconomy().depositPlayer(playerName, money);
+			
+			Module.sendMessage(module.getName(), sender, "Player granted investor money of '£" + formatMoney(money) + "'");
+			Player player = Bukkit.getPlayer(playerName);
+			if (player != null) {
+				Module.sendMessage(module.getName(), player, ChatColor.GOLD + "Thankyou for investing. You have been paid your investor money of '£" + formatMoney(money) + "'.");
+			}
+		} catch (Exception ex) {
+			Module.sendMessage(module.getName(), sender, "Failed to grant money '" + money + "'");
+			bFundamentals.log(Level.WARNING, "Failed to grant money '" + money + "'", ex);
+		}
         
         Permission perms = bFundamentals.getPermissions();
         
@@ -178,9 +193,6 @@ public class CommandStore extends ModuleCommand {
             }
             perms.playerAddGroup((World)null, playerName, group);
         }
-        
-        // Give the investor their money
-        bFundamentals.getEconomy().depositPlayer(playerName, money);
                 
         // Log the end time of the investor
         long from = System.currentTimeMillis();
@@ -199,14 +211,7 @@ public class CommandStore extends ModuleCommand {
         logPurchase(playerName, "Investor", length);
         
         Module.sendMessage(module.getName(), sender, "[Sucess] Investor Purchase - '" + playerName + "' length '" + length + "' old rank '" + oldRank + "' .");
-        
-        broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased " + ChatColor.YELLOW + userFriendlyInvestorLength + ChatColor.GOLD + "!");
-        
-        Player player = Bukkit.getPlayer(playerName);
-        if (player != null) {
-            Module.sendMessage(module.getName(), player, ChatColor.GOLD + "Thankyou for investing. You have been paid your investor money of '£" + formatMoney(money) + "'.");
-        }
-        
+        broadcast(ChatColor.YELLOW + playerName + ChatColor.GOLD + " has purchased " + ChatColor.YELLOW + userFriendlyInvestorLength + ChatColor.GOLD + "!");        
         
     }
 
@@ -374,7 +379,7 @@ public class CommandStore extends ModuleCommand {
     * @return the string
     */
     private String formatMoney(double amount) {
-        DecimalFormat format = new DecimalFormat("@##0.00");
+        DecimalFormat format = new DecimalFormat("##0.00");
         String formatted = format.format(amount);
 
         if (formatted.endsWith(".")) {
