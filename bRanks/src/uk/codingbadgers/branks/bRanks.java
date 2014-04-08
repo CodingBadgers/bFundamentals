@@ -32,16 +32,12 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.event.NPCSpawnEvent;
 import net.citizensnpcs.api.npc.NPC;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -57,7 +53,6 @@ import org.bukkit.scoreboard.Team;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.mcsg.double0negative.tabapi.TabAPI;
-
 import ru.tehkode.permissions.PermissionEntity;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -152,13 +147,18 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
 			addPlayerToTeam(player, false);
 		}
 		
-		for (NPC npc : CitizensAPI.getNPCRegistry()) {
+		// If citizens is installed, enable the listener and update all npcs
+		if (Bukkit.getPluginManager().getPlugin("Citizens") != null) {
+			this.register(new NpcListener(this));
 			
-			if (npc.getBukkitEntity() == null || npc.getBukkitEntity().getType() != EntityType.PLAYER)
-				continue;
-			
-			Player player = (Player)npc.getBukkitEntity();
-			addPlayerToTeam(player, true);
+			for (NPC npc : CitizensAPI.getNPCRegistry()) {
+
+				if (npc.getEntity() == null || npc.getEntity().getType() != EntityType.PLAYER)
+					continue;
+
+				Player player = (Player)npc.getEntity();
+				addPlayerToTeam(player, true);
+			}
 		}
 		
 		if (onlinePlayers.length != 0) {
@@ -299,24 +299,9 @@ public class bRanks extends Module implements Listener, PluginMessageListener {
 	}
 	
 	/**
-	 * Called when a citizens NPC is spawned
-	 */
-	@EventHandler
-	public void onNPCSpawn(NPCSpawnEvent event) {
-
-		NPC npc = event.getNPC();
-		LivingEntity entity = npc.getBukkitEntity();
-		if (entity == null || !(entity instanceof Player))
-			return;
-			
-		Player player = (Player)entity;
-		addPlayerToTeam(player, true);		
-	}
-	
-	/**
 	 * Add a given player to a team based upon their pex rank
 	 */
-	private void addPlayerToTeam(Player player, boolean isNPC) {
+	public void addPlayerToTeam(Player player, boolean isNPC) {
 		final String rank = this.getPermissions().getPrimaryGroup(player);
 		Team team = m_rankScorboards.get(rank);
 		if (team != null) {
