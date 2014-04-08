@@ -2,7 +2,6 @@ package uk.codingbadgers.bstore.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -205,7 +204,7 @@ public class DatabaseManager {
      * @param playerName 
      */
     public void removeXPPurchases(String playerName) {
-        this.database.queryResult("DELETE FROM `Store-XP` WHERE `playerName`= '" + playerName + "'");
+        this.database.query("DELETE FROM `Store-XP` WHERE `playerName`= '" + playerName + "'");
     }
 
 }
