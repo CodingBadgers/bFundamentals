@@ -17,14 +17,13 @@
  */
 package uk.codingbadgers.bHelpful;
 
-import java.io.File;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+
 import uk.codingbadgers.bHelpful.commands.MaintenanceCommand;
 import uk.codingbadgers.bHelpful.commands.MotdCommand;
 import uk.codingbadgers.bHelpful.commands.NewsCommand;
@@ -69,28 +68,9 @@ public class PlayerListener implements Listener {
 		if (MaintenanceCommand.Maintenance.STAFF_MAINTENANCE) {
 			Output.player(player, "[bHelpful]", "Staff maintenance mode enabled");
 		}
-
-		if (!hasPlayedBefore(player)) {
-			Output.server("[bHelpful]", "Please welcome " + player.getName() + " to " + Bukkit.getServerName());
-		}
-	
 		PlayerListCommand.displayList(player);
 	}
 	
-	/**
-	 * Checks if the player has played before.
-	 *
-	 * @param player the player
-	 * @return true, if they have
-	 */
-	private boolean hasPlayedBefore(Player player) {
-		
-		final String tpPlayerDatPath = Bukkit.getServer().getWorlds().get(0).getWorldFolder() + "/players/" + player.getName() + ".dat";
-		File tpPlayerDat = new File(tpPlayerDatPath);
-		return tpPlayerDat.exists();
-		
-	}
-
 	/**
 	 * On player login event.
 	 *
