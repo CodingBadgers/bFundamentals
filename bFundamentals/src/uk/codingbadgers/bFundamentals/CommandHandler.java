@@ -48,13 +48,6 @@ public class CommandHandler implements TabExecutor {
 			return true;
 		}
 		
-		if (args[0].equalsIgnoreCase("reload")) {
-			bFundamentals.getInstance().getPluginLoader().disablePlugin(bFundamentals.getInstance());
-			bFundamentals.getInstance().getPluginLoader().enablePlugin(bFundamentals.getInstance());
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloading plugin");
-			return true;
-		}
-		
 		if (args[0].equalsIgnoreCase("module")) {
 			if (args.length < 1) {
 				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals module commands");

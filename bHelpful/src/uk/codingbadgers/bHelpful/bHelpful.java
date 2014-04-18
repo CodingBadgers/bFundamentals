@@ -24,7 +24,6 @@ import org.bukkit.entity.Player;
 
 import uk.codingbadgers.bFundamentals.bFundamentals;
 import uk.codingbadgers.bFundamentals.module.Module;
-import uk.codingbadgers.bFundamentals.update.BadgerUpdater;
 import uk.codingbadgers.bHelpful.commands.*;
 
 /**
